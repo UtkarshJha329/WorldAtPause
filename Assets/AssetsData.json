@@ -1,0 +1,47 @@
+{
+    "Prefabs":[
+        {
+            "Player": [{
+                    "Name": "Player Basic",
+                    "Entity Type": "Player",
+                    "Components": [
+                        {"Position": [100,100]},
+                        {"Sprite": {
+                            "imageSrc": "Assets/Images/NinjaSpriteSheet.png",
+                            "sourceRectStart": [0,0],
+                            "sourceRectEnd": [16,16]
+                        }}
+                    ]
+                }]
+        },
+        {
+            "Enemies": [{
+                    "Name": "Skeleton",
+                    "Entity Type": "Enemy",
+                    "Components": [
+                        {"Position": [25,25]},
+                        {"Sprite": {
+                            "imageSrc": "Assets/Images/SkeletonSpriteSheet.png",
+                            "sourceRectStart": [0,0],
+                            "sourceRectEnd": [16,16]
+                        }}
+                    ]
+                }]
+        },
+        {
+            "Items": [{
+                    "Name": "Life Pot",
+                    "Entity Type": "Item",
+                    "Components": [
+                        {"Position": [160,120]},
+                        {"Sprite": {
+                            "imageSrc": "Assets/Images/LifePot.png",
+                            "sourceRectStart": [0,0],
+                            "sourceRectEnd": [16,16]
+                        }}
+                    ]
+                }]
+        }
+    ],
+    "Entities": ["Player Basic", "Skeleton", "Skeleton", "Skeleton", "Life Pot"]
+}
