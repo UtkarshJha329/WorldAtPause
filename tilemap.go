@@ -1,7 +1,6 @@
 package main
 
 import (
-	"embed"
 	"image"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -67,7 +66,7 @@ type Tilemap struct {
 	levels        map[Vector2Int]*Level
 }
 
-func NewTilemap(embeddedFileSystem *embed.FS, tileSetTexturePath string, tilemapPath string, gridSize int, tilemapToFill *Tilemap) error {
+func NewTilemap(tileSetTexturePath string, tilemapPath string, gridSize int, tilemapToFill *Tilemap, tilemapDataJSON *TilemapDataJSON) error {
 
 	// Will not work with android directly because of lack of filesystem, use go:embed!
 	var err error
@@ -75,9 +74,6 @@ func NewTilemap(embeddedFileSystem *embed.FS, tileSetTexturePath string, tilemap
 	if err != nil {
 		return err
 	}
-
-	var tilemapDataJSON TilemapDataJSON
-	NewTileMapJson(embeddedFileSystem, tilemapPath, &tilemapDataJSON)
 
 	tilemapToFill.gridSize = gridSize
 	tilemapToFill.levels = make(map[Vector2Int]*Level)

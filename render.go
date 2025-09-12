@@ -8,7 +8,7 @@ import (
 
 func (sprite Sprite) DrawSprite(gRef *Game, screenRef *ebiten.Image, drawImgOptionsRef *ebiten.DrawImageOptions, drawPositionRef *Vector2) {
 	drawImgOptionsRef.GeoM.Translate(drawPositionRef.x, drawPositionRef.y)
-	screenRef.DrawImage(sprite.image.SubImage(image.Rect(sprite.sourceStart.x, sprite.sourceStart.y, sprite.sourceEnd.x, sprite.sourceEnd.y)).(*ebiten.Image), drawImgOptionsRef)
+	screenRef.DrawImage(sprite.image.SubImage(image.Rect(sprite.renderRectStart.x, sprite.renderRectStart.y, sprite.renderRectEnd.x, sprite.renderRectEnd.y)).(*ebiten.Image), drawImgOptionsRef)
 	drawImgOptionsRef.GeoM.Reset()
 }
 

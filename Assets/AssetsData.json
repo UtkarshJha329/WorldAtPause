@@ -1,28 +1,28 @@
 {
     "Prefabs":[
         {
-            "Tilemaps":[{
+            "Tilemaps": [{
                     "Name": "Ground Tilemap",
                     "Entity Type": "Tilemap",
-                    "Components": [
-                        {"Tilemap": {
-                            "tilemapTilesetsSource": "Assets/Maps/TilesetFloor.png",
-                            "tilemapSourceJSON": "Assets/Maps/WorldMap.json",
-                            "gridSize": 16
+                    "AssetData": [
+                        {"Tilemap":{
+                                "tilemapTilesetsSource": "Assets/Maps/TilesetFloor.png",
+                                "tilemapSourceJSON": "Assets/Maps/WorldMap.json",
+                                "gridSize": 16
                         }}
                     ]
-            }]
+                }]
         },
         {
             "Player": [{
                     "Name": "Player Basic",
                     "Entity Type": "Player",
-                    "Components": [
+                    "AssetData": [
                         {"Position": [100, 100]},
-                        {"Sprite": {
-                            "imageSrc": "Assets/Images/NinjaSpriteSheet.png",
-                            "sourceRectStart": [0, 0],
-                            "sourceRectEnd": [16, 16]
+                        {"SpriteData": {
+                            "SpriteTextureLocation": "Assets/Images/NinjaSpriteSheet.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
                         }}
                     ]
                 }]
@@ -31,12 +31,12 @@
             "Enemies": [{
                     "Name": "Skeleton",
                     "Entity Type": "Enemy",
-                    "Components": [
+                    "AssetData": [
                         {"Position": [25, 25]},
-                        {"Sprite": {
-                            "imageSrc": "Assets/Images/SkeletonSpriteSheet.png",
-                            "sourceRectStart": [0, 0],
-                            "sourceRectEnd": [16, 16]
+                        {"SpriteData": {
+                            "SpriteTextureLocation": "Assets/Images/SkeletonSpriteSheet.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
                         }}
                     ]
                 }]
@@ -45,12 +45,12 @@
             "Items": [{
                     "Name": "Life Pot",
                     "Entity Type": "Item",
-                    "Components": [
+                    "AssetData": [
                         {"Position": [160, 120]},
-                        {"Sprite": {
-                            "imageSrc": "Assets/Images/LifePot.png",
-                            "sourceRectStart": [0, 0],
-                            "sourceRectEnd": [16, 16]
+                        {"SpriteData": {
+                            "SpriteTextureLocation": "Assets/Images/LifePot.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
                         }}
                     ]
                 }]
