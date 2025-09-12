@@ -2,8 +2,6 @@ package main
 
 import (
 	"log"
-
-	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type EntityComponents struct {
@@ -11,6 +9,7 @@ type EntityComponents struct {
 	playerEntityID   int
 	cameraEntityID   int
 	cameraData       CameraData
+	tilemap          Tilemap
 	enemyEntityIDs   []int
 	itemEntityIDs    []int
 	sprites          []Sprite
@@ -32,6 +31,11 @@ func PopulateEntityDataFromPrefab(prefabMap map[string]Prefab, entityComponents 
 			entityComponents.positions[entityID] = *component.Position
 		case "Sprite":
 			entityComponents.sprites[entityID] = *component.Sprite
+		case "Tilemap":
+			err := NewTilemap(component.tilemapAssetData.TilemapTilesetFilePath, component.tilemapAssetData.TilemapWorldJSONFilePath, component.tilemapAssetData.TilemapGridSize, &entityComponents.tilemap)
+			if err != nil {
+				log.Fatal(err, "\nFailed to create tilemap.")
+			}
 		}
 	}
 
@@ -62,10 +66,11 @@ func CreateAndPopulateEntitiesAndComponentsFromGameData(path string) *EntityComp
 		log.Fatal("Failed to load game data from file.")
 	}
 
-	return CreateAndPopulateEntitiesAndComponents(prefabMap, entityTypesToSpawn)
-}
+	entityComponentData := CreateAndPopulateEntitiesAndComponents(prefabMap, entityTypesToSpawn)
+	// err = NewTilemap("Assets/Maps/TilesetFloor.png", "Assets/Maps/WorldMap.json", 16, &entityComponentData.tilemap)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
-func DrawEntityID(gRef *Game, screenRef *ebiten.Image, drawImgOptionsRef *ebiten.DrawImageOptions, entityID int) {
-	drawPositionWithCameraOffser := Add_Vector2(&gRef.entityComponentsRef.positions[entityID], &gRef.entityComponentsRef.cameraData.targetFollowOffset)
-	gRef.entityComponentsRef.sprites[entityID].DrawSprite(gRef, screenRef, drawImgOptionsRef, &drawPositionWithCameraOffser)
+	return entityComponentData
 }

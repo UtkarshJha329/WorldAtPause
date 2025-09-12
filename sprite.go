@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"image"
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -36,10 +35,4 @@ func (s *Sprite) UnmarshalJSON(data []byte) error {
 	s.sourceEnd = aux.SourceEnd
 
 	return nil
-}
-
-func (sprite Sprite) DrawSprite(gRef *Game, screenRef *ebiten.Image, drawImgOptionsRef *ebiten.DrawImageOptions, drawPositionRef *Vector2) {
-	drawImgOptionsRef.GeoM.Translate(drawPositionRef.x, drawPositionRef.y)
-	screenRef.DrawImage(sprite.image.SubImage(image.Rect(sprite.sourceStart.x, sprite.sourceStart.y, sprite.sourceEnd.x, sprite.sourceEnd.y)).(*ebiten.Image), drawImgOptionsRef)
-	drawImgOptionsRef.GeoM.Reset()
 }

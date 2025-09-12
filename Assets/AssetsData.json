@@ -1,15 +1,28 @@
 {
     "Prefabs":[
         {
+            "Tilemaps":[{
+                    "Name": "Ground Tilemap",
+                    "Entity Type": "Tilemap",
+                    "Components": [
+                        {"Tilemap": {
+                            "tilemapTilesetsSource": "Assets/Maps/TilesetFloor.png",
+                            "tilemapSourceJSON": "Assets/Maps/WorldMap.json",
+                            "gridSize": 16
+                        }}
+                    ]
+            }]
+        },
+        {
             "Player": [{
                     "Name": "Player Basic",
                     "Entity Type": "Player",
                     "Components": [
-                        {"Position": [100,100]},
+                        {"Position": [100, 100]},
                         {"Sprite": {
                             "imageSrc": "Assets/Images/NinjaSpriteSheet.png",
-                            "sourceRectStart": [0,0],
-                            "sourceRectEnd": [16,16]
+                            "sourceRectStart": [0, 0],
+                            "sourceRectEnd": [16, 16]
                         }}
                     ]
                 }]
@@ -19,11 +32,11 @@
                     "Name": "Skeleton",
                     "Entity Type": "Enemy",
                     "Components": [
-                        {"Position": [25,25]},
+                        {"Position": [25, 25]},
                         {"Sprite": {
                             "imageSrc": "Assets/Images/SkeletonSpriteSheet.png",
-                            "sourceRectStart": [0,0],
-                            "sourceRectEnd": [16,16]
+                            "sourceRectStart": [0, 0],
+                            "sourceRectEnd": [16, 16]
                         }}
                     ]
                 }]
@@ -33,15 +46,15 @@
                     "Name": "Life Pot",
                     "Entity Type": "Item",
                     "Components": [
-                        {"Position": [160,120]},
+                        {"Position": [160, 120]},
                         {"Sprite": {
                             "imageSrc": "Assets/Images/LifePot.png",
-                            "sourceRectStart": [0,0],
-                            "sourceRectEnd": [16,16]
+                            "sourceRectStart": [0, 0],
+                            "sourceRectEnd": [16, 16]
                         }}
                     ]
                 }]
         }
     ],
-    "Entities": ["Player Basic", "Skeleton", "Skeleton", "Skeleton", "Life Pot"]
+    "Entities": ["Ground Tilemap", "Player Basic", "Skeleton", "Skeleton", "Skeleton", "Life Pot"]
 }

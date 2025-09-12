@@ -2,13 +2,15 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"os"
 )
 
 type Components struct {
-	Type     string
-	Position *Vector2
-	Sprite   *Sprite
+	Type             string
+	Position         *Vector2
+	Sprite           *Sprite
+	tilemapAssetData *TilemapAssetData
 }
 
 func (c *Components) UnmarshalJSON(data []byte) error {
@@ -31,6 +33,12 @@ func (c *Components) UnmarshalJSON(data []byte) error {
 				return err
 			}
 			c.Sprite = &spr
+		case "Tilemap":
+			var tilemapAssetData TilemapAssetData
+			if err := json.Unmarshal(val, &tilemapAssetData); err != nil {
+				return err
+			}
+			c.tilemapAssetData = &tilemapAssetData
 		}
 	}
 	return nil
@@ -50,11 +58,13 @@ type Root struct {
 func LoadGameData(path string) (map[string]Prefab, []string, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
+		log.Fatal("Failed to read provided game data file.")
 		return nil, nil, err
 	}
 
 	var root Root
 	if err := json.Unmarshal(data, &root); err != nil {
+		log.Fatal("Failed to unmarshal provided game data file.")
 		return nil, nil, err
 	}
 

@@ -9,6 +9,12 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
+type TilemapAssetData struct {
+	TilemapTilesetFilePath   string `json:"tilemapTilesetsSource"`
+	TilemapWorldJSONFilePath string `json:"tilemapSourceJSON"`
+	TilemapGridSize          int    `json:"gridSize"`
+}
+
 type TileDataJSON struct {
 	TilePos             Vector2    `json:"px"`
 	TileTextureSrcStart Vector2Int `json:"src"`
@@ -22,12 +28,16 @@ type LayerDataJSON struct {
 }
 
 type LevelDataJSON struct {
-	LevelName string          `json:"identifier"`
-	Layers    []LayerDataJSON `json:"layerInstances"`
+	LevelName        string          `json:"identifier"`
+	LevelPosInWorldX float64         `json:"worldX"`
+	LevelPosInWorldY float64         `json:"worldY"`
+	Layers           []LayerDataJSON `json:"layerInstances"`
 }
 
 type TilemapDataJSON struct {
-	Levels []LevelDataJSON `json:"levels"`
+	WorldGridWidth  float64         `json:"worldGridWidth"`
+	WorldGridHeight float64         `json:"worldGridHeight"`
+	Levels          []LevelDataJSON `json:"levels"`
 }
 
 func NewTileMapJson(filepath string, tilemapJSON *TilemapDataJSON) error {
@@ -61,14 +71,16 @@ type Layer struct {
 }
 
 type Level struct {
-	levelName string
-	layers    []Layer
+	levelName            string
+	levelPositionInWorld Vector2
+	layers               []Layer
 }
 
 type Tilemap struct {
-	tileSet  TileSet
-	gridSize int
-	levels   []Level
+	tileSet       TileSet
+	gridSize      int
+	worldGridSize Vector2
+	levels        map[Vector2Int]*Level
 }
 
 func NewTilemap(tileSetTexturePath string, tilemapPath string, gridSize int, tilemapToFill *Tilemap) error {
@@ -84,19 +96,27 @@ func NewTilemap(tileSetTexturePath string, tilemapPath string, gridSize int, til
 	NewTileMapJson(tilemapPath, &tilemapDataJSON)
 
 	tilemapToFill.gridSize = gridSize
-	tilemapToFill.levels = make([]Level, len(tilemapDataJSON.Levels))
+	tilemapToFill.levels = make(map[Vector2Int]*Level)
 
 	tilemapToFill.tileSet.tileSourceImages = make(map[int]*ebiten.Image)
 
-	for currentLevelIndex, level := range tilemapDataJSON.Levels {
+	tilemapToFill.worldGridSize = Vector2{tilemapDataJSON.WorldGridWidth, tilemapDataJSON.WorldGridHeight}
 
-		tilemapToFill.levels[currentLevelIndex].levelName = level.LevelName
-		tilemapToFill.levels[currentLevelIndex].layers = make([]Layer, len(level.Layers))
+	for _, level := range tilemapDataJSON.Levels {
+
+		levelIndex := Vector2Int{int(level.LevelPosInWorldX) / int(tilemapDataJSON.WorldGridWidth), int(level.LevelPosInWorldY) / int(tilemapDataJSON.WorldGridHeight)}
+
+		currentLevel := Level{
+			levelName:            level.LevelName,
+			levelPositionInWorld: Vector2{level.LevelPosInWorldX, level.LevelPosInWorldY},
+			layers:               make([]Layer, len(level.Layers)),
+		}
+		tilemapToFill.levels[levelIndex] = &currentLevel
 
 		for currentLayerIndex, layer := range level.Layers {
 
-			tilemapToFill.levels[currentLevelIndex].layers[currentLayerIndex].layerName = layer.LayerName
-			tilemapToFill.levels[currentLevelIndex].layers[currentLayerIndex].tiles = make([]Tile, len(layer.TilesData))
+			currentLevel.layers[currentLayerIndex].layerName = layer.LayerName
+			currentLevel.layers[currentLayerIndex].tiles = make([]Tile, len(layer.TilesData))
 
 			for currentTileIndex, tile := range layer.TilesData {
 
@@ -111,8 +131,8 @@ func NewTilemap(tileSetTexturePath string, tilemapPath string, gridSize int, til
 							tile.TileTextureSrcStart.y+layer.GridSize)).(*ebiten.Image)
 				}
 
-				tilemapToFill.levels[currentLevelIndex].layers[currentLayerIndex].tiles[currentTileIndex].position = tile.TilePos
-				tilemapToFill.levels[currentLevelIndex].layers[currentLayerIndex].tiles[currentTileIndex].TileSetTilesID = tile.TileID
+				currentLevel.layers[currentLayerIndex].tiles[currentTileIndex].position = Add_Vector2(&currentLevel.levelPositionInWorld, &tile.TilePos)
+				currentLevel.layers[currentLayerIndex].tiles[currentTileIndex].TileSetTilesID = tile.TileID
 			}
 		}
 	}

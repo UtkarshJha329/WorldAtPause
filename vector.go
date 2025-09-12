@@ -17,6 +17,10 @@ func Magnitude_Vector2(const_a *Vector2) float64 {
 	return math.Sqrt(const_a.x*const_a.x + const_a.y*const_a.y)
 }
 
+func MagnitudeSquare_Vector2(const_a *Vector2) float64 {
+	return (const_a.x*const_a.x + const_a.y*const_a.y)
+}
+
 func Normalise_Vector2(const_a *Vector2) Vector2 {
 	magnitude := Magnitude_Vector2(const_a)
 	return Vector2{const_a.x / magnitude, const_a.y / magnitude}
@@ -58,6 +62,10 @@ func DistanceSquare_Vector2Int(const_a, const_b *Vector2) float64 {
 
 func Magnitude_Vector2Int(const_a *Vector2Int) float64 {
 	return math.Sqrt(float64(const_a.x*const_a.x + const_a.y*const_a.y))
+}
+
+func MagnitudeSquare_Vector2Int(const_a *Vector2Int) float64 {
+	return float64(const_a.x*const_a.x + const_a.y*const_a.y)
 }
 
 func Normalise_Vector2Int(const_a *Vector2Int) Vector2Int {

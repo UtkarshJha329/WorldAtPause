@@ -11,27 +11,37 @@ import (
 
 type Game struct {
 	entityComponentsRef *EntityComponents
-	tilemap             Tilemap
 }
 
 func (g *Game) Update() error {
 
-	playerPosRef := &g.entityComponentsRef.positions[PlayerEntityID]
+	playerPosRef := &g.entityComponentsRef.positions[g.entityComponentsRef.playerEntityID]
+
+	inputDirection := Vector2{0.0, 0.0}
 
 	if ebiten.IsKeyPressed(ebiten.KeyRight) {
-		playerPosRef.x += 2
+		inputDirection.x += 1
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyLeft) {
-		playerPosRef.x -= 2
+		inputDirection.x -= 1
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyDown) {
-		playerPosRef.y += 2
+		inputDirection.y += 1
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyUp) {
-		playerPosRef.y -= 2
+		inputDirection.y -= 1
+	}
+
+	if inputDirection.x != 0 || inputDirection.y != 0 {
+
+		normalisedInputDir := Normalise_Vector2(&inputDirection)
+		totalMoveAmount := Multiply_Float_Vector2(2.0, &normalisedInputDir)
+
+		playerPosRef.x += totalMoveAmount.x
+		playerPosRef.y += totalMoveAmount.y
 	}
 
 	itemPickupDistance := 16.0
@@ -62,7 +72,12 @@ func (g *Game) Update() error {
 		}
 	}
 
-	CameraFollowTarget(g.entityComponentsRef.positions[g.entityComponentsRef.playerEntityID], g.entityComponentsRef)
+	playerPos := g.entityComponentsRef.positions[g.entityComponentsRef.playerEntityID]
+	playerInLevel := Vector2{float64(int(playerPos.x) / int(g.entityComponentsRef.tilemap.worldGridSize.x)), float64(int(playerPos.y) / int(g.entityComponentsRef.tilemap.worldGridSize.y))}
+	levelHalfSize := Multiply_Float_Vector2(0.5, &g.entityComponentsRef.tilemap.worldGridSize)
+	currentLevelPos := Vector2{playerInLevel.x * g.entityComponentsRef.tilemap.worldGridSize.x, playerInLevel.y * g.entityComponentsRef.tilemap.worldGridSize.y}
+	currentLevelCentre := Add_Vector2(&currentLevelPos, &levelHalfSize)
+	CameraFollowTarget(currentLevelCentre, g.entityComponentsRef)
 
 	return nil
 }
@@ -75,16 +90,10 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	drawImgOptions := ebiten.DrawImageOptions{}
 
-	for _, levels := range g.tilemap.levels {
-		for _, layers := range levels.layers {
-			for _, tile := range layers.tiles {
-				drawTilePosition := Add_Vector2(&tile.position, &g.entityComponentsRef.cameraData.targetFollowOffset)
-				drawImgOptions.GeoM.Translate(drawTilePosition.x, drawTilePosition.y)
-				screen.DrawImage(g.tilemap.tileSet.tileSourceImages[tile.TileSetTilesID], &drawImgOptions)
-				drawImgOptions.GeoM.Reset()
-			}
-		}
-	}
+	playerPos := g.entityComponentsRef.positions[g.entityComponentsRef.playerEntityID]
+	playerInLevel := Vector2Int{int(playerPos.x) / int(g.entityComponentsRef.tilemap.worldGridSize.x), int(playerPos.y) / int(g.entityComponentsRef.tilemap.worldGridSize.y)}
+
+	DrawTileMapLevel(g.entityComponentsRef.tilemap.levels[playerInLevel], g, screen, &drawImgOptions)
 
 	for _, itemEntityID := range g.entityComponentsRef.itemEntityIDs {
 		DrawEntityID(g, screen, &drawImgOptions, itemEntityID)
@@ -102,8 +111,6 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 	return int(g.entityComponentsRef.cameraData.screenSize.x), int(g.entityComponentsRef.cameraData.screenSize.y)
 }
 
-const PlayerEntityID = 0
-
 func main() {
 	ebiten.SetWindowSize(640, 480)
 	ebiten.SetWindowTitle("Ninja!")
@@ -111,15 +118,9 @@ func main() {
 
 	game := Game{
 		entityComponentsRef: CreateAndPopulateEntitiesAndComponentsFromGameData("Assets/AssetsData.json"),
-		tilemap:             Tilemap{},
 	}
 
 	game.entityComponentsRef.cameraData.screenSize = Vector2{320, 240}
-
-	err := NewTilemap("Assets/Maps/TilesetFloor.png", "Assets/Maps/WorldMap.json", 16, &game.tilemap)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	if err := ebiten.RunGame(&game); err != nil {
 		log.Fatal(err)
