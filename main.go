@@ -117,7 +117,7 @@ func main() {
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 
 	game := Game{
-		entityComponentsRef: CreateAndPopulateEntitiesAndComponentsFromGameData("Assets/AssetsData.json"),
+		entityComponentsRef: CreateAndPopulateEntitiesAndComponentsFromGameData(&EmbeddedAssetsFS, "Assets/AssetsData.json"),
 	}
 
 	game.entityComponentsRef.cameraData.screenSize = Vector2{320, 240}

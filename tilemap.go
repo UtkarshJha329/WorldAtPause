@@ -1,9 +1,8 @@
 package main
 
 import (
-	"encoding/json"
+	"embed"
 	"image"
-	"os"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
@@ -40,21 +39,6 @@ type TilemapDataJSON struct {
 	Levels          []LevelDataJSON `json:"levels"`
 }
 
-func NewTileMapJson(filepath string, tilemapJSON *TilemapDataJSON) error {
-	contents, err := os.ReadFile(filepath)
-	if err != nil {
-		return err
-	}
-
-	err = json.Unmarshal(contents, tilemapJSON)
-	if err != nil {
-		return err
-	}
-
-	return nil
-
-}
-
 type Tile struct {
 	TileSetTilesID int
 	position       Vector2
@@ -83,7 +67,7 @@ type Tilemap struct {
 	levels        map[Vector2Int]*Level
 }
 
-func NewTilemap(tileSetTexturePath string, tilemapPath string, gridSize int, tilemapToFill *Tilemap) error {
+func NewTilemap(embeddedFileSystem *embed.FS, tileSetTexturePath string, tilemapPath string, gridSize int, tilemapToFill *Tilemap) error {
 
 	// Will not work with android directly because of lack of filesystem, use go:embed!
 	var err error
@@ -93,7 +77,7 @@ func NewTilemap(tileSetTexturePath string, tilemapPath string, gridSize int, til
 	}
 
 	var tilemapDataJSON TilemapDataJSON
-	NewTileMapJson(tilemapPath, &tilemapDataJSON)
+	NewTileMapJson(embeddedFileSystem, tilemapPath, &tilemapDataJSON)
 
 	tilemapToFill.gridSize = gridSize
 	tilemapToFill.levels = make(map[Vector2Int]*Level)

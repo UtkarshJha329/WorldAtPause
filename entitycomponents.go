@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"log"
 )
 
@@ -23,7 +24,7 @@ func CreateEntityComponents(totalNumEntitiesToCreate int) *EntityComponents {
 		positions:        make([]Vector2, totalNumEntitiesToCreate)}
 }
 
-func PopulateEntityDataFromPrefab(prefabMap map[string]Prefab, entityComponents *EntityComponents, prefabName string, entityID int) {
+func PopulateEntityDataFromPrefab(embeddedFileSystem *embed.FS, prefabMap map[string]Prefab, entityComponents *EntityComponents, prefabName string, entityID int) {
 
 	for _, component := range prefabMap[prefabName].Components {
 		switch component.Type {
@@ -32,7 +33,7 @@ func PopulateEntityDataFromPrefab(prefabMap map[string]Prefab, entityComponents 
 		case "Sprite":
 			entityComponents.sprites[entityID] = *component.Sprite
 		case "Tilemap":
-			err := NewTilemap(component.tilemapAssetData.TilemapTilesetFilePath, component.tilemapAssetData.TilemapWorldJSONFilePath, component.tilemapAssetData.TilemapGridSize, &entityComponents.tilemap)
+			err := NewTilemap(embeddedFileSystem, component.tilemapAssetData.TilemapTilesetFilePath, component.tilemapAssetData.TilemapWorldJSONFilePath, component.tilemapAssetData.TilemapGridSize, &entityComponents.tilemap)
 			if err != nil {
 				log.Fatal(err, "\nFailed to create tilemap.")
 			}
@@ -41,11 +42,11 @@ func PopulateEntityDataFromPrefab(prefabMap map[string]Prefab, entityComponents 
 
 }
 
-func CreateAndPopulateEntitiesAndComponents(prefabMap map[string]Prefab, prefabNames []string) *EntityComponents {
+func CreateAndPopulateEntitiesAndComponents(embeddedFileSystem *embed.FS, prefabMap map[string]Prefab, prefabNames []string) *EntityComponents {
 
 	entityComponents := CreateEntityComponents(len(prefabNames))
 	for entityID, prefabName := range prefabNames {
-		PopulateEntityDataFromPrefab(prefabMap, entityComponents, prefabName, entityID)
+		PopulateEntityDataFromPrefab(embeddedFileSystem, prefabMap, entityComponents, prefabName, entityID)
 
 		switch prefabMap[prefabName].EntityType {
 		case "Player":
@@ -60,13 +61,13 @@ func CreateAndPopulateEntitiesAndComponents(prefabMap map[string]Prefab, prefabN
 	return entityComponents
 }
 
-func CreateAndPopulateEntitiesAndComponentsFromGameData(path string) *EntityComponents {
-	prefabMap, entityTypesToSpawn, err := LoadGameData(path)
+func CreateAndPopulateEntitiesAndComponentsFromGameData(embeddedFileSystem *embed.FS, path string) *EntityComponents {
+	prefabMap, entityTypesToSpawn, err := LoadGameData(embeddedFileSystem, path)
 	if err != nil {
 		log.Fatal("Failed to load game data from file.")
 	}
 
-	entityComponentData := CreateAndPopulateEntitiesAndComponents(prefabMap, entityTypesToSpawn)
+	entityComponentData := CreateAndPopulateEntitiesAndComponents(embeddedFileSystem, prefabMap, entityTypesToSpawn)
 	// err = NewTilemap("Assets/Maps/TilesetFloor.png", "Assets/Maps/WorldMap.json", 16, &entityComponentData.tilemap)
 	// if err != nil {
 	// 	log.Fatal(err)
