@@ -5,12 +5,27 @@ import (
 	"encoding/json"
 	"io/fs"
 	"log"
-
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
-//go:embed Assets/*
-var EmbeddedAssetsFS embed.FS
+func (v *Vector2) UnmarshalJSON(data []byte) error {
+	var arr [2]float64
+	if err := json.Unmarshal(data, &arr); err != nil {
+		return err
+	}
+	v.x = arr[0]
+	v.y = arr[1]
+	return nil
+}
+
+func (v *Vector2Int) UnmarshalJSON(data []byte) error {
+	var arr [2]int
+	if err := json.Unmarshal(data, &arr); err != nil {
+		return err
+	}
+	v.x = arr[0]
+	v.y = arr[1]
+	return nil
+}
 
 func (s *Sprite) UnmarshalJSON(data []byte) error {
 	var aux struct {
@@ -24,10 +39,7 @@ func (s *Sprite) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
-	s.image, _, err = ebitenutil.NewImageFromFileSystem(EmbeddedAssetsFS, aux.ImageLocation)
-	if err != nil {
-		log.Fatal("Failed to load sprite from" + aux.ImageLocation)
-	}
+	s.image = LoadImageFromFileSystem(aux.ImageLocation)
 
 	s.sourceStart = aux.SourceStart
 	s.sourceEnd = aux.SourceEnd
@@ -66,30 +78,10 @@ func (c *Components) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func LoadGameData(embeddedFileSystem *embed.FS, path string) (map[string]Prefab, []string, error) {
-	data, err := fs.ReadFile(embeddedFileSystem, path)
-	if err != nil {
-		log.Fatal("Failed to read provided game data file.")
-		return nil, nil, err
-	}
-
-	var root Root
-	if err := json.Unmarshal(data, &root); err != nil {
+func UnmarshalRoot(data *[]byte, root *Root) {
+	if err := json.Unmarshal(*data, root); err != nil {
 		log.Fatal("Failed to unmarshal provided game data file.")
-		return nil, nil, err
 	}
-
-	prefabMap := make(map[string]Prefab)
-
-	for _, entry := range root.Prefabs {
-		for _, prefabList := range entry {
-			for _, p := range prefabList {
-				prefabMap[p.Name] = p
-			}
-		}
-	}
-
-	return prefabMap, root.Entities, nil
 }
 
 func NewTileMapJson(embeddedFileSystem *embed.FS, filepath string, tilemapJSON *TilemapDataJSON) error {

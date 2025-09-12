@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"math"
 )
 
@@ -42,16 +41,6 @@ func Multiply_Float_Vector2(const_a float64, const_b *Vector2) Vector2 {
 	return Vector2{const_b.x * const_a, const_b.y * const_a}
 }
 
-func (v *Vector2) UnmarshalJSON(data []byte) error {
-	var arr [2]float64
-	if err := json.Unmarshal(data, &arr); err != nil {
-		return err
-	}
-	v.x = arr[0]
-	v.y = arr[1]
-	return nil
-}
-
 type Vector2Int struct {
 	x, y int
 }
@@ -87,14 +76,4 @@ func Add_Float_Vector2Int(const_a int, const_b *Vector2Int) Vector2Int {
 
 func Multiply_Float_Vector2Int(const_a int, const_b *Vector2Int) Vector2Int {
 	return Vector2Int{const_b.x * const_a, const_b.y * const_a}
-}
-
-func (v *Vector2Int) UnmarshalJSON(data []byte) error {
-	var arr [2]int
-	if err := json.Unmarshal(data, &arr); err != nil {
-		return err
-	}
-	v.x = arr[0]
-	v.y = arr[1]
-	return nil
 }
