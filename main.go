@@ -70,22 +70,12 @@ func (g *Game) Update() error {
 		}
 	}
 
-	// itemPickupDistance := 16.0
 	for index, itemEntityID := range g.entityComponentsRef.itemEntityIDs {
 		itemPosRef := &g.entityComponentsRef.positions[itemEntityID]
 
-		// if DistanceSquare_Vector2(itemPosRef, playerPosRef) < math.Pow(itemPickupDistance, 2) {
-		// 	g.entityComponentsRef.itemEntityIDs = append(g.entityComponentsRef.itemEntityIDs[:index], g.entityComponentsRef.itemEntityIDs[index+1:]...)
-		// 	fmt.Printf("Picked up item entity ID : %d\n", itemEntityID)
-		// }
 		itemCentre := Vector2{itemPosRef.x + 5.0, itemPosRef.y + 5.0}
 		itemCollisionShapeRef := g.entityComponentsRef.collisionShapes[itemEntityID]
 
-		// if itemCollisionShapeRef.CollisionShapeIncludesPoint(itemPosRef, &g.entityComponentsRef.positions[g.entityComponentsRef.playerEntityID]) {
-		// 	g.entityComponentsRef.itemEntityIDs = append(g.entityComponentsRef.itemEntityIDs[:index], g.entityComponentsRef.itemEntityIDs[index+1:]...)
-		// 	fmt.Printf("Picked up item entity ID : %d\n", itemEntityID)
-		// }
-		// if CollisionShapeOverlapsWithCollisionShape(itemPosRef, itemCollisionShapeRef, &g.entityComponentsRef.positions[g.entityComponentsRef.playerEntityID], g.entityComponentsRef.collisionShapes[g.entityComponentsRef.playerEntityID]) {
 		if CollisionShapeOverlapsWithCollisionShape(&itemCentre, itemCollisionShapeRef, &g.entityComponentsRef.positions[g.entityComponentsRef.playerEntityID], g.entityComponentsRef.collisionShapes[g.entityComponentsRef.playerEntityID]) {
 			g.entityComponentsRef.itemEntityIDs = append(g.entityComponentsRef.itemEntityIDs[:index], g.entityComponentsRef.itemEntityIDs[index+1:]...)
 			fmt.Printf("Picked up item entity ID : %d\n", itemEntityID)
@@ -127,12 +117,10 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	DrawEntityID(g, screen, &drawImgOptions, g.entityComponentsRef.playerEntityID)
 
 	playerCollisionShapeRef := g.entityComponentsRef.collisionShapes[g.entityComponentsRef.playerEntityID]
-	playerCollisionShapePoints := playerCollisionShapeRef.CollisionPoints(&playerPos)
-	topLeft := (*playerCollisionShapePoints)[0]
-	bottomRight := (*playerCollisionShapePoints)[2]
+	playerCollisionShapePoints := playerCollisionShapeRef.GetCollisionPoints()
+	topLeft := Add_Vector2(&(*playerCollisionShapePoints)[0], &playerPos)
+	bottomRight := Add_Vector2(&(*playerCollisionShapePoints)[2], &playerPos)
 	size := Vector2{bottomRight.x - topLeft.x, bottomRight.y - topLeft.y}
-
-	// fmt.Println(playerCollisionShapeRef.(*BoxCollider).size.x, playerCollisionShapeRef.(*BoxCollider).size.y)
 
 	vector.StrokeRect(screen, float32(topLeft.x), float32(topLeft.y), float32(size.x), float32(size.y), 1.0, color.Black, false)
 

@@ -4,7 +4,12 @@ import (
 	"math"
 )
 
+type Collider struct {
+	collisionPoints []Vector2
+}
+
 type BoxCollider struct {
+	Collider
 	size Vector2
 }
 
@@ -21,14 +26,14 @@ func (bc *BoxCollider) CollisionShapeIncludesPoint(const_origin *Vector2, const_
 	return false
 }
 
-func (bc *BoxCollider) CollisionPoints(const_origin *Vector2) *[]Vector2 {
+func (bc *BoxCollider) CreateCollisionPoints() {
 
-	topLeft := *const_origin
-	bottomRight := Add_Vector2(const_origin, &bc.size)
+	topLeft := Vector2{0, 0}
+	bottomRight := bc.size
 	topRight := Vector2{bottomRight.x, topLeft.y}
 	bottomLeft := Vector2{topLeft.x, bottomRight.y}
 
-	return &[]Vector2{
+	bc.collisionPoints = []Vector2{
 		topLeft,
 		topRight,
 		bottomRight,
@@ -36,7 +41,12 @@ func (bc *BoxCollider) CollisionPoints(const_origin *Vector2) *[]Vector2 {
 	}
 }
 
+func (bc *BoxCollider) GetCollisionPoints() *[]Vector2 {
+	return &bc.collisionPoints
+}
+
 type CircleCollider struct {
+	Collider
 	radius float64
 }
 
@@ -44,19 +54,43 @@ func (cc *CircleCollider) CollisionShapeIncludesPoint(const_origin *Vector2, con
 	return DistanceSquare_Vector2(const_point, const_origin) <= math.Pow(cc.radius, 2.0)
 }
 
-func (cc *CircleCollider) CollisionPoints(const_origin *Vector2) *[]Vector2 {
-	return &[]Vector2{*const_origin}
+func (cc *CircleCollider) CreateCollisionPoints() {
+	cc.collisionPoints = []Vector2{{0, 0}}
+}
+
+func (cc *CircleCollider) GetCollisionPoints() *[]Vector2 {
+	return &cc.collisionPoints
+}
+
+func CircleBoxAABBOverlap(const_origin_circle *Vector2, cc *CircleCollider, const_origin_box *Vector2, bx *BoxCollider) bool {
+
+	pointOnBoxToCheck := *const_origin_circle
+
+	if const_origin_circle.x < const_origin_box.x {
+		pointOnBoxToCheck.x = const_origin_box.x
+	} else if const_origin_circle.x > const_origin_box.x+bx.size.x {
+		pointOnBoxToCheck.x = const_origin_box.x + bx.size.x
+	}
+
+	if const_origin_circle.y < const_origin_box.y {
+		pointOnBoxToCheck.y = const_origin_box.y
+	} else if const_origin_circle.y > const_origin_box.y+bx.size.y {
+		pointOnBoxToCheck.y = const_origin_box.y + bx.size.y
+	}
+
+	return DistanceSquare_Vector2(&pointOnBoxToCheck, const_origin_circle) <= math.Pow(cc.radius, 2.0)
 }
 
 type CollisionShape interface {
-	CollisionPoints(const_origin *Vector2) *[]Vector2
+	GetCollisionPoints() *[]Vector2
+	CreateCollisionPoints()
 	CollisionShapeIncludesPoint(const_origin *Vector2, const_point *Vector2) bool
 }
 
 func CollisionShapeOverlapsWithCollisionShape(const_originA *Vector2, csA CollisionShape, const_originB *Vector2, csB CollisionShape) bool {
 
-	csAPoints := csA.CollisionPoints(const_originA)
-	csBPoints := csB.CollisionPoints(const_originB)
+	csAPoints := csA.GetCollisionPoints()
+	csBPoints := csB.GetCollisionPoints()
 
 	numPointsA := len(*csAPoints)
 	numPointsB := len(*csBPoints)
@@ -65,26 +99,14 @@ func CollisionShapeOverlapsWithCollisionShape(const_originA *Vector2, csA Collis
 		return DistanceSquare_Vector2(const_originA, const_originB) <= math.Pow(csA.(*CircleCollider).radius+csB.(*CircleCollider).radius, 2.0)
 	}
 	if numPointsA == 1 {
-		for _, collisionPointInB := range *csBPoints {
-			if csA.CollisionShapeIncludesPoint(const_originA, &collisionPointInB) {
-				return true
-			}
-		}
-		return false
+		return CircleBoxAABBOverlap(const_originA, csA.(*CircleCollider), const_originB, csB.(*BoxCollider))
 	} else if numPointsB == 1 {
-		for _, collisionPointInA := range *csAPoints {
-			if csB.CollisionShapeIncludesPoint(const_originB, &collisionPointInA) {
-				return true
-			}
-		}
-		return false
+		return CircleBoxAABBOverlap(const_originB, csB.(*CircleCollider), const_originA, csA.(*BoxCollider))
 	} else {
-		for _, collisionPointInB := range *csBPoints {
-			if csA.CollisionShapeIncludesPoint(const_originA, &collisionPointInB) {
-				return true
-			}
-		}
-		return false
+		return (const_originA.x < const_originB.x+csB.(*BoxCollider).size.x) &&
+			(const_originA.x+csA.(*BoxCollider).size.x > const_originB.x) &&
+			(const_originA.y < const_originB.y+csB.(*BoxCollider).size.y) &&
+			(const_originA.y+csA.(*BoxCollider).size.y > const_originB.y)
 	}
 }
 

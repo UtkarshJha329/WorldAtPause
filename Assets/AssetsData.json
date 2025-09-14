@@ -62,7 +62,7 @@
                         }},
                         {"CollisionShapeData": {
                             "CollisionShapeType": "Circle",
-                            "Radius": 16
+                            "Radius": 4
                         }}
 
                     ]

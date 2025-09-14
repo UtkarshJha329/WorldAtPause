@@ -44,10 +44,12 @@ func PopulateEntityDataFromPrefab(prefabMap map[string]Prefab, entityComponents 
 				entityComponents.collisionShapes[entityID] = &BoxCollider{
 					size: *assetData.CollisionShapeData.Size,
 				}
+				entityComponents.collisionShapes[entityID].CreateCollisionPoints()
 			case "Circle":
 				entityComponents.collisionShapes[entityID] = &CircleCollider{
 					radius: *assetData.CollisionShapeData.Radius,
 				}
+				entityComponents.collisionShapes[entityID].CreateCollisionPoints()
 			}
 		case "Tilemap":
 
