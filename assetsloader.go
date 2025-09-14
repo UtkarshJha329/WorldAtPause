@@ -1,10 +1,11 @@
 package main
 
 type AssetData struct {
-	AssetType        string
-	Position         *Vector2
-	SpriteData       *SpriteData
-	tilemapAssetData *TilemapAssetData
+	AssetType          string
+	Position           *Vector2
+	SpriteAssetData    *SpriteAssetData
+	CollisionShapeData *CollisionShapeAssetData
+	tilemapAssetData   *TilemapAssetData
 }
 
 type Prefab struct {

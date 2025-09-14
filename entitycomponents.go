@@ -9,20 +9,21 @@ import (
 type EntityComponents struct {
 	totalNumEntities int
 	playerEntityID   int
-	cameraEntityID   int
 	cameraData       CameraData
 	tilemap          Tilemap
 	enemyEntityIDs   []int
 	itemEntityIDs    []int
-	sprites          []Sprite
 	positions        []Vector2
+	sprites          []Sprite
+	collisionShapes  []CollisionShape
 }
 
 func CreateEntityComponents(totalNumEntitiesToCreate int) *EntityComponents {
 	return &EntityComponents{
 		totalNumEntities: totalNumEntitiesToCreate,
 		sprites:          make([]Sprite, totalNumEntitiesToCreate),
-		positions:        make([]Vector2, totalNumEntitiesToCreate)}
+		positions:        make([]Vector2, totalNumEntitiesToCreate),
+		collisionShapes:  make([]CollisionShape, totalNumEntitiesToCreate)}
 }
 
 func PopulateEntityDataFromPrefab(prefabMap map[string]Prefab, entityComponents *EntityComponents, prefabName string, entityID int) {
@@ -33,9 +34,20 @@ func PopulateEntityDataFromPrefab(prefabMap map[string]Prefab, entityComponents 
 			entityComponents.positions[entityID] = *assetData.Position
 		case "SpriteData":
 			entityComponents.sprites[entityID] = Sprite{
-				image:           LoadImageFromFileSystem(assetData.SpriteData.SpriteTextureLocation),
-				renderRectStart: assetData.SpriteData.RenderRectStart,
-				renderRectEnd:   assetData.SpriteData.RenderRectEnd,
+				image:           LoadImageFromFileSystem(assetData.SpriteAssetData.SpriteTextureLocation),
+				renderRectStart: assetData.SpriteAssetData.RenderRectStart,
+				renderRectEnd:   assetData.SpriteAssetData.RenderRectEnd,
+			}
+		case "CollisionShapeData":
+			switch assetData.CollisionShapeData.CollisionShapeType {
+			case "Box":
+				entityComponents.collisionShapes[entityID] = &BoxCollider{
+					size: *assetData.CollisionShapeData.Size,
+				}
+			case "Circle":
+				entityComponents.collisionShapes[entityID] = &CircleCollider{
+					radius: *assetData.CollisionShapeData.Radius,
+				}
 			}
 		case "Tilemap":
 

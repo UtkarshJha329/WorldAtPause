@@ -23,6 +23,10 @@
                             "SpriteTextureLocation": "Assets/Images/NinjaSpriteSheet.png",
                             "RenderRectStart": [0, 0],
                             "RenderRectEnd": [16, 16]
+                        }},
+                        {"CollisionShapeData": {
+                            "CollisionShapeType": "Box",
+                            "Size": [16, 16]
                         }}
                     ]
                 }]
@@ -37,6 +41,10 @@
                             "SpriteTextureLocation": "Assets/Images/SkeletonSpriteSheet.png",
                             "RenderRectStart": [0, 0],
                             "RenderRectEnd": [16, 16]
+                        }},
+                        {"CollisionShapeData": {
+                            "CollisionShapeType": "Box",
+                            "Size": [16, 16]
                         }}
                     ]
                 }]
@@ -51,7 +59,12 @@
                             "SpriteTextureLocation": "Assets/Images/LifePot.png",
                             "RenderRectStart": [0, 0],
                             "RenderRectEnd": [16, 16]
+                        }},
+                        {"CollisionShapeData": {
+                            "CollisionShapeType": "Circle",
+                            "Radius": 16
                         }}
+
                     ]
                 }]
         }

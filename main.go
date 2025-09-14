@@ -7,6 +7,7 @@ import (
 	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/vector"
 )
 
 type Game struct {
@@ -16,6 +17,8 @@ type Game struct {
 func (g *Game) Update() error {
 
 	playerPosRef := &g.entityComponentsRef.positions[g.entityComponentsRef.playerEntityID]
+	playerCollisionShapeRef := g.entityComponentsRef.collisionShapes[g.entityComponentsRef.playerEntityID]
+	playerMoveAmountPerFrame := 2.0
 
 	inputDirection := Vector2{0.0, 0.0}
 
@@ -38,15 +41,14 @@ func (g *Game) Update() error {
 	if inputDirection.x != 0 || inputDirection.y != 0 {
 
 		normalisedInputDir := Normalise_Vector2(&inputDirection)
-		totalMoveAmount := Multiply_Float_Vector2(2.0, &normalisedInputDir)
+		totalMoveAmount := Multiply_Float_Vector2(playerMoveAmountPerFrame, &normalisedInputDir)
 
 		playerPosRef.x += totalMoveAmount.x
 		playerPosRef.y += totalMoveAmount.y
 	}
 
-	itemPickupDistance := 16.0
 	stoppageDistanceFromPlayer := 32.0
-	skeleMoveAmountPerFrame := 2.0
+	skeleMoveAmountPerFrame := 1.0
 	for _, enemyEntityID := range g.entityComponentsRef.enemyEntityIDs {
 		skelePosRef := &g.entityComponentsRef.positions[enemyEntityID]
 
@@ -61,15 +63,34 @@ func (g *Game) Update() error {
 			skelePosRef.x = finalPosition.x
 			skelePosRef.y = finalPosition.y
 		}
+
+		skeletonCollisionShapeRef := g.entityComponentsRef.collisionShapes[enemyEntityID]
+		if CollisionShapeOverlapsWithCollisionShape(skelePosRef, skeletonCollisionShapeRef, playerPosRef, playerCollisionShapeRef) {
+			fmt.Println("Skeleton is colliding with player!")
+		}
 	}
 
+	// itemPickupDistance := 16.0
 	for index, itemEntityID := range g.entityComponentsRef.itemEntityIDs {
 		itemPosRef := &g.entityComponentsRef.positions[itemEntityID]
 
-		if DistanceSquare_Vector2(itemPosRef, playerPosRef) < math.Pow(itemPickupDistance, 2) {
+		// if DistanceSquare_Vector2(itemPosRef, playerPosRef) < math.Pow(itemPickupDistance, 2) {
+		// 	g.entityComponentsRef.itemEntityIDs = append(g.entityComponentsRef.itemEntityIDs[:index], g.entityComponentsRef.itemEntityIDs[index+1:]...)
+		// 	fmt.Printf("Picked up item entity ID : %d\n", itemEntityID)
+		// }
+		itemCentre := Vector2{itemPosRef.x + 5.0, itemPosRef.y + 5.0}
+		itemCollisionShapeRef := g.entityComponentsRef.collisionShapes[itemEntityID]
+
+		// if itemCollisionShapeRef.CollisionShapeIncludesPoint(itemPosRef, &g.entityComponentsRef.positions[g.entityComponentsRef.playerEntityID]) {
+		// 	g.entityComponentsRef.itemEntityIDs = append(g.entityComponentsRef.itemEntityIDs[:index], g.entityComponentsRef.itemEntityIDs[index+1:]...)
+		// 	fmt.Printf("Picked up item entity ID : %d\n", itemEntityID)
+		// }
+		// if CollisionShapeOverlapsWithCollisionShape(itemPosRef, itemCollisionShapeRef, &g.entityComponentsRef.positions[g.entityComponentsRef.playerEntityID], g.entityComponentsRef.collisionShapes[g.entityComponentsRef.playerEntityID]) {
+		if CollisionShapeOverlapsWithCollisionShape(&itemCentre, itemCollisionShapeRef, &g.entityComponentsRef.positions[g.entityComponentsRef.playerEntityID], g.entityComponentsRef.collisionShapes[g.entityComponentsRef.playerEntityID]) {
 			g.entityComponentsRef.itemEntityIDs = append(g.entityComponentsRef.itemEntityIDs[:index], g.entityComponentsRef.itemEntityIDs[index+1:]...)
 			fmt.Printf("Picked up item entity ID : %d\n", itemEntityID)
 		}
+
 	}
 
 	playerPos := g.entityComponentsRef.positions[g.entityComponentsRef.playerEntityID]
@@ -104,6 +125,33 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	}
 
 	DrawEntityID(g, screen, &drawImgOptions, g.entityComponentsRef.playerEntityID)
+
+	playerCollisionShapeRef := g.entityComponentsRef.collisionShapes[g.entityComponentsRef.playerEntityID]
+	playerCollisionShapePoints := playerCollisionShapeRef.CollisionPoints(&playerPos)
+	topLeft := (*playerCollisionShapePoints)[0]
+	bottomRight := (*playerCollisionShapePoints)[2]
+	size := Vector2{bottomRight.x - topLeft.x, bottomRight.y - topLeft.y}
+
+	// fmt.Println(playerCollisionShapeRef.(*BoxCollider).size.x, playerCollisionShapeRef.(*BoxCollider).size.y)
+
+	vector.StrokeRect(screen, float32(topLeft.x), float32(topLeft.y), float32(size.x), float32(size.y), 1.0, color.Black, false)
+
+	for _, enemyEntityID := range g.entityComponentsRef.enemyEntityIDs {
+		skelePosRef := &g.entityComponentsRef.positions[enemyEntityID]
+
+		skeletonCollisionShapeRef := g.entityComponentsRef.collisionShapes[enemyEntityID]
+		vector.StrokeRect(screen, float32(skelePosRef.x), float32(skelePosRef.y), float32(skeletonCollisionShapeRef.(*BoxCollider).size.x), float32(skeletonCollisionShapeRef.(*BoxCollider).size.y), 1.0, color.Black, false)
+	}
+
+	for _, itemEntityID := range g.entityComponentsRef.itemEntityIDs {
+
+		itemPosRef := &g.entityComponentsRef.positions[itemEntityID]
+		itemCentre := Vector2{itemPosRef.x + 5.0, itemPosRef.y + 5.0}
+		itemCollisionShapeRef := g.entityComponentsRef.collisionShapes[itemEntityID]
+
+		vector.StrokeCircle(screen, float32(itemCentre.x), float32(itemCentre.y), float32(itemCollisionShapeRef.(*CircleCollider).radius), 1.0, color.Black, false)
+
+	}
 
 }
 

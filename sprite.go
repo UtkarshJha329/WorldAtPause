@@ -10,8 +10,8 @@ type Sprite struct {
 	renderRectEnd   Vector2Int
 }
 
-type SpriteData struct {
+type SpriteAssetData struct {
 	SpriteTextureLocation string     `json:"SpriteTextureLocation"`
-	RenderRectStart       Vector2Int `json:"renderRectStart"`
-	RenderRectEnd         Vector2Int `json:"renderRectEnd"`
+	RenderRectStart       Vector2Int `json:"RenderRectStart"`
+	RenderRectEnd         Vector2Int `json:"RenderRectEnd"`
 }
