@@ -20,9 +20,11 @@ type TileDataJSON struct {
 }
 
 type LayerDataJSON struct {
-	LayerName string         `json:"__identifier"`
-	GridSize  int            `json:"__gridSize"`
-	TilesData []TileDataJSON `json:"gridTiles"`
+	LayerName     string         `json:"__identifier"`
+	LayerType     string         `json:"__type"`
+	GridSize      int            `json:"__gridSize"`
+	CollisionData []int          `json:"intGridCsv"`
+	TilesData     []TileDataJSON `json:"gridTiles"`
 }
 
 type LevelDataJSON struct {
@@ -48,9 +50,12 @@ type TileSet struct {
 	tileSourceImages map[int]*ebiten.Image
 }
 
+const TILEMAP_COLLISION_LAYER = 0
+
 type Layer struct {
-	layerName string
-	tiles     []Tile
+	layerName     string
+	tiles         []Tile
+	collisionData *[]int
 }
 
 type Level struct {
@@ -64,6 +69,42 @@ type Tilemap struct {
 	gridSize      int
 	worldGridSize Vector2
 	levels        map[Vector2Int]*Level
+}
+
+func (t *Tilemap) GetTilesPerLevel() Vector2Int {
+	return Vector2Int{int(t.worldGridSize.x) / t.gridSize, int(t.worldGridSize.y) / t.gridSize}
+}
+
+func (t *Tilemap) GetFlattenedTileIndex(tileXInLevel int, tileYInLevel int) int {
+	return tileXInLevel + t.GetTilesPerLevel().x*tileYInLevel
+}
+
+func (t *Tilemap) GetLevelPos(levelIndex *Vector2Int) Vector2 {
+	return Vector2{float64(levelIndex.x) * t.worldGridSize.x, float64(levelIndex.y) * t.worldGridSize.y}
+}
+
+func (t *Tilemap) GetTileOfPointInLevel(levelIndex *Vector2Int, const_pointPosition *Vector2) Vector2 {
+
+	currentLevelPos := t.GetLevelPos(levelIndex)
+	pointLevelPos := Subtract_Vector2(const_pointPosition, &currentLevelPos)
+	return Vector2{float64(int(pointLevelPos.x) / t.gridSize), float64(int(pointLevelPos.y) / t.gridSize)}
+}
+
+func (t *Tilemap) PointCollidesWithTilemapCollisionLayerInLevel(levelIndex *Vector2Int, pointPosition *Vector2) bool {
+
+	pointCurrentTileInLevel := t.GetTileOfPointInLevel(levelIndex, pointPosition)
+	flattenedTileIndexInLevel := t.GetFlattenedTileIndex(int(pointCurrentTileInLevel.x), int(pointCurrentTileInLevel.y))
+
+	return (*t.levels[*levelIndex].layers[TILEMAP_COLLISION_LAYER].collisionData)[flattenedTileIndexInLevel] == 1
+}
+
+func (t *Tilemap) GetLevelIndexOfPosition(const_pointPosition *Vector2) Vector2Int {
+	return Vector2Int{int(const_pointPosition.x) / int(t.worldGridSize.x), int(const_pointPosition.y) / int(t.worldGridSize.y)}
+}
+
+func (t *Tilemap) PointCollidesWithTilemapCollisionLayer(const_pointPosition *Vector2) bool {
+	pointLevelIndex := t.GetLevelIndexOfPosition(const_pointPosition)
+	return t.PointCollidesWithTilemapCollisionLayerInLevel(&pointLevelIndex, const_pointPosition)
 }
 
 func NewTilemap(tileSetTexturePath string, tilemapPath string, gridSize int, tilemapToFill *Tilemap, tilemapDataJSON *TilemapDataJSON) error {
@@ -96,23 +137,31 @@ func NewTilemap(tileSetTexturePath string, tilemapPath string, gridSize int, til
 		for currentLayerIndex, layer := range level.Layers {
 
 			currentLevel.layers[currentLayerIndex].layerName = layer.LayerName
-			currentLevel.layers[currentLayerIndex].tiles = make([]Tile, len(layer.TilesData))
 
-			for currentTileIndex, tile := range layer.TilesData {
+			switch layer.LayerType {
+			case "IntGrid":
+				currentLevel.layers[currentLayerIndex].collisionData = &layer.CollisionData
 
-				_, ok := tilemapToFill.tileSet.tileSourceImages[tile.TileID]
-				if !ok {
+			case "Tiles":
 
-					tilemapToFill.tileSet.tileSourceImages[tile.TileID] = tilemapToFill.tileSet.tileSetTexture.SubImage(
-						image.Rect(
-							tile.TileTextureSrcStart.x,
-							tile.TileTextureSrcStart.y,
-							tile.TileTextureSrcStart.x+layer.GridSize,
-							tile.TileTextureSrcStart.y+layer.GridSize)).(*ebiten.Image)
+				currentLevel.layers[currentLayerIndex].tiles = make([]Tile, len(layer.TilesData))
+
+				for currentTileIndex, tile := range layer.TilesData {
+
+					_, ok := tilemapToFill.tileSet.tileSourceImages[tile.TileID]
+					if !ok {
+
+						tilemapToFill.tileSet.tileSourceImages[tile.TileID] = tilemapToFill.tileSet.tileSetTexture.SubImage(
+							image.Rect(
+								tile.TileTextureSrcStart.x,
+								tile.TileTextureSrcStart.y,
+								tile.TileTextureSrcStart.x+layer.GridSize,
+								tile.TileTextureSrcStart.y+layer.GridSize)).(*ebiten.Image)
+					}
+
+					currentLevel.layers[currentLayerIndex].tiles[currentTileIndex].position = Add_Vector2(&currentLevel.levelPositionInWorld, &tile.TilePos)
+					currentLevel.layers[currentLayerIndex].tiles[currentTileIndex].TileSetTilesID = tile.TileID
 				}
-
-				currentLevel.layers[currentLayerIndex].tiles[currentTileIndex].position = Add_Vector2(&currentLevel.levelPositionInWorld, &tile.TilePos)
-				currentLevel.layers[currentLayerIndex].tiles[currentTileIndex].TileSetTilesID = tile.TileID
 			}
 		}
 	}

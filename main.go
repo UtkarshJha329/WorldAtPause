@@ -16,6 +16,8 @@ type Game struct {
 
 func (g *Game) Update() error {
 
+	playerPos := g.entityComponentsRef.positions[g.entityComponentsRef.playerEntityID]
+
 	playerPosRef := &g.entityComponentsRef.positions[g.entityComponentsRef.playerEntityID]
 	playerCollisionShapeRef := g.entityComponentsRef.collisionShapes[g.entityComponentsRef.playerEntityID]
 	playerMoveAmountPerFrame := 2.0
@@ -43,8 +45,30 @@ func (g *Game) Update() error {
 		normalisedInputDir := Normalise_Vector2(&inputDirection)
 		totalMoveAmount := Multiply_Float_Vector2(playerMoveAmountPerFrame, &normalisedInputDir)
 
-		playerPosRef.x += totalMoveAmount.x
-		playerPosRef.y += totalMoveAmount.y
+		playerToMoveXPos := playerPos.x + totalMoveAmount.x
+		moveDirectionCheckOffsetX := 0.0
+		if inputDirection.x > 0 {
+			moveDirectionCheckOffsetX += playerCollisionShapeRef.(*BoxCollider).size.x
+		}
+		collidingOnX := g.entityComponentsRef.tilemap.PointCollidesWithTilemapCollisionLayer(&Vector2{playerToMoveXPos + moveDirectionCheckOffsetX, playerPos.y})
+
+		playerToMoveYPos := playerPos.y + totalMoveAmount.y
+		moveDirectionCheckOffsetY := 0.0
+		if inputDirection.y > 0 {
+			moveDirectionCheckOffsetY += playerCollisionShapeRef.(*BoxCollider).size.y
+		}
+
+		collidingOnY := g.entityComponentsRef.tilemap.PointCollidesWithTilemapCollisionLayer(&Vector2{playerPos.x, playerToMoveYPos + moveDirectionCheckOffsetY})
+
+		if !collidingOnX && !collidingOnY {
+			playerPosRef.x += totalMoveAmount.x
+			playerPosRef.y += totalMoveAmount.y
+		} else if !collidingOnX && collidingOnY {
+			playerPosRef.x += inputDirection.x * playerMoveAmountPerFrame
+		} else if collidingOnX && !collidingOnY {
+			playerPosRef.y += inputDirection.y * playerMoveAmountPerFrame
+		}
+
 	}
 
 	stoppageDistanceFromPlayer := 32.0
@@ -83,11 +107,13 @@ func (g *Game) Update() error {
 
 	}
 
-	playerPos := g.entityComponentsRef.positions[g.entityComponentsRef.playerEntityID]
-	playerInLevel := Vector2{float64(int(playerPos.x) / int(g.entityComponentsRef.tilemap.worldGridSize.x)), float64(int(playerPos.y) / int(g.entityComponentsRef.tilemap.worldGridSize.y))}
+	currentLevelIndex := g.entityComponentsRef.tilemap.GetLevelIndexOfPosition(playerPosRef)
+	playerInLevel := Vector2{float64(currentLevelIndex.x), float64(currentLevelIndex.y)}
+
 	levelHalfSize := Multiply_Float_Vector2(0.5, &g.entityComponentsRef.tilemap.worldGridSize)
 	currentLevelPos := Vector2{playerInLevel.x * g.entityComponentsRef.tilemap.worldGridSize.x, playerInLevel.y * g.entityComponentsRef.tilemap.worldGridSize.y}
 	currentLevelCentre := Add_Vector2(&currentLevelPos, &levelHalfSize)
+
 	CameraFollowTarget(currentLevelCentre, g.entityComponentsRef)
 
 	return nil
