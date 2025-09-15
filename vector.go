@@ -41,6 +41,10 @@ func Multiply_Float_Vector2(const_a float64, const_b *Vector2) Vector2 {
 	return Vector2{const_b.x * const_a, const_b.y * const_a}
 }
 
+func Dot_Vector2(const_a *Vector2, const_b *Vector2) float64 {
+	return const_a.x*const_b.x + const_a.y*const_b.y
+}
+
 type Vector2Int struct {
 	x, y int
 }

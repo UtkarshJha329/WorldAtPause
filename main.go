@@ -19,7 +19,6 @@ func (g *Game) Update() error {
 	// playerPos := g.entityComponentsRef.positions[g.entityComponentsRef.playerEntityID]
 
 	playerPosRef := &g.entityComponentsRef.positions[g.entityComponentsRef.playerEntityID]
-	playerCollisionShapeRef := g.entityComponentsRef.collisionShapes[g.entityComponentsRef.playerEntityID]
 	playerMoveAmountPerFrame := 2.0
 
 	inputDirection := Vector2{0.0, 0.0}
@@ -48,6 +47,7 @@ func (g *Game) Update() error {
 		g.entityComponentsRef.MoveAndCollideEntityWithTilemapAndObstacles(g.entityComponentsRef.playerEntityID, inputDirection, totalMoveAmount, playerMoveAmountPerFrame)
 	}
 
+	playerCollisionShapeRef := g.entityComponentsRef.collisionShapes[g.entityComponentsRef.playerEntityID]
 	stoppageDistanceFromPlayer := 32.0
 	skeleMoveAmountPerFrame := 1.0
 	for _, enemyEntityID := range g.entityComponentsRef.enemyEntityIDs {
@@ -68,14 +68,13 @@ func (g *Game) Update() error {
 		}
 	}
 
-	for index, itemEntityID := range g.entityComponentsRef.itemEntityIDs {
-		itemPosRef := &g.entityComponentsRef.positions[itemEntityID]
+	for _, itemEntityID := range g.entityComponentsRef.itemEntityIDs {
 
-		itemCentre := Vector2{itemPosRef.x + 5.0, itemPosRef.y + 5.0}
+		itemPosRef := &g.entityComponentsRef.positions[itemEntityID]
 		itemCollisionShapeRef := g.entityComponentsRef.collisionShapes[itemEntityID]
 
-		if CollisionShapeOverlapsWithCollisionShape(&itemCentre, itemCollisionShapeRef, &g.entityComponentsRef.positions[g.entityComponentsRef.playerEntityID], g.entityComponentsRef.collisionShapes[g.entityComponentsRef.playerEntityID]) {
-			g.entityComponentsRef.itemEntityIDs = append(g.entityComponentsRef.itemEntityIDs[:index], g.entityComponentsRef.itemEntityIDs[index+1:]...)
+		if CollisionShapeOverlapsWithCollisionShape(itemPosRef, itemCollisionShapeRef, &g.entityComponentsRef.positions[g.entityComponentsRef.playerEntityID], g.entityComponentsRef.collisionShapes[g.entityComponentsRef.playerEntityID]) {
+			// g.entityComponentsRef.itemEntityIDs = append(g.entityComponentsRef.itemEntityIDs[:index], g.entityComponentsRef.itemEntityIDs[index+1:]...)
 			fmt.Printf("Picked up item entity ID : %d\n", itemEntityID)
 		}
 
@@ -140,16 +139,21 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		obstaclePosRef := &g.entityComponentsRef.positions[obstacleIndex]
 		obstacleCollisionShapeRef := g.entityComponentsRef.collisionShapes[obstacleIndex]
 
-		vector.StrokeRect(screen, float32(obstaclePosRef.x), float32(obstaclePosRef.y), float32(obstacleCollisionShapeRef.(*BoxCollider).size.x), float32(obstacleCollisionShapeRef.(*BoxCollider).size.y), 1.0, color.Black, false)
+		if obstacleCollisionShapeRef.CollisionShapeType() == Box {
+			vector.StrokeRect(screen, float32(obstaclePosRef.x), float32(obstaclePosRef.y), float32(obstacleCollisionShapeRef.(*BoxCollider).size.x), float32(obstacleCollisionShapeRef.(*BoxCollider).size.y), 1.0, color.Black, false)
+		} else if obstacleCollisionShapeRef.CollisionShapeType() == Circle {
+			offsetCentre := obstacleCollisionShapeRef.GetOffsetOrigin(obstaclePosRef)
+			vector.StrokeCircle(screen, float32(offsetCentre.x), float32(offsetCentre.y), float32(obstacleCollisionShapeRef.GetBoundingBoxDims().x*0.5), 1.0, color.Black, false)
+		}
 	}
 
 	for _, itemEntityID := range g.entityComponentsRef.itemEntityIDs {
 
 		itemPosRef := &g.entityComponentsRef.positions[itemEntityID]
-		itemCentre := Vector2{itemPosRef.x + 5.0, itemPosRef.y + 5.0}
 		itemCollisionShapeRef := g.entityComponentsRef.collisionShapes[itemEntityID]
+		itemColliderOrigin := itemCollisionShapeRef.GetOffsetOrigin(itemPosRef)
 
-		vector.StrokeCircle(screen, float32(itemCentre.x), float32(itemCentre.y), float32(itemCollisionShapeRef.(*CircleCollider).radius), 1.0, color.Black, false)
+		vector.StrokeCircle(screen, float32(itemColliderOrigin.x), float32(itemColliderOrigin.y), float32(itemCollisionShapeRef.(*CircleCollider).radius), 1.0, color.Black, false)
 	}
 
 }

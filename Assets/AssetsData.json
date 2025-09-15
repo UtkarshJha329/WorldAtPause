@@ -26,7 +26,8 @@
                         }},
                         {"CollisionShapeData": {
                             "CollisionShapeType": "Box",
-                            "Size": [16, 16]
+                            "Size": [16, 16],
+                            "ColliderOriginOffset": [0, 0]
                         }}
                     ]
                 }]
@@ -44,7 +45,8 @@
                         }},
                         {"CollisionShapeData": {
                             "CollisionShapeType": "Box",
-                            "Size": [16, 16]
+                            "Size": [16, 16],
+                            "ColliderOriginOffset": [0, 0]
                         }}
                     ]
                 }]
@@ -62,10 +64,29 @@
                         }},
                         {"CollisionShapeData": {
                             "CollisionShapeType": "Box",
-                            "Size": [16, 16]
+                            "Size": [16, 16],
+                            "ColliderOriginOffset": [0, 0]
                         }}
                     ]
-            }]
+                },
+                {
+                    "Name": "Stone Pyramid",
+                    "Entity Type": "Obstacle",
+                    "AssetData": [
+                        {"Position": [200, 150]},
+                        {"SpriteData": {
+                            "SpriteTextureLocation": "Assets/Images/TilesetDungeon.png",
+                            "RenderRectStart": [112, 48],
+                            "RenderRectEnd": [128, 64]
+                        }},
+                        {"CollisionShapeData": {
+                            "CollisionShapeType": "Circle",
+                            "Radius": 8,
+                            "ColliderOriginOffset": [8, 8]
+                        }}
+                    ]    
+                }
+            ]
         },
         {
             "Items": [{
@@ -80,12 +101,13 @@
                         }},
                         {"CollisionShapeData": {
                             "CollisionShapeType": "Circle",
-                            "Radius": 4
+                            "Radius": 4,
+                            "ColliderOriginOffset": [5, 5]
                         }}
 
                     ]
                 }]
         }
     ],
-    "Entities": ["Ground Tilemap", "Player Basic", "Skeleton", "Skeleton", "Stone Block", "Skeleton", "Life Pot"]
+    "Entities": ["Ground Tilemap", "Player Basic", "Skeleton", "Stone Pyramid", "Skeleton", "Stone Block", "Skeleton", "Life Pot"]
 }
