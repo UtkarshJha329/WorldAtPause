@@ -46,62 +46,6 @@ func (g *Game) Update() error {
 		totalMoveAmount := Multiply_Float_Vector2(playerMoveAmountPerFrame, &normalisedInputDir)
 
 		g.entityComponentsRef.MoveAndCollideEntityWithTilemapAndObstacles(g.entityComponentsRef.playerEntityID, inputDirection, totalMoveAmount, playerMoveAmountPerFrame)
-
-		// playerToMoveXPos := playerPos.x + totalMoveAmount.x
-		// moveDirectionCheckOffsetX := 0.0
-		// if inputDirection.x > 0 {
-		// 	moveDirectionCheckOffsetX = playerCollisionShapeRef.(*BoxCollider).size.x
-		// }
-
-		// collidingOnXWithTilemap := g.entityComponentsRef.tilemap.PointCollidesWithTilemapCollisionLayer(&Vector2{playerToMoveXPos + moveDirectionCheckOffsetX, playerPos.y})
-		// collidingOnX := collidingOnXWithTilemap
-
-		// maxMoveAmtOnX := 0.0
-		// if !collidingOnXWithTilemap {
-		// 	obstacleCollisionResult := g.entityComponentsRef.DoesEntityCollideWithObstacles(&Vector2{playerToMoveXPos, playerPos.y}, playerCollisionShapeRef)
-		// 	if obstacleCollisionResult.collidedWithObstacle {
-		// 		collidingOnX = true
-		// 		if inputDirection.x > 0 {
-		// 			maxMoveAmtOnX = obstacleCollisionResult.collidedWithObstaclePosition.x - (playerPos.x + playerCollisionShapeRef.(*BoxCollider).size.x)
-		// 		} else if inputDirection.x < 0 {
-		// 			maxMoveAmtOnX = playerPos.x - (obstacleCollisionResult.collidedWithObstaclePosition.x + obstacleCollisionResult.collidedWithObstacleCollisionShapeRef.(*BoxCollider).size.x)
-		// 		}
-		// 	}
-		// }
-
-		// playerToMoveYPos := playerPos.y + totalMoveAmount.y
-		// moveDirectionCheckOffsetY := 0.0
-		// if inputDirection.y > 0 {
-		// 	moveDirectionCheckOffsetY = playerCollisionShapeRef.(*BoxCollider).size.y
-		// }
-
-		// collidingOnYWithTilemap := g.entityComponentsRef.tilemap.PointCollidesWithTilemapCollisionLayer(&Vector2{playerPos.x, playerToMoveYPos + moveDirectionCheckOffsetY})
-		// collidingOnY := collidingOnYWithTilemap
-
-		// maxMoveAmtOnY := 0.0
-		// if !collidingOnYWithTilemap {
-		// 	obstacleCollisionResult := g.entityComponentsRef.DoesEntityCollideWithObstacles(&Vector2{playerPos.x, playerToMoveYPos}, playerCollisionShapeRef)
-		// 	if obstacleCollisionResult.collidedWithObstacle {
-		// 		collidingOnY = true
-		// 		if inputDirection.y > 0 {
-		// 			maxMoveAmtOnY = obstacleCollisionResult.collidedWithObstaclePosition.y - (playerPos.y + playerCollisionShapeRef.(*BoxCollider).size.y)
-		// 		} else if inputDirection.y < 0 {
-		// 			maxMoveAmtOnY = playerPos.y - (obstacleCollisionResult.collidedWithObstaclePosition.y + obstacleCollisionResult.collidedWithObstacleCollisionShapeRef.(*BoxCollider).size.y)
-		// 		}
-		// 	}
-		// }
-
-		// if !collidingOnX && !collidingOnY {
-		// 	playerPosRef.x += totalMoveAmount.x
-		// 	playerPosRef.y += totalMoveAmount.y
-		// } else if !collidingOnX && collidingOnY {
-		// 	playerPosRef.x += inputDirection.x * playerMoveAmountPerFrame
-		// 	playerPosRef.y += inputDirection.y * maxMoveAmtOnY
-		// } else if collidingOnX && !collidingOnY {
-		// 	playerPosRef.y += inputDirection.y * playerMoveAmountPerFrame
-		// 	playerPosRef.x += inputDirection.x * maxMoveAmtOnX
-		// }
-
 	}
 
 	stoppageDistanceFromPlayer := 32.0
@@ -111,14 +55,11 @@ func (g *Game) Update() error {
 
 		if DistanceSquare_Vector2(skelePosRef, playerPosRef) > math.Pow(stoppageDistanceFromPlayer, 2) {
 			directionToPlayer := Subtract_Vector2(playerPosRef, skelePosRef)
-			directionToPlayer = Normalise_Vector2(&directionToPlayer)
+			directionToPlayerNormalised := Normalise_Vector2(&directionToPlayer)
 
-			totalDisplacement := Multiply_Float_Vector2(skeleMoveAmountPerFrame, &directionToPlayer)
+			totalDisplacement := Multiply_Float_Vector2(skeleMoveAmountPerFrame, &directionToPlayerNormalised)
 
-			finalPosition := Add_Vector2(skelePosRef, &totalDisplacement)
-
-			skelePosRef.x = finalPosition.x
-			skelePosRef.y = finalPosition.y
+			g.entityComponentsRef.MoveAndCollideEntityWithTilemapAndObstacles(enemyEntityID, directionToPlayerNormalised, totalDisplacement, skeleMoveAmountPerFrame)
 		}
 
 		skeletonCollisionShapeRef := g.entityComponentsRef.collisionShapes[enemyEntityID]
