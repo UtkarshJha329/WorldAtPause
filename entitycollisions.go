@@ -136,51 +136,26 @@ func (entityComponentsRef *EntityComponents) MoveAndCollideEntityWithTilemapAndO
 		}
 	}
 
-	// Currently when the box hits the circle it gets pushed out, but since the box is trying to go through the circle it gets stuck, even at a single pixel.
-	// To fix that either shift the input along the tangent of the circle based on the position of the boject and the circle or use a physics library.
-
 	circlePenetrationObjectEscapeDirection.x += circleObstaclePenetrationEscapeDirectionX.x + circleObstaclePenetrationEscapeDirectionY.x
 	circlePenetrationObjectEscapeDirection.y += circleObstaclePenetrationEscapeDirectionX.y + circleObstaclePenetrationEscapeDirectionY.y
-
-	// if circlePenetrationObjectEscapeDirection.x != 0 && circlePenetrationObjectEscapeDirection.y != 0 {
-	// 	circlePenetrationObjectEscapeDirection = Normalise_Vector2(&circlePenetrationObjectEscapeDirection)
-	// }
 
 	finalInputDirection := inputDirection
 	if circleCollision {
 		normal := circlePenetrationObjectEscapeDirection
 
-		entityColliderCentrePos := Vector2{entityPos.x + entityCollisionShapeRef.GetBoundingBoxDims().x*0.5, entityPos.y + entityCollisionShapeRef.GetBoundingBoxDims().y*0.5}
+		entityBBDims := entityCollisionShapeRef.GetBoundingBoxDims()
+		entityColliderCentrePos := Vector2{entityPos.x + entityBBDims.x*0.5, entityPos.y + entityBBDims.y*0.5}
 		relPos := Subtract_Vector2(&entityColliderCentrePos, &circleColliderOriginPosition)
 		relPos = Vector2{Sign(relPos.x), Sign(relPos.y)}
 
-		tangent := normal
-		if inputDirection.x > 0 { //Going left to right
-			if relPos.y == -1 { // in top left compared to collider centre
-				tangent = Vector2{1.0 * math.Abs(normal.y), -1.0 * math.Abs(normal.x)}
-			} else if relPos.y == 1 { // in bottom left compared to collider centre
-				tangent = Vector2{1.0 * math.Abs(normal.y), 1.0 * math.Abs(normal.x)}
-			}
-		} else if inputDirection.x < 0 { // Going right to left
-			if relPos.y == -1 { // in top right compared to collider centre
-				tangent = Vector2{-1.0 * math.Abs(normal.y), -1.0 * math.Abs(normal.x)}
-			} else if relPos.y == 1 { // in bottom right compared to collider centre
-				tangent = Vector2{-1.0 * math.Abs(normal.y), 1.0 * math.Abs(normal.x)}
-			}
-		}
+		absNormal := Vector2{math.Abs(normal.x), math.Abs(normal.y)}
 
-		if inputDirection.y > 0 { //Going top to bottom
-			if relPos.x == -1 { // in top left compared to collider centre
-				tangent = Vector2{-1.0 * math.Abs(normal.y), 1.0 * math.Abs(normal.x)}
-			} else if relPos.x == 1 { // in top right compared to collider centre
-				tangent = Vector2{1.0 * math.Abs(normal.y), 1.0 * math.Abs(normal.x)}
-			}
-		} else if inputDirection.y < 0 { // Going bottom to top
-			if relPos.x == -1 { // in bottom left compared to collider centre
-				tangent = Vector2{-1.0 * math.Abs(normal.y), -1.0 * math.Abs(normal.x)}
-			} else if relPos.x == 1 { // in bottom right compared to collider centre
-				tangent = Vector2{1.0 * math.Abs(normal.y), -1.0 * math.Abs(normal.x)}
-			}
+		tangent := normal
+		if inputDirection.x != 0 {
+			tangent = Vector2{Sign(inputDirection.x) * absNormal.y, relPos.y * absNormal.x}
+		}
+		if inputDirection.y != 0 {
+			tangent = Vector2{relPos.x * absNormal.y, Sign(inputDirection.y) * absNormal.x}
 		}
 
 		tangent = Normalise_Vector2(&tangent)
