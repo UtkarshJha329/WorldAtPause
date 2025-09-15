@@ -7,15 +7,16 @@ import (
 )
 
 type EntityComponents struct {
-	totalNumEntities int
-	playerEntityID   int
-	cameraData       CameraData
-	tilemap          Tilemap
-	enemyEntityIDs   []int
-	itemEntityIDs    []int
-	positions        []Vector2
-	sprites          []Sprite
-	collisionShapes  []CollisionShape
+	totalNumEntities  int
+	playerEntityID    int
+	cameraData        CameraData
+	tilemap           Tilemap
+	enemyEntityIDs    []int
+	obstacleEntityIDs []int
+	itemEntityIDs     []int
+	positions         []Vector2
+	sprites           []Sprite
+	collisionShapes   []CollisionShape
 }
 
 func CreateEntityComponents(totalNumEntitiesToCreate int) *EntityComponents {
@@ -81,6 +82,8 @@ func CreateAndPopulateEntitiesAndComponents(prefabMap map[string]Prefab, prefabN
 			entityComponents.playerEntityID = entityID
 		case "Enemy":
 			entityComponents.enemyEntityIDs = append(entityComponents.enemyEntityIDs, entityID)
+		case "Obstacle":
+			entityComponents.obstacleEntityIDs = append(entityComponents.obstacleEntityIDs, entityID)
 		case "Item":
 			entityComponents.itemEntityIDs = append(entityComponents.itemEntityIDs, entityID)
 		}

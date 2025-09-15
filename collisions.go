@@ -4,6 +4,13 @@ import (
 	"math"
 )
 
+type ColliderType int
+
+const (
+	Circle = iota
+	Box
+)
+
 type Collider struct {
 	collisionPoints []Vector2
 }
@@ -45,6 +52,10 @@ func (bc *BoxCollider) GetCollisionPoints() *[]Vector2 {
 	return &bc.collisionPoints
 }
 
+func (bc *BoxCollider) CollisionShapeType() int {
+	return Box
+}
+
 type CircleCollider struct {
 	Collider
 	radius float64
@@ -60,6 +71,10 @@ func (cc *CircleCollider) CreateCollisionPoints() {
 
 func (cc *CircleCollider) GetCollisionPoints() *[]Vector2 {
 	return &cc.collisionPoints
+}
+
+func (cc *CircleCollider) CollisionShapeType() int {
+	return Circle
 }
 
 func CircleBoxAABBOverlap(const_origin_circle *Vector2, cc *CircleCollider, const_origin_box *Vector2, bx *BoxCollider) bool {
@@ -82,6 +97,7 @@ func CircleBoxAABBOverlap(const_origin_circle *Vector2, cc *CircleCollider, cons
 }
 
 type CollisionShape interface {
+	CollisionShapeType() int
 	GetCollisionPoints() *[]Vector2
 	CreateCollisionPoints()
 	CollisionShapeIncludesPoint(const_origin *Vector2, const_point *Vector2) bool
@@ -89,18 +105,12 @@ type CollisionShape interface {
 
 func CollisionShapeOverlapsWithCollisionShape(const_originA *Vector2, csA CollisionShape, const_originB *Vector2, csB CollisionShape) bool {
 
-	csAPoints := csA.GetCollisionPoints()
-	csBPoints := csB.GetCollisionPoints()
-
-	numPointsA := len(*csAPoints)
-	numPointsB := len(*csBPoints)
-
-	if numPointsA == 1 && numPointsB == 1 {
+	if csA.CollisionShapeType() == Circle && csB.CollisionShapeType() == Circle {
 		return DistanceSquare_Vector2(const_originA, const_originB) <= math.Pow(csA.(*CircleCollider).radius+csB.(*CircleCollider).radius, 2.0)
 	}
-	if numPointsA == 1 {
+	if csA.CollisionShapeType() == Circle {
 		return CircleBoxAABBOverlap(const_originA, csA.(*CircleCollider), const_originB, csB.(*BoxCollider))
-	} else if numPointsB == 1 {
+	} else if csB.CollisionShapeType() == Circle {
 		return CircleBoxAABBOverlap(const_originB, csB.(*CircleCollider), const_originA, csA.(*BoxCollider))
 	} else {
 		return (const_originA.x < const_originB.x+csB.(*BoxCollider).size.x) &&

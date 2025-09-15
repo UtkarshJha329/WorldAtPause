@@ -50,6 +50,24 @@
                 }]
         },
         {
+            "Obstacles": [{
+                    "Name": "Stone Block",
+                    "Entity Type": "Obstacle",
+                    "AssetData": [
+                        {"Position": [150, 150]},
+                        {"SpriteData": {
+                            "SpriteTextureLocation": "Assets/Images/TilesetDungeon.png",
+                            "RenderRectStart": [128, 48],
+                            "RenderRectEnd": [144, 64]
+                        }},
+                        {"CollisionShapeData": {
+                            "CollisionShapeType": "Box",
+                            "Size": [16, 16]
+                        }}
+                    ]
+            }]
+        },
+        {
             "Items": [{
                     "Name": "Life Pot",
                     "Entity Type": "Item",
@@ -69,5 +87,5 @@
                 }]
         }
     ],
-    "Entities": ["Ground Tilemap", "Player Basic", "Skeleton", "Skeleton", "Skeleton", "Life Pot"]
+    "Entities": ["Ground Tilemap", "Player Basic", "Skeleton", "Skeleton", "Stone Block", "Skeleton", "Life Pot"]
 }

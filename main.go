@@ -16,7 +16,7 @@ type Game struct {
 
 func (g *Game) Update() error {
 
-	playerPos := g.entityComponentsRef.positions[g.entityComponentsRef.playerEntityID]
+	// playerPos := g.entityComponentsRef.positions[g.entityComponentsRef.playerEntityID]
 
 	playerPosRef := &g.entityComponentsRef.positions[g.entityComponentsRef.playerEntityID]
 	playerCollisionShapeRef := g.entityComponentsRef.collisionShapes[g.entityComponentsRef.playerEntityID]
@@ -45,29 +45,62 @@ func (g *Game) Update() error {
 		normalisedInputDir := Normalise_Vector2(&inputDirection)
 		totalMoveAmount := Multiply_Float_Vector2(playerMoveAmountPerFrame, &normalisedInputDir)
 
-		playerToMoveXPos := playerPos.x + totalMoveAmount.x
-		moveDirectionCheckOffsetX := 0.0
-		if inputDirection.x > 0 {
-			moveDirectionCheckOffsetX += playerCollisionShapeRef.(*BoxCollider).size.x
-		}
-		collidingOnX := g.entityComponentsRef.tilemap.PointCollidesWithTilemapCollisionLayer(&Vector2{playerToMoveXPos + moveDirectionCheckOffsetX, playerPos.y})
+		g.entityComponentsRef.MoveAndCollideEntityWithTilemapAndObstacles(g.entityComponentsRef.playerEntityID, inputDirection, totalMoveAmount, playerMoveAmountPerFrame)
 
-		playerToMoveYPos := playerPos.y + totalMoveAmount.y
-		moveDirectionCheckOffsetY := 0.0
-		if inputDirection.y > 0 {
-			moveDirectionCheckOffsetY += playerCollisionShapeRef.(*BoxCollider).size.y
-		}
+		// playerToMoveXPos := playerPos.x + totalMoveAmount.x
+		// moveDirectionCheckOffsetX := 0.0
+		// if inputDirection.x > 0 {
+		// 	moveDirectionCheckOffsetX = playerCollisionShapeRef.(*BoxCollider).size.x
+		// }
 
-		collidingOnY := g.entityComponentsRef.tilemap.PointCollidesWithTilemapCollisionLayer(&Vector2{playerPos.x, playerToMoveYPos + moveDirectionCheckOffsetY})
+		// collidingOnXWithTilemap := g.entityComponentsRef.tilemap.PointCollidesWithTilemapCollisionLayer(&Vector2{playerToMoveXPos + moveDirectionCheckOffsetX, playerPos.y})
+		// collidingOnX := collidingOnXWithTilemap
 
-		if !collidingOnX && !collidingOnY {
-			playerPosRef.x += totalMoveAmount.x
-			playerPosRef.y += totalMoveAmount.y
-		} else if !collidingOnX && collidingOnY {
-			playerPosRef.x += inputDirection.x * playerMoveAmountPerFrame
-		} else if collidingOnX && !collidingOnY {
-			playerPosRef.y += inputDirection.y * playerMoveAmountPerFrame
-		}
+		// maxMoveAmtOnX := 0.0
+		// if !collidingOnXWithTilemap {
+		// 	obstacleCollisionResult := g.entityComponentsRef.DoesEntityCollideWithObstacles(&Vector2{playerToMoveXPos, playerPos.y}, playerCollisionShapeRef)
+		// 	if obstacleCollisionResult.collidedWithObstacle {
+		// 		collidingOnX = true
+		// 		if inputDirection.x > 0 {
+		// 			maxMoveAmtOnX = obstacleCollisionResult.collidedWithObstaclePosition.x - (playerPos.x + playerCollisionShapeRef.(*BoxCollider).size.x)
+		// 		} else if inputDirection.x < 0 {
+		// 			maxMoveAmtOnX = playerPos.x - (obstacleCollisionResult.collidedWithObstaclePosition.x + obstacleCollisionResult.collidedWithObstacleCollisionShapeRef.(*BoxCollider).size.x)
+		// 		}
+		// 	}
+		// }
+
+		// playerToMoveYPos := playerPos.y + totalMoveAmount.y
+		// moveDirectionCheckOffsetY := 0.0
+		// if inputDirection.y > 0 {
+		// 	moveDirectionCheckOffsetY = playerCollisionShapeRef.(*BoxCollider).size.y
+		// }
+
+		// collidingOnYWithTilemap := g.entityComponentsRef.tilemap.PointCollidesWithTilemapCollisionLayer(&Vector2{playerPos.x, playerToMoveYPos + moveDirectionCheckOffsetY})
+		// collidingOnY := collidingOnYWithTilemap
+
+		// maxMoveAmtOnY := 0.0
+		// if !collidingOnYWithTilemap {
+		// 	obstacleCollisionResult := g.entityComponentsRef.DoesEntityCollideWithObstacles(&Vector2{playerPos.x, playerToMoveYPos}, playerCollisionShapeRef)
+		// 	if obstacleCollisionResult.collidedWithObstacle {
+		// 		collidingOnY = true
+		// 		if inputDirection.y > 0 {
+		// 			maxMoveAmtOnY = obstacleCollisionResult.collidedWithObstaclePosition.y - (playerPos.y + playerCollisionShapeRef.(*BoxCollider).size.y)
+		// 		} else if inputDirection.y < 0 {
+		// 			maxMoveAmtOnY = playerPos.y - (obstacleCollisionResult.collidedWithObstaclePosition.y + obstacleCollisionResult.collidedWithObstacleCollisionShapeRef.(*BoxCollider).size.y)
+		// 		}
+		// 	}
+		// }
+
+		// if !collidingOnX && !collidingOnY {
+		// 	playerPosRef.x += totalMoveAmount.x
+		// 	playerPosRef.y += totalMoveAmount.y
+		// } else if !collidingOnX && collidingOnY {
+		// 	playerPosRef.x += inputDirection.x * playerMoveAmountPerFrame
+		// 	playerPosRef.y += inputDirection.y * maxMoveAmtOnY
+		// } else if collidingOnX && !collidingOnY {
+		// 	playerPosRef.y += inputDirection.y * playerMoveAmountPerFrame
+		// 	playerPosRef.x += inputDirection.x * maxMoveAmtOnX
+		// }
 
 	}
 
@@ -90,7 +123,7 @@ func (g *Game) Update() error {
 
 		skeletonCollisionShapeRef := g.entityComponentsRef.collisionShapes[enemyEntityID]
 		if CollisionShapeOverlapsWithCollisionShape(skelePosRef, skeletonCollisionShapeRef, playerPosRef, playerCollisionShapeRef) {
-			fmt.Println("Skeleton is colliding with player!")
+			// fmt.Println("Skeleton is colliding with player!")
 		}
 	}
 
@@ -140,6 +173,10 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		DrawEntityID(g, screen, &drawImgOptions, enemyEntityID)
 	}
 
+	for _, obstacleEntityID := range g.entityComponentsRef.obstacleEntityIDs {
+		DrawEntityID(g, screen, &drawImgOptions, obstacleEntityID)
+	}
+
 	DrawEntityID(g, screen, &drawImgOptions, g.entityComponentsRef.playerEntityID)
 
 	playerCollisionShapeRef := g.entityComponentsRef.collisionShapes[g.entityComponentsRef.playerEntityID]
@@ -157,6 +194,14 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		vector.StrokeRect(screen, float32(skelePosRef.x), float32(skelePosRef.y), float32(skeletonCollisionShapeRef.(*BoxCollider).size.x), float32(skeletonCollisionShapeRef.(*BoxCollider).size.y), 1.0, color.Black, false)
 	}
 
+	for _, obstacleIndex := range g.entityComponentsRef.obstacleEntityIDs {
+
+		obstaclePosRef := &g.entityComponentsRef.positions[obstacleIndex]
+		obstacleCollisionShapeRef := g.entityComponentsRef.collisionShapes[obstacleIndex]
+
+		vector.StrokeRect(screen, float32(obstaclePosRef.x), float32(obstaclePosRef.y), float32(obstacleCollisionShapeRef.(*BoxCollider).size.x), float32(obstacleCollisionShapeRef.(*BoxCollider).size.y), 1.0, color.Black, false)
+	}
+
 	for _, itemEntityID := range g.entityComponentsRef.itemEntityIDs {
 
 		itemPosRef := &g.entityComponentsRef.positions[itemEntityID]
@@ -164,7 +209,6 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		itemCollisionShapeRef := g.entityComponentsRef.collisionShapes[itemEntityID]
 
 		vector.StrokeCircle(screen, float32(itemCentre.x), float32(itemCentre.y), float32(itemCollisionShapeRef.(*CircleCollider).radius), 1.0, color.Black, false)
-
 	}
 
 }
