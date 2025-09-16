@@ -1,4 +1,4 @@
-package main
+package Engine
 
 type AssetData struct {
 	AssetType          string

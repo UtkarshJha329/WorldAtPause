@@ -1,4 +1,4 @@
-package main
+package Engine
 
 import (
 	"encoding/json"
@@ -7,21 +7,21 @@ import (
 )
 
 type EntityComponents struct {
-	totalNumEntities int
-	playerEntityID   int
-	cameraData       CameraData
-	tilemap          Tilemap
-	positions        []Vector2
-	sprites          []Sprite
-	collisionShapes  []CollisionShape
+	TotalNumEntities int
+	PlayerEntityID   int
+	CameraData       CameraData
+	Tilemap          Tilemap
+	Positions        []Vector2
+	Sprites          []Sprite
+	CollisionShapes  []CollisionShape
 }
 
 func CreateEntityComponents(totalNumEntitiesToCreate int) *EntityComponents {
 	return &EntityComponents{
-		totalNumEntities: totalNumEntitiesToCreate,
-		sprites:          make([]Sprite, totalNumEntitiesToCreate),
-		positions:        make([]Vector2, totalNumEntitiesToCreate),
-		collisionShapes:  make([]CollisionShape, totalNumEntitiesToCreate)}
+		TotalNumEntities: totalNumEntitiesToCreate,
+		Sprites:          make([]Sprite, totalNumEntitiesToCreate),
+		Positions:        make([]Vector2, totalNumEntitiesToCreate),
+		CollisionShapes:  make([]CollisionShape, totalNumEntitiesToCreate)}
 }
 
 func PopulateEntityDataFromPrefab(prefabMap map[string]Prefab, entityComponents *EntityComponents, prefabName string, entityID int) {
@@ -29,31 +29,31 @@ func PopulateEntityDataFromPrefab(prefabMap map[string]Prefab, entityComponents 
 	for _, assetData := range prefabMap[prefabName].AssetDatas {
 		switch assetData.AssetType {
 		case "Position":
-			entityComponents.positions[entityID] = *assetData.Position
+			entityComponents.Positions[entityID] = *assetData.Position
 		case "SpriteData":
-			entityComponents.sprites[entityID] = Sprite{
-				image:           LoadImageFromFileSystem(assetData.SpriteAssetData.SpriteTextureLocation),
-				renderRectStart: assetData.SpriteAssetData.RenderRectStart,
-				renderRectEnd:   assetData.SpriteAssetData.RenderRectEnd,
+			entityComponents.Sprites[entityID] = Sprite{
+				Image:           LoadImageFromFileSystem(assetData.SpriteAssetData.SpriteTextureLocation),
+				RenderRectStart: assetData.SpriteAssetData.RenderRectStart,
+				RenderRectEnd:   assetData.SpriteAssetData.RenderRectEnd,
 			}
 		case "CollisionShapeData":
 			switch assetData.CollisionShapeData.CollisionShapeType {
 			case "Box":
-				entityComponents.collisionShapes[entityID] = &BoxCollider{
+				entityComponents.CollisionShapes[entityID] = &BoxCollider{
 					size: *assetData.CollisionShapeData.Size,
 					Collider: Collider{
-						colliderOriginOffset: *assetData.CollisionShapeData.ColliderOriginOffset,
+						ColliderOriginOffset: *assetData.CollisionShapeData.ColliderOriginOffset,
 					},
 				}
-				entityComponents.collisionShapes[entityID].CreateCollisionPoints()
+				entityComponents.CollisionShapes[entityID].CreateCollisionPoints()
 			case "Circle":
-				entityComponents.collisionShapes[entityID] = &CircleCollider{
+				entityComponents.CollisionShapes[entityID] = &CircleCollider{
 					radius: *assetData.CollisionShapeData.Radius,
 					Collider: Collider{
-						colliderOriginOffset: *assetData.CollisionShapeData.ColliderOriginOffset,
+						ColliderOriginOffset: *assetData.CollisionShapeData.ColliderOriginOffset,
 					},
 				}
-				entityComponents.collisionShapes[entityID].CreateCollisionPoints()
+				entityComponents.CollisionShapes[entityID].CreateCollisionPoints()
 			}
 		case "Tilemap":
 
@@ -63,7 +63,7 @@ func PopulateEntityDataFromPrefab(prefabMap map[string]Prefab, entityComponents 
 				fmt.Println(err, "Failed to loaad tilemapJSON contents.")
 			}
 
-			err := NewTilemap(assetData.tilemapAssetData.TilemapTilesetFilePath, assetData.tilemapAssetData.TilemapWorldJSONFilePath, assetData.tilemapAssetData.TilemapGridSize, &entityComponents.tilemap, &tilemapDataJSON)
+			err := NewTilemap(assetData.tilemapAssetData.TilemapTilesetFilePath, assetData.tilemapAssetData.TilemapWorldJSONFilePath, assetData.tilemapAssetData.TilemapGridSize, &entityComponents.Tilemap, &tilemapDataJSON)
 			if err != nil {
 				log.Fatal(err, "\nFailed to create tilemap.")
 			}
@@ -79,7 +79,7 @@ func OverridePrefabDataForEntityWithEntityData(entityID int, entityComponents *E
 		switch assetData.AssetType {
 
 		case "Position":
-			entityComponents.positions[entityID] = *assetData.Position
+			entityComponents.Positions[entityID] = *assetData.Position
 
 		}
 	}
@@ -96,21 +96,21 @@ func CreateAndPopulateEntitiesAndComponents(prefabMap map[string]Prefab, scenesD
 			totalNumEntitiesInScene += len(curRoomData.RoomEntities)
 		}
 
-		world.scenes[index] = CreateSceneWithNumEntities(totalNumEntitiesInScene)
+		world.Scenes[index] = CreateSceneWithNumEntities(totalNumEntitiesInScene)
 
 		runningEntityID := 0
-		curSceneEntityComponents := world.scenes[index].entityComponentsForScene
+		curSceneEntityComponents := world.Scenes[index].EntityComponentsForScene
 
 		PopulateEntityDataFromPrefab(prefabMap, curSceneEntityComponents, sceneData.PlayerEntityDataForScene.PrefabName, runningEntityID)
 		OverridePrefabDataForEntityWithEntityData(runningEntityID, curSceneEntityComponents, &sceneData.PlayerEntityDataForScene)
-		curSceneEntityComponents.playerEntityID = runningEntityID
+		curSceneEntityComponents.PlayerEntityID = runningEntityID
 		runningEntityID++
 
 		for _, curRoomParsedData := range sceneData.RoomsData {
 
 			roomIndex := curRoomParsedData.RoomIndex
-			world.scenes[index].roomsData[roomIndex] = &Room{}
-			curRoom := world.scenes[index].roomsData[roomIndex]
+			world.Scenes[index].RoomsData[roomIndex] = &Room{}
+			curRoom := world.Scenes[index].RoomsData[roomIndex]
 
 			for _, curEntityData := range curRoomParsedData.RoomEntities {
 
@@ -119,14 +119,14 @@ func CreateAndPopulateEntitiesAndComponents(prefabMap map[string]Prefab, scenesD
 
 				switch prefabMap[curEntityData.PrefabName].EntityType {
 				case "Enemy":
-					curRoom.enemyEntityIDs = append(curRoom.enemyEntityIDs, runningEntityID)
+					curRoom.EnemyEntityIDs = append(curRoom.EnemyEntityIDs, runningEntityID)
 				case "Obstacle":
-					curRoom.obstacleEntityIDs = append(curRoom.obstacleEntityIDs, runningEntityID)
+					curRoom.ObstacleEntityIDs = append(curRoom.ObstacleEntityIDs, runningEntityID)
 				case "Item":
-					curRoom.itemEntityIDs = append(curRoom.itemEntityIDs, runningEntityID)
+					curRoom.ItemEntityIDs = append(curRoom.ItemEntityIDs, runningEntityID)
 				}
 
-				curRoom.entitiesInThisRoom = append(curRoom.entitiesInThisRoom, runningEntityID)
+				curRoom.EntitiesInThisRoom = append(curRoom.EntitiesInThisRoom, runningEntityID)
 				runningEntityID += 1
 			}
 		}

@@ -1,4 +1,4 @@
-package main
+package Engine
 
 import (
 	"encoding/json"
@@ -10,8 +10,8 @@ func (v *Vector2) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &arr); err != nil {
 		return err
 	}
-	v.x = arr[0]
-	v.y = arr[1]
+	v.X = arr[0]
+	v.Y = arr[1]
 	return nil
 }
 
@@ -20,8 +20,8 @@ func (v *Vector2Int) UnmarshalJSON(data []byte) error {
 	if err := json.Unmarshal(data, &arr); err != nil {
 		return err
 	}
-	v.x = arr[0]
-	v.y = arr[1]
+	v.X = arr[0]
+	v.Y = arr[1]
 	return nil
 }
 

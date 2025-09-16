@@ -1,4 +1,4 @@
-package main
+package Engine
 
 import (
 	"math"
@@ -12,8 +12,8 @@ const (
 )
 
 type Collider struct {
-	colliderOriginOffset Vector2
-	collisionPoints      []Vector2
+	ColliderOriginOffset Vector2
+	CollisionPoints      []Vector2
 }
 
 type BoxCollider struct {
@@ -22,11 +22,11 @@ type BoxCollider struct {
 }
 
 func (bc *BoxCollider) CollisionShapeIncludesPoint(const_origin *Vector2, const_point *Vector2) bool {
-	bcTopLeft := Vector2{const_origin.x + bc.colliderOriginOffset.x, const_origin.y + bc.colliderOriginOffset.y}
-	bcBottomRight := Vector2{const_origin.x + bc.size.x + bc.colliderOriginOffset.x, const_origin.y + bc.size.y + bc.colliderOriginOffset.y}
+	bcTopLeft := Vector2{const_origin.X + bc.ColliderOriginOffset.X, const_origin.Y + bc.ColliderOriginOffset.Y}
+	bcBottomRight := Vector2{const_origin.X + bc.size.X + bc.ColliderOriginOffset.X, const_origin.Y + bc.size.Y + bc.ColliderOriginOffset.Y}
 
-	if const_point.x >= bcTopLeft.x && const_point.x <= bcBottomRight.x {
-		if const_point.y >= bcTopLeft.y && const_point.y <= bcBottomRight.y {
+	if const_point.X >= bcTopLeft.X && const_point.X <= bcBottomRight.X {
+		if const_point.Y >= bcTopLeft.Y && const_point.Y <= bcBottomRight.Y {
 			return true
 		}
 	}
@@ -36,12 +36,12 @@ func (bc *BoxCollider) CollisionShapeIncludesPoint(const_origin *Vector2, const_
 
 func (bc *BoxCollider) CreateCollisionPoints() {
 
-	topLeft := Vector2{bc.colliderOriginOffset.x, bc.colliderOriginOffset.y}
-	bottomRight := Vector2{bc.size.x + bc.colliderOriginOffset.x, bc.size.y + bc.colliderOriginOffset.y}
-	topRight := Vector2{bottomRight.x, topLeft.y}
-	bottomLeft := Vector2{topLeft.x, bottomRight.y}
+	topLeft := Vector2{bc.ColliderOriginOffset.X, bc.ColliderOriginOffset.Y}
+	bottomRight := Vector2{bc.size.X + bc.ColliderOriginOffset.X, bc.size.Y + bc.ColliderOriginOffset.Y}
+	topRight := Vector2{bottomRight.X, topLeft.Y}
+	bottomLeft := Vector2{topLeft.X, bottomRight.Y}
 
-	bc.collisionPoints = []Vector2{
+	bc.CollisionPoints = []Vector2{
 		topLeft,
 		topRight,
 		bottomRight,
@@ -50,7 +50,7 @@ func (bc *BoxCollider) CreateCollisionPoints() {
 }
 
 func (bc *BoxCollider) GetCollisionPoints() *[]Vector2 {
-	return &bc.collisionPoints
+	return &bc.CollisionPoints
 }
 
 func (bc *BoxCollider) CollisionShapeType() int {
@@ -62,7 +62,7 @@ func (bc *BoxCollider) GetBoundingBoxDims() *Vector2 {
 }
 
 func (bc *BoxCollider) GetOffsetOrigin(const_object_origin *Vector2) *Vector2 {
-	boxColliderOrigin := Add_Vector2(const_object_origin, &bc.colliderOriginOffset)
+	boxColliderOrigin := Add_Vector2(const_object_origin, &bc.ColliderOriginOffset)
 	return &boxColliderOrigin
 }
 
@@ -72,16 +72,16 @@ type CircleCollider struct {
 }
 
 func (cc *CircleCollider) CollisionShapeIncludesPoint(const_origin *Vector2, const_point *Vector2) bool {
-	circleColliderPosition := Add_Vector2(const_origin, &cc.colliderOriginOffset)
+	circleColliderPosition := Add_Vector2(const_origin, &cc.ColliderOriginOffset)
 	return DistanceSquare_Vector2(const_point, &circleColliderPosition) <= math.Pow(cc.radius, 2.0)
 }
 
 func (cc *CircleCollider) CreateCollisionPoints() {
-	cc.collisionPoints = []Vector2{cc.colliderOriginOffset}
+	cc.CollisionPoints = []Vector2{cc.ColliderOriginOffset}
 }
 
 func (cc *CircleCollider) GetCollisionPoints() *[]Vector2 {
-	return &cc.collisionPoints
+	return &cc.CollisionPoints
 }
 
 func (cc *CircleCollider) CollisionShapeType() int {
@@ -93,7 +93,7 @@ func (cc *CircleCollider) GetBoundingBoxDims() *Vector2 {
 }
 
 func (cc *CircleCollider) GetOffsetOrigin(const_object_origin *Vector2) *Vector2 {
-	circleColliderOrigin := Add_Vector2(const_object_origin, &cc.colliderOriginOffset)
+	circleColliderOrigin := Add_Vector2(const_object_origin, &cc.ColliderOriginOffset)
 	return &circleColliderOrigin
 }
 
@@ -108,19 +108,19 @@ func GetCircleBoxOverlapPenetrationData(const_origin *Vector2, cc *CircleCollide
 	const_offset_origin := cc.GetOffsetOrigin(const_origin)
 	closestPointOnBox := *const_offset_origin
 
-	if const_offset_origin.x < const_origin_box.x {
-		closestPointOnBox.x = const_origin_box.x
-	} else if const_offset_origin.x > const_origin_box.x+bx.size.x {
-		closestPointOnBox.x = const_origin_box.x + bx.size.x
+	if const_offset_origin.X < const_origin_box.X {
+		closestPointOnBox.X = const_origin_box.X
+	} else if const_offset_origin.X > const_origin_box.X+bx.size.X {
+		closestPointOnBox.X = const_origin_box.X + bx.size.X
 	}
 
-	if const_offset_origin.y < const_origin_box.y {
-		closestPointOnBox.y = const_origin_box.y
-	} else if const_offset_origin.y > const_origin_box.y+bx.size.y {
-		closestPointOnBox.y = const_origin_box.y + bx.size.y
+	if const_offset_origin.Y < const_origin_box.Y {
+		closestPointOnBox.Y = const_origin_box.Y
+	} else if const_offset_origin.Y > const_origin_box.Y+bx.size.Y {
+		closestPointOnBox.Y = const_origin_box.Y + bx.size.Y
 	}
 
-	distVector := Vector2{closestPointOnBox.x - const_offset_origin.x, closestPointOnBox.y - const_offset_origin.y}
+	distVector := Vector2{closestPointOnBox.X - const_offset_origin.X, closestPointOnBox.Y - const_offset_origin.Y}
 	return CircleBoxOverlapCirclePenetrationData{
 		closestPointOnBox: closestPointOnBox,
 		normal:            Normalise_Vector2(&distVector),
@@ -157,10 +157,10 @@ func CollisionShapeOverlapsWithCollisionShape(const_object_originA *Vector2, csA
 	} else if csB.CollisionShapeType() == Circle {
 		return CircleBoxAABBOverlap(const_object_originB, csB.(*CircleCollider), const_object_originA, csA.(*BoxCollider))
 	} else {
-		return (const_object_originA.x < const_object_originB.x+csB.GetBoundingBoxDims().x) &&
-			(const_object_originA.x+csA.GetBoundingBoxDims().x > const_object_originB.x) &&
-			(const_object_originA.y < const_object_originB.y+csB.GetBoundingBoxDims().y) &&
-			(const_object_originA.y+csA.GetBoundingBoxDims().y > const_object_originB.y)
+		return (const_object_originA.X < const_object_originB.X+csB.GetBoundingBoxDims().X) &&
+			(const_object_originA.X+csA.GetBoundingBoxDims().X > const_object_originB.X) &&
+			(const_object_originA.Y < const_object_originB.Y+csB.GetBoundingBoxDims().Y) &&
+			(const_object_originA.Y+csA.GetBoundingBoxDims().Y > const_object_originB.Y)
 	}
 }
 

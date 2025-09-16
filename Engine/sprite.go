@@ -1,13 +1,13 @@
-package main
+package Engine
 
 import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
 type Sprite struct {
-	image           *ebiten.Image
-	renderRectStart Vector2Int
-	renderRectEnd   Vector2Int
+	Image           *ebiten.Image
+	RenderRectStart Vector2Int
+	RenderRectEnd   Vector2Int
 }
 
 type SpriteAssetData struct {

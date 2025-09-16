@@ -1,0 +1,20 @@
+package Engine
+
+type Room struct {
+	EntitiesInThisRoom []int
+	EnemyEntityIDs     []int
+	ObstacleEntityIDs  []int
+	ItemEntityIDs      []int
+}
+
+type Scene struct {
+	EntityComponentsForScene *EntityComponents
+	RoomsData                map[Vector2Int]*Room
+}
+
+func CreateSceneWithNumEntities(numEntitiesToCreateInScene int) *Scene {
+	return &Scene{
+		EntityComponentsForScene: CreateEntityComponents(numEntitiesToCreateInScene),
+		RoomsData:                make(map[Vector2Int]*Room),
+	}
+}

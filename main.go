@@ -1,6 +1,8 @@
 package main
 
 import (
+	"WorldAtPause/Engine"
+	"embed"
 	"fmt"
 	"image/color"
 	"log"
@@ -9,89 +11,92 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+//go:embed Assets/*
+var EmbeddedAssetsFS embed.FS
+
 type Game struct {
-	world *World
+	world *Engine.World
 }
 
 func (g *Game) Update() error {
 
-	curSceneRef := g.world.scenes[g.world.currentSceneIndex]
-	entityComponentsRef := curSceneRef.entityComponentsForScene
+	curSceneRef := g.world.Scenes[g.world.CurrentSceneIndex]
+	entityComponentsRef := curSceneRef.EntityComponentsForScene
 
 	playerMoveAmountPerFrame := 2.0
 
-	playerPosRef := &entityComponentsRef.positions[entityComponentsRef.playerEntityID]
-	curRoomIndex := entityComponentsRef.tilemap.GetRoomIndexOfPosition(playerPosRef)
-	curRoom, curRoomHasSomeData := curSceneRef.roomsData[curRoomIndex]
+	playerPosRef := &entityComponentsRef.Positions[entityComponentsRef.PlayerEntityID]
+	curRoomIndex := entityComponentsRef.Tilemap.GetRoomIndexOfPosition(playerPosRef)
+	curRoom, curRoomHasSomeData := curSceneRef.RoomsData[curRoomIndex]
 
-	inputDirection := Vector2{0.0, 0.0}
+	inputDirection := Engine.Vector2{X: 0.0, Y: 0.0}
 
 	if ebiten.IsKeyPressed(ebiten.KeyRight) {
-		inputDirection.x += 1
+		inputDirection.X += 1
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyLeft) {
-		inputDirection.x -= 1
+		inputDirection.X -= 1
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyDown) {
-		inputDirection.y += 1
+		inputDirection.Y += 1
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyUp) {
-		inputDirection.y -= 1
+		inputDirection.Y -= 1
 	}
 
-	if inputDirection.x != 0 || inputDirection.y != 0 {
+	if inputDirection.X != 0 || inputDirection.Y != 0 {
 
-		normalisedInputDir := Normalise_Vector2(&inputDirection)
-		totalMoveAmount := Multiply_Float_Vector2(playerMoveAmountPerFrame, &normalisedInputDir)
+		normalisedInputDir := Engine.Normalise_Vector2(&inputDirection)
+		totalMoveAmount := Engine.Multiply_Float_Vector2(playerMoveAmountPerFrame, &normalisedInputDir)
 
-		curSceneRef.CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex, curSceneRef.entityComponentsForScene.playerEntityID, inputDirection, totalMoveAmount, playerMoveAmountPerFrame)
+		curSceneRef.CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex, curSceneRef.EntityComponentsForScene.PlayerEntityID, inputDirection, totalMoveAmount, playerMoveAmountPerFrame)
 	}
 
 	if curRoomHasSomeData {
-		playerCollisionShapeRef := entityComponentsRef.collisionShapes[entityComponentsRef.playerEntityID]
+		playerCollisionShapeRef := entityComponentsRef.CollisionShapes[entityComponentsRef.PlayerEntityID]
 		stoppageDistanceFromPlayer := 32.0
 		skeleMoveAmountPerFrame := 1.0
-		for _, enemyEntityID := range curRoom.enemyEntityIDs {
-			skelePosRef := &entityComponentsRef.positions[enemyEntityID]
+		for _, enemyEntityID := range curRoom.EnemyEntityIDs {
+			skelePosRef := &entityComponentsRef.Positions[enemyEntityID]
 
-			if DistanceSquare_Vector2(skelePosRef, playerPosRef) > math.Pow(stoppageDistanceFromPlayer, 2) {
-				directionToPlayer := Subtract_Vector2(playerPosRef, skelePosRef)
-				directionToPlayerNormalised := Normalise_Vector2(&directionToPlayer)
+			if Engine.DistanceSquare_Vector2(skelePosRef, playerPosRef) > math.Pow(stoppageDistanceFromPlayer, 2) {
+				directionToPlayer := Engine.Subtract_Vector2(playerPosRef, skelePosRef)
+				directionToPlayerNormalised := Engine.Normalise_Vector2(&directionToPlayer)
 
-				totalDisplacement := Multiply_Float_Vector2(skeleMoveAmountPerFrame, &directionToPlayerNormalised)
+				totalDisplacement := Engine.Multiply_Float_Vector2(skeleMoveAmountPerFrame, &directionToPlayerNormalised)
 
 				curSceneRef.CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex, enemyEntityID, directionToPlayerNormalised, totalDisplacement, skeleMoveAmountPerFrame)
 			}
 
-			skeletonCollisionShapeRef := entityComponentsRef.collisionShapes[enemyEntityID]
-			if CollisionShapeOverlapsWithCollisionShape(skelePosRef, skeletonCollisionShapeRef, playerPosRef, playerCollisionShapeRef) {
+			skeletonCollisionShapeRef := entityComponentsRef.CollisionShapes[enemyEntityID]
+			if Engine.CollisionShapeOverlapsWithCollisionShape(skelePosRef, skeletonCollisionShapeRef, playerPosRef, playerCollisionShapeRef) {
 				// fmt.Println("Skeleton is colliding with player!")
 			}
 		}
 
-		for index, itemEntityID := range curRoom.itemEntityIDs {
+		for index, itemEntityID := range curRoom.ItemEntityIDs {
 
-			itemPosRef := &entityComponentsRef.positions[itemEntityID]
-			itemCollisionShapeRef := entityComponentsRef.collisionShapes[itemEntityID]
+			itemPosRef := &entityComponentsRef.Positions[itemEntityID]
+			itemCollisionShapeRef := entityComponentsRef.CollisionShapes[itemEntityID]
 
-			if CollisionShapeOverlapsWithCollisionShape(itemPosRef, itemCollisionShapeRef, &entityComponentsRef.positions[entityComponentsRef.playerEntityID], entityComponentsRef.collisionShapes[entityComponentsRef.playerEntityID]) {
-				curRoom.itemEntityIDs = append(curRoom.itemEntityIDs[:index], curRoom.itemEntityIDs[index+1:]...)
+			if Engine.CollisionShapeOverlapsWithCollisionShape(itemPosRef, itemCollisionShapeRef, &entityComponentsRef.Positions[entityComponentsRef.PlayerEntityID], entityComponentsRef.CollisionShapes[entityComponentsRef.PlayerEntityID]) {
+				curRoom.ItemEntityIDs = append(curRoom.ItemEntityIDs[:index], curRoom.ItemEntityIDs[index+1:]...)
 				fmt.Printf("Picked up item entity ID : %d\n", itemEntityID)
 			}
 
 		}
 	}
-	currentLevelIndex := entityComponentsRef.tilemap.GetRoomIndexOfPosition(playerPosRef)
-	playerInLevel := Vector2{float64(currentLevelIndex.x), float64(currentLevelIndex.y)}
+	currentLevelIndex := entityComponentsRef.Tilemap.GetRoomIndexOfPosition(playerPosRef)
+	playerInLevel := Engine.Vector2{X: float64(currentLevelIndex.X), Y: float64(currentLevelIndex.Y)}
 
-	levelHalfSize := Multiply_Float_Vector2(0.5, &entityComponentsRef.tilemap.worldGridSize)
-	currentLevelPos := Vector2{playerInLevel.x * entityComponentsRef.tilemap.worldGridSize.x, playerInLevel.y * entityComponentsRef.tilemap.worldGridSize.y}
-	currentLevelCentre := Add_Vector2(&currentLevelPos, &levelHalfSize)
+	levelHalfSize := Engine.Multiply_Float_Vector2(0.5, &entityComponentsRef.Tilemap.WorldGridSize)
+	currentLevelPos := Engine.Vector2{X: playerInLevel.X * entityComponentsRef.Tilemap.WorldGridSize.X, Y: playerInLevel.Y * entityComponentsRef.Tilemap.WorldGridSize.Y}
+	currentLevelCentre := Engine.Add_Vector2(&currentLevelPos, &levelHalfSize)
 
-	CameraFollowTarget(currentLevelCentre, entityComponentsRef)
+	Engine.CameraFollowTarget(currentLevelCentre, entityComponentsRef)
 
 	return nil
 }
@@ -102,14 +107,14 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	// TODO : Sort drawings based on Layers order and sort order index and then draw all at once.
 
-	DrawActiveRoomInScene(g.world.scenes[g.world.currentSceneIndex], screen)
-	DrawActiveRoomInSceneColliders(g.world.scenes[g.world.currentSceneIndex], screen)
+	Engine.DrawActiveRoomInScene(g.world.Scenes[g.world.CurrentSceneIndex], screen)
+	Engine.DrawActiveRoomInSceneColliders(g.world.Scenes[g.world.CurrentSceneIndex], screen)
 
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	entityComponentsRef := g.world.scenes[g.world.currentSceneIndex].entityComponentsForScene
-	return int(entityComponentsRef.cameraData.screenSize.x), int(entityComponentsRef.cameraData.screenSize.y)
+	entityComponentsRef := g.world.Scenes[g.world.CurrentSceneIndex].EntityComponentsForScene
+	return int(entityComponentsRef.CameraData.ScreenSize.X), int(entityComponentsRef.CameraData.ScreenSize.Y)
 }
 
 func main() {
@@ -117,12 +122,14 @@ func main() {
 	ebiten.SetWindowTitle("Ninja!")
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 
+	Engine.EmbeddedAssetsFS = EmbeddedAssetsFS
+
 	game := Game{
-		world: CreateAndPopulateWorldScenesAndEntitiesAndComponentsFromGameData("Assets/AssetsData.json"),
+		world: Engine.CreateAndPopulateWorldScenesAndEntitiesAndComponentsFromGameData("Assets/AssetsData.json"),
 	}
 
-	entityComponentsRef := game.world.scenes[game.world.currentSceneIndex].entityComponentsForScene
-	entityComponentsRef.cameraData.screenSize = Vector2{320, 240}
+	entityComponentsRef := game.world.Scenes[game.world.CurrentSceneIndex].EntityComponentsForScene
+	entityComponentsRef.CameraData.ScreenSize = Engine.Vector2{X: 320, Y: 240}
 
 	if err := ebiten.RunGame(&game); err != nil {
 		log.Fatal(err)

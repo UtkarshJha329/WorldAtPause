@@ -1,4 +1,4 @@
-package main
+package Engine
 
 import (
 	"image"
@@ -10,7 +10,7 @@ import (
 type TilemapAssetData struct {
 	TilemapTilesetFilePath   string `json:"tilemapTilesetsSource"`
 	TilemapWorldJSONFilePath string `json:"tilemapSourceJSON"`
-	TilemapGridSize          int    `json:"gridSize"`
+	TilemapGridSize          int    `json:"GridSize"`
 }
 
 type TileDataJSON struct {
@@ -65,41 +65,41 @@ type TilemapRoom struct {
 }
 
 type Tilemap struct {
-	tileSet       TileSet
-	gridSize      int
-	worldGridSize Vector2
-	tilemapRooms  map[Vector2Int]*TilemapRoom
+	TileSet       TileSet
+	GridSize      int
+	WorldGridSize Vector2
+	TilemapRooms  map[Vector2Int]*TilemapRoom
 }
 
 func (t *Tilemap) GetTilesPerLevel() Vector2Int {
-	return Vector2Int{int(t.worldGridSize.x) / t.gridSize, int(t.worldGridSize.y) / t.gridSize}
+	return Vector2Int{int(t.WorldGridSize.X) / t.GridSize, int(t.WorldGridSize.Y) / t.GridSize}
 }
 
 func (t *Tilemap) GetFlattenedTileIndex(tileXInLevel int, tileYInLevel int) int {
-	return tileXInLevel + t.GetTilesPerLevel().x*tileYInLevel
+	return tileXInLevel + t.GetTilesPerLevel().X*tileYInLevel
 }
 
 func (t *Tilemap) GetLevelPos(levelIndex *Vector2Int) Vector2 {
-	return Vector2{float64(levelIndex.x) * t.worldGridSize.x, float64(levelIndex.y) * t.worldGridSize.y}
+	return Vector2{float64(levelIndex.X) * t.WorldGridSize.X, float64(levelIndex.Y) * t.WorldGridSize.Y}
 }
 
 func (t *Tilemap) GetTileOfPointInLevel(levelIndex *Vector2Int, const_pointPosition *Vector2) Vector2 {
 
 	currentLevelPos := t.GetLevelPos(levelIndex)
 	pointLevelPos := Subtract_Vector2(const_pointPosition, &currentLevelPos)
-	return Vector2{float64(int(pointLevelPos.x) / t.gridSize), float64(int(pointLevelPos.y) / t.gridSize)}
+	return Vector2{float64(int(pointLevelPos.X) / t.GridSize), float64(int(pointLevelPos.Y) / t.GridSize)}
 }
 
 func (t *Tilemap) PointCollidesWithTilemapCollisionLayerInLevel(levelIndex *Vector2Int, pointPosition *Vector2) bool {
 
 	pointCurrentTileInLevel := t.GetTileOfPointInLevel(levelIndex, pointPosition)
-	flattenedTileIndexInLevel := t.GetFlattenedTileIndex(int(pointCurrentTileInLevel.x), int(pointCurrentTileInLevel.y))
+	flattenedTileIndexInLevel := t.GetFlattenedTileIndex(int(pointCurrentTileInLevel.X), int(pointCurrentTileInLevel.Y))
 
-	return (*t.tilemapRooms[*levelIndex].layers[TILEMAP_COLLISION_LAYER].collisionData)[flattenedTileIndexInLevel] == 1
+	return (*t.TilemapRooms[*levelIndex].layers[TILEMAP_COLLISION_LAYER].collisionData)[flattenedTileIndexInLevel] == 1
 }
 
 func (t *Tilemap) GetRoomIndexOfPosition(const_pointPosition *Vector2) Vector2Int {
-	return Vector2Int{int(const_pointPosition.x) / int(t.worldGridSize.x), int(const_pointPosition.y) / int(t.worldGridSize.y)}
+	return Vector2Int{int(const_pointPosition.X) / int(t.WorldGridSize.X), int(const_pointPosition.Y) / int(t.WorldGridSize.Y)}
 }
 
 func (t *Tilemap) PointCollidesWithTilemapCollisionLayer(const_pointPosition *Vector2) bool {
@@ -107,21 +107,21 @@ func (t *Tilemap) PointCollidesWithTilemapCollisionLayer(const_pointPosition *Ve
 	return t.PointCollidesWithTilemapCollisionLayerInLevel(&pointLevelIndex, const_pointPosition)
 }
 
-func NewTilemap(tileSetTexturePath string, tilemapPath string, gridSize int, tilemapToFill *Tilemap, tilemapDataJSON *TilemapDataJSON) error {
+func NewTilemap(tileSetTexturePath string, tilemapPath string, GridSize int, tilemapToFill *Tilemap, tilemapDataJSON *TilemapDataJSON) error {
 
 	// Will not work with android directly because of lack of filesystem, use go:embed!
 	var err error
-	tilemapToFill.tileSet.tileSetTexture, _, err = ebitenutil.NewImageFromFile(tileSetTexturePath)
+	tilemapToFill.TileSet.tileSetTexture, _, err = ebitenutil.NewImageFromFile(tileSetTexturePath)
 	if err != nil {
 		return err
 	}
 
-	tilemapToFill.gridSize = gridSize
-	tilemapToFill.tilemapRooms = make(map[Vector2Int]*TilemapRoom)
+	tilemapToFill.GridSize = GridSize
+	tilemapToFill.TilemapRooms = make(map[Vector2Int]*TilemapRoom)
 
-	tilemapToFill.tileSet.tileSourceImages = make(map[int]*ebiten.Image)
+	tilemapToFill.TileSet.tileSourceImages = make(map[int]*ebiten.Image)
 
-	tilemapToFill.worldGridSize = Vector2{tilemapDataJSON.WorldGridWidth, tilemapDataJSON.WorldGridHeight}
+	tilemapToFill.WorldGridSize = Vector2{tilemapDataJSON.WorldGridWidth, tilemapDataJSON.WorldGridHeight}
 
 	for _, level := range tilemapDataJSON.Levels {
 
@@ -132,7 +132,7 @@ func NewTilemap(tileSetTexturePath string, tilemapPath string, gridSize int, til
 			roomPositionInWorld: Vector2{level.LevelPosInWorldX, level.LevelPosInWorldY},
 			layers:              make([]Layer, len(level.Layers)),
 		}
-		tilemapToFill.tilemapRooms[levelIndex] = &currentRoom
+		tilemapToFill.TilemapRooms[levelIndex] = &currentRoom
 
 		for currentLayerIndex, layer := range level.Layers {
 
@@ -148,15 +148,15 @@ func NewTilemap(tileSetTexturePath string, tilemapPath string, gridSize int, til
 
 				for currentTileIndex, tile := range layer.TilesData {
 
-					_, ok := tilemapToFill.tileSet.tileSourceImages[tile.TileID]
+					_, ok := tilemapToFill.TileSet.tileSourceImages[tile.TileID]
 					if !ok {
 
-						tilemapToFill.tileSet.tileSourceImages[tile.TileID] = tilemapToFill.tileSet.tileSetTexture.SubImage(
+						tilemapToFill.TileSet.tileSourceImages[tile.TileID] = tilemapToFill.TileSet.tileSetTexture.SubImage(
 							image.Rect(
-								tile.TileTextureSrcStart.x,
-								tile.TileTextureSrcStart.y,
-								tile.TileTextureSrcStart.x+layer.GridSize,
-								tile.TileTextureSrcStart.y+layer.GridSize)).(*ebiten.Image)
+								tile.TileTextureSrcStart.X,
+								tile.TileTextureSrcStart.Y,
+								tile.TileTextureSrcStart.X+layer.GridSize,
+								tile.TileTextureSrcStart.Y+layer.GridSize)).(*ebiten.Image)
 					}
 
 					currentRoom.layers[currentLayerIndex].tiles[currentTileIndex].position = Add_Vector2(&currentRoom.roomPositionInWorld, &tile.TilePos)

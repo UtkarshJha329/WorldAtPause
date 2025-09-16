@@ -1,4 +1,4 @@
-package main
+package Engine
 
 import (
 	"embed"
@@ -10,7 +10,6 @@ import (
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
-//go:embed Assets/*
 var EmbeddedAssetsFS embed.FS
 
 func LoadImageFromFileSystem(imageLocation string) *ebiten.Image {
