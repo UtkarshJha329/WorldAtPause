@@ -58,17 +58,17 @@ type Layer struct {
 	collisionData *[]int
 }
 
-type Level struct {
-	levelName            string
-	levelPositionInWorld Vector2
-	layers               []Layer
+type TilemapRoom struct {
+	roomName            string
+	roomPositionInWorld Vector2
+	layers              []Layer
 }
 
 type Tilemap struct {
 	tileSet       TileSet
 	gridSize      int
 	worldGridSize Vector2
-	levels        map[Vector2Int]*Level
+	tilemapRooms  map[Vector2Int]*TilemapRoom
 }
 
 func (t *Tilemap) GetTilesPerLevel() Vector2Int {
@@ -95,15 +95,15 @@ func (t *Tilemap) PointCollidesWithTilemapCollisionLayerInLevel(levelIndex *Vect
 	pointCurrentTileInLevel := t.GetTileOfPointInLevel(levelIndex, pointPosition)
 	flattenedTileIndexInLevel := t.GetFlattenedTileIndex(int(pointCurrentTileInLevel.x), int(pointCurrentTileInLevel.y))
 
-	return (*t.levels[*levelIndex].layers[TILEMAP_COLLISION_LAYER].collisionData)[flattenedTileIndexInLevel] == 1
+	return (*t.tilemapRooms[*levelIndex].layers[TILEMAP_COLLISION_LAYER].collisionData)[flattenedTileIndexInLevel] == 1
 }
 
-func (t *Tilemap) GetLevelIndexOfPosition(const_pointPosition *Vector2) Vector2Int {
+func (t *Tilemap) GetRoomIndexOfPosition(const_pointPosition *Vector2) Vector2Int {
 	return Vector2Int{int(const_pointPosition.x) / int(t.worldGridSize.x), int(const_pointPosition.y) / int(t.worldGridSize.y)}
 }
 
 func (t *Tilemap) PointCollidesWithTilemapCollisionLayer(const_pointPosition *Vector2) bool {
-	pointLevelIndex := t.GetLevelIndexOfPosition(const_pointPosition)
+	pointLevelIndex := t.GetRoomIndexOfPosition(const_pointPosition)
 	return t.PointCollidesWithTilemapCollisionLayerInLevel(&pointLevelIndex, const_pointPosition)
 }
 
@@ -117,7 +117,7 @@ func NewTilemap(tileSetTexturePath string, tilemapPath string, gridSize int, til
 	}
 
 	tilemapToFill.gridSize = gridSize
-	tilemapToFill.levels = make(map[Vector2Int]*Level)
+	tilemapToFill.tilemapRooms = make(map[Vector2Int]*TilemapRoom)
 
 	tilemapToFill.tileSet.tileSourceImages = make(map[int]*ebiten.Image)
 
@@ -127,24 +127,24 @@ func NewTilemap(tileSetTexturePath string, tilemapPath string, gridSize int, til
 
 		levelIndex := Vector2Int{int(level.LevelPosInWorldX) / int(tilemapDataJSON.WorldGridWidth), int(level.LevelPosInWorldY) / int(tilemapDataJSON.WorldGridHeight)}
 
-		currentLevel := Level{
-			levelName:            level.LevelName,
-			levelPositionInWorld: Vector2{level.LevelPosInWorldX, level.LevelPosInWorldY},
-			layers:               make([]Layer, len(level.Layers)),
+		currentRoom := TilemapRoom{
+			roomName:            level.LevelName,
+			roomPositionInWorld: Vector2{level.LevelPosInWorldX, level.LevelPosInWorldY},
+			layers:              make([]Layer, len(level.Layers)),
 		}
-		tilemapToFill.levels[levelIndex] = &currentLevel
+		tilemapToFill.tilemapRooms[levelIndex] = &currentRoom
 
 		for currentLayerIndex, layer := range level.Layers {
 
-			currentLevel.layers[currentLayerIndex].layerName = layer.LayerName
+			currentRoom.layers[currentLayerIndex].layerName = layer.LayerName
 
 			switch layer.LayerType {
 			case "IntGrid":
-				currentLevel.layers[currentLayerIndex].collisionData = &layer.CollisionData
+				currentRoom.layers[currentLayerIndex].collisionData = &layer.CollisionData
 
 			case "Tiles":
 
-				currentLevel.layers[currentLayerIndex].tiles = make([]Tile, len(layer.TilesData))
+				currentRoom.layers[currentLayerIndex].tiles = make([]Tile, len(layer.TilesData))
 
 				for currentTileIndex, tile := range layer.TilesData {
 
@@ -159,8 +159,8 @@ func NewTilemap(tileSetTexturePath string, tilemapPath string, gridSize int, til
 								tile.TileTextureSrcStart.y+layer.GridSize)).(*ebiten.Image)
 					}
 
-					currentLevel.layers[currentLayerIndex].tiles[currentTileIndex].position = Add_Vector2(&currentLevel.levelPositionInWorld, &tile.TilePos)
-					currentLevel.layers[currentLayerIndex].tiles[currentTileIndex].TileSetTilesID = tile.TileID
+					currentRoom.layers[currentLayerIndex].tiles[currentTileIndex].position = Add_Vector2(&currentRoom.roomPositionInWorld, &tile.TilePos)
+					currentRoom.layers[currentLayerIndex].tiles[currentTileIndex].TileSetTilesID = tile.TileID
 				}
 			}
 		}
