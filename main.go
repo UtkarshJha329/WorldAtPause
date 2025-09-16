@@ -11,15 +11,21 @@ import (
 )
 
 type Game struct {
-	entityComponentsRef *EntityComponents
+	world *World
 }
 
 func (g *Game) Update() error {
 
-	// playerPos := g.entityComponentsRef.positions[g.entityComponentsRef.playerEntityID]
+	// playerPos := entityComponentsRef.positions[entityComponentsRef.playerEntityID]
 
-	playerPosRef := &g.entityComponentsRef.positions[g.entityComponentsRef.playerEntityID]
+	curSceneRef := g.world.scenes[g.world.currentSceneIndex]
+	entityComponentsRef := curSceneRef.entityComponentsForScene
+
 	playerMoveAmountPerFrame := 2.0
+
+	playerPosRef := &entityComponentsRef.positions[entityComponentsRef.playerEntityID]
+	curRoomIndex := entityComponentsRef.tilemap.GetLevelIndexOfPosition(playerPosRef)
+	curRoom, curRoomHasSomeData := curSceneRef.roomsData[curRoomIndex]
 
 	inputDirection := Vector2{0.0, 0.0}
 
@@ -44,50 +50,51 @@ func (g *Game) Update() error {
 		normalisedInputDir := Normalise_Vector2(&inputDirection)
 		totalMoveAmount := Multiply_Float_Vector2(playerMoveAmountPerFrame, &normalisedInputDir)
 
-		g.entityComponentsRef.CollideAndMoveEntityWithTilemapAndObstacles(g.entityComponentsRef.playerEntityID, inputDirection, totalMoveAmount, playerMoveAmountPerFrame)
+		curSceneRef.CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex, curSceneRef.entityComponentsForScene.playerEntityID, inputDirection, totalMoveAmount, playerMoveAmountPerFrame)
 	}
 
-	playerCollisionShapeRef := g.entityComponentsRef.collisionShapes[g.entityComponentsRef.playerEntityID]
-	stoppageDistanceFromPlayer := 32.0
-	skeleMoveAmountPerFrame := 1.0
-	for _, enemyEntityID := range g.entityComponentsRef.enemyEntityIDs {
-		skelePosRef := &g.entityComponentsRef.positions[enemyEntityID]
+	if curRoomHasSomeData {
+		playerCollisionShapeRef := entityComponentsRef.collisionShapes[entityComponentsRef.playerEntityID]
+		stoppageDistanceFromPlayer := 32.0
+		skeleMoveAmountPerFrame := 1.0
+		for _, enemyEntityID := range curRoom.enemyEntityIDs {
+			skelePosRef := &entityComponentsRef.positions[enemyEntityID]
 
-		if DistanceSquare_Vector2(skelePosRef, playerPosRef) > math.Pow(stoppageDistanceFromPlayer, 2) {
-			directionToPlayer := Subtract_Vector2(playerPosRef, skelePosRef)
-			directionToPlayerNormalised := Normalise_Vector2(&directionToPlayer)
+			if DistanceSquare_Vector2(skelePosRef, playerPosRef) > math.Pow(stoppageDistanceFromPlayer, 2) {
+				directionToPlayer := Subtract_Vector2(playerPosRef, skelePosRef)
+				directionToPlayerNormalised := Normalise_Vector2(&directionToPlayer)
 
-			totalDisplacement := Multiply_Float_Vector2(skeleMoveAmountPerFrame, &directionToPlayerNormalised)
+				totalDisplacement := Multiply_Float_Vector2(skeleMoveAmountPerFrame, &directionToPlayerNormalised)
 
-			g.entityComponentsRef.CollideAndMoveEntityWithTilemapAndObstacles(enemyEntityID, directionToPlayerNormalised, totalDisplacement, skeleMoveAmountPerFrame)
+				curSceneRef.CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex, enemyEntityID, directionToPlayerNormalised, totalDisplacement, skeleMoveAmountPerFrame)
+			}
+
+			skeletonCollisionShapeRef := entityComponentsRef.collisionShapes[enemyEntityID]
+			if CollisionShapeOverlapsWithCollisionShape(skelePosRef, skeletonCollisionShapeRef, playerPosRef, playerCollisionShapeRef) {
+				// fmt.Println("Skeleton is colliding with player!")
+			}
 		}
 
-		skeletonCollisionShapeRef := g.entityComponentsRef.collisionShapes[enemyEntityID]
-		if CollisionShapeOverlapsWithCollisionShape(skelePosRef, skeletonCollisionShapeRef, playerPosRef, playerCollisionShapeRef) {
-			// fmt.Println("Skeleton is colliding with player!")
+		for index, itemEntityID := range curRoom.itemEntityIDs {
+
+			itemPosRef := &entityComponentsRef.positions[itemEntityID]
+			itemCollisionShapeRef := entityComponentsRef.collisionShapes[itemEntityID]
+
+			if CollisionShapeOverlapsWithCollisionShape(itemPosRef, itemCollisionShapeRef, &entityComponentsRef.positions[entityComponentsRef.playerEntityID], entityComponentsRef.collisionShapes[entityComponentsRef.playerEntityID]) {
+				curRoom.itemEntityIDs = append(curRoom.itemEntityIDs[:index], curRoom.itemEntityIDs[index+1:]...)
+				fmt.Printf("Picked up item entity ID : %d\n", itemEntityID)
+			}
+
 		}
 	}
-
-	for index, itemEntityID := range g.entityComponentsRef.itemEntityIDs {
-
-		itemPosRef := &g.entityComponentsRef.positions[itemEntityID]
-		itemCollisionShapeRef := g.entityComponentsRef.collisionShapes[itemEntityID]
-
-		if CollisionShapeOverlapsWithCollisionShape(itemPosRef, itemCollisionShapeRef, &g.entityComponentsRef.positions[g.entityComponentsRef.playerEntityID], g.entityComponentsRef.collisionShapes[g.entityComponentsRef.playerEntityID]) {
-			g.entityComponentsRef.itemEntityIDs = append(g.entityComponentsRef.itemEntityIDs[:index], g.entityComponentsRef.itemEntityIDs[index+1:]...)
-			fmt.Printf("Picked up item entity ID : %d\n", itemEntityID)
-		}
-
-	}
-
-	currentLevelIndex := g.entityComponentsRef.tilemap.GetLevelIndexOfPosition(playerPosRef)
+	currentLevelIndex := entityComponentsRef.tilemap.GetLevelIndexOfPosition(playerPosRef)
 	playerInLevel := Vector2{float64(currentLevelIndex.x), float64(currentLevelIndex.y)}
 
-	levelHalfSize := Multiply_Float_Vector2(0.5, &g.entityComponentsRef.tilemap.worldGridSize)
-	currentLevelPos := Vector2{playerInLevel.x * g.entityComponentsRef.tilemap.worldGridSize.x, playerInLevel.y * g.entityComponentsRef.tilemap.worldGridSize.y}
+	levelHalfSize := Multiply_Float_Vector2(0.5, &entityComponentsRef.tilemap.worldGridSize)
+	currentLevelPos := Vector2{playerInLevel.x * entityComponentsRef.tilemap.worldGridSize.x, playerInLevel.y * entityComponentsRef.tilemap.worldGridSize.y}
 	currentLevelCentre := Add_Vector2(&currentLevelPos, &levelHalfSize)
 
-	CameraFollowTarget(currentLevelCentre, g.entityComponentsRef)
+	CameraFollowTarget(currentLevelCentre, entityComponentsRef)
 
 	return nil
 }
@@ -100,26 +107,35 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	drawImgOptions := ebiten.DrawImageOptions{}
 
-	playerPos := g.entityComponentsRef.positions[g.entityComponentsRef.playerEntityID]
-	playerInLevel := Vector2Int{int(playerPos.x) / int(g.entityComponentsRef.tilemap.worldGridSize.x), int(playerPos.y) / int(g.entityComponentsRef.tilemap.worldGridSize.y)}
+	curSceneRef := g.world.scenes[g.world.currentSceneIndex]
+	entityComponentsRef := curSceneRef.entityComponentsForScene
 
-	DrawTileMapLevel(g.entityComponentsRef.tilemap.levels[playerInLevel], g, screen, &drawImgOptions)
+	playerPosRef := &entityComponentsRef.positions[entityComponentsRef.playerEntityID]
+	curRoomIndex := entityComponentsRef.tilemap.GetLevelIndexOfPosition(playerPosRef)
+	curRoom, curRoomHasSomeData := curSceneRef.roomsData[curRoomIndex]
 
-	for _, itemEntityID := range g.entityComponentsRef.itemEntityIDs {
-		DrawEntityID(g, screen, &drawImgOptions, itemEntityID)
+	playerPos := entityComponentsRef.positions[entityComponentsRef.playerEntityID]
+	playerInLevel := Vector2Int{int(playerPos.x) / int(entityComponentsRef.tilemap.worldGridSize.x), int(playerPos.y) / int(entityComponentsRef.tilemap.worldGridSize.y)}
+
+	DrawTileMapLevel(entityComponentsRef.tilemap.levels[playerInLevel], entityComponentsRef, screen, &drawImgOptions)
+
+	if curRoomHasSomeData {
+		for _, itemEntityID := range curRoom.itemEntityIDs {
+			DrawEntityID(entityComponentsRef, screen, &drawImgOptions, itemEntityID)
+		}
+
+		for _, enemyEntityID := range curRoom.enemyEntityIDs {
+			DrawEntityID(entityComponentsRef, screen, &drawImgOptions, enemyEntityID)
+		}
+
+		for _, obstacleEntityID := range curRoom.obstacleEntityIDs {
+			DrawEntityID(entityComponentsRef, screen, &drawImgOptions, obstacleEntityID)
+		}
 	}
 
-	for _, enemyEntityID := range g.entityComponentsRef.enemyEntityIDs {
-		DrawEntityID(g, screen, &drawImgOptions, enemyEntityID)
-	}
+	DrawEntityID(entityComponentsRef, screen, &drawImgOptions, entityComponentsRef.playerEntityID)
 
-	for _, obstacleEntityID := range g.entityComponentsRef.obstacleEntityIDs {
-		DrawEntityID(g, screen, &drawImgOptions, obstacleEntityID)
-	}
-
-	DrawEntityID(g, screen, &drawImgOptions, g.entityComponentsRef.playerEntityID)
-
-	playerCollisionShapeRef := g.entityComponentsRef.collisionShapes[g.entityComponentsRef.playerEntityID]
+	playerCollisionShapeRef := entityComponentsRef.collisionShapes[entityComponentsRef.playerEntityID]
 	playerCollisionShapePoints := playerCollisionShapeRef.GetCollisionPoints()
 	topLeft := Add_Vector2(&(*playerCollisionShapePoints)[0], &playerPos)
 	bottomRight := Add_Vector2(&(*playerCollisionShapePoints)[2], &playerPos)
@@ -127,39 +143,42 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	vector.StrokeRect(screen, float32(topLeft.x), float32(topLeft.y), float32(size.x), float32(size.y), 1.0, color.Black, false)
 
-	for _, enemyEntityID := range g.entityComponentsRef.enemyEntityIDs {
-		skelePosRef := &g.entityComponentsRef.positions[enemyEntityID]
+	if curRoomHasSomeData {
 
-		skeletonCollisionShapeRef := g.entityComponentsRef.collisionShapes[enemyEntityID]
-		vector.StrokeRect(screen, float32(skelePosRef.x), float32(skelePosRef.y), float32(skeletonCollisionShapeRef.(*BoxCollider).size.x), float32(skeletonCollisionShapeRef.(*BoxCollider).size.y), 1.0, color.Black, false)
-	}
+		for _, enemyEntityID := range curRoom.enemyEntityIDs {
+			skelePosRef := &entityComponentsRef.positions[enemyEntityID]
 
-	for _, obstacleIndex := range g.entityComponentsRef.obstacleEntityIDs {
+			skeletonCollisionShapeRef := entityComponentsRef.collisionShapes[enemyEntityID]
+			vector.StrokeRect(screen, float32(skelePosRef.x), float32(skelePosRef.y), float32(skeletonCollisionShapeRef.(*BoxCollider).size.x), float32(skeletonCollisionShapeRef.(*BoxCollider).size.y), 1.0, color.Black, false)
+		}
 
-		obstaclePosRef := &g.entityComponentsRef.positions[obstacleIndex]
-		obstacleCollisionShapeRef := g.entityComponentsRef.collisionShapes[obstacleIndex]
+		for _, obstacleIndex := range curRoom.obstacleEntityIDs {
 
-		if obstacleCollisionShapeRef.CollisionShapeType() == Box {
-			vector.StrokeRect(screen, float32(obstaclePosRef.x), float32(obstaclePosRef.y), float32(obstacleCollisionShapeRef.(*BoxCollider).size.x), float32(obstacleCollisionShapeRef.(*BoxCollider).size.y), 1.0, color.Black, false)
-		} else if obstacleCollisionShapeRef.CollisionShapeType() == Circle {
-			offsetCentre := obstacleCollisionShapeRef.GetOffsetOrigin(obstaclePosRef)
-			vector.StrokeCircle(screen, float32(offsetCentre.x), float32(offsetCentre.y), float32(obstacleCollisionShapeRef.GetBoundingBoxDims().x*0.5), 1.0, color.Black, false)
+			obstaclePosRef := &entityComponentsRef.positions[obstacleIndex]
+			obstacleCollisionShapeRef := entityComponentsRef.collisionShapes[obstacleIndex]
+
+			if obstacleCollisionShapeRef.CollisionShapeType() == Box {
+				vector.StrokeRect(screen, float32(obstaclePosRef.x), float32(obstaclePosRef.y), float32(obstacleCollisionShapeRef.(*BoxCollider).size.x), float32(obstacleCollisionShapeRef.(*BoxCollider).size.y), 1.0, color.Black, false)
+			} else if obstacleCollisionShapeRef.CollisionShapeType() == Circle {
+				offsetCentre := obstacleCollisionShapeRef.GetOffsetOrigin(obstaclePosRef)
+				vector.StrokeCircle(screen, float32(offsetCentre.x), float32(offsetCentre.y), float32(obstacleCollisionShapeRef.GetBoundingBoxDims().x*0.5), 1.0, color.Black, false)
+			}
+		}
+
+		for _, itemEntityID := range curRoom.itemEntityIDs {
+
+			itemPosRef := &entityComponentsRef.positions[itemEntityID]
+			itemCollisionShapeRef := entityComponentsRef.collisionShapes[itemEntityID]
+			itemColliderOrigin := itemCollisionShapeRef.GetOffsetOrigin(itemPosRef)
+
+			vector.StrokeCircle(screen, float32(itemColliderOrigin.x), float32(itemColliderOrigin.y), float32(itemCollisionShapeRef.(*CircleCollider).radius), 1.0, color.Black, false)
 		}
 	}
-
-	for _, itemEntityID := range g.entityComponentsRef.itemEntityIDs {
-
-		itemPosRef := &g.entityComponentsRef.positions[itemEntityID]
-		itemCollisionShapeRef := g.entityComponentsRef.collisionShapes[itemEntityID]
-		itemColliderOrigin := itemCollisionShapeRef.GetOffsetOrigin(itemPosRef)
-
-		vector.StrokeCircle(screen, float32(itemColliderOrigin.x), float32(itemColliderOrigin.y), float32(itemCollisionShapeRef.(*CircleCollider).radius), 1.0, color.Black, false)
-	}
-
 }
 
 func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return int(g.entityComponentsRef.cameraData.screenSize.x), int(g.entityComponentsRef.cameraData.screenSize.y)
+	entityComponentsRef := g.world.scenes[g.world.currentSceneIndex].entityComponentsForScene
+	return int(entityComponentsRef.cameraData.screenSize.x), int(entityComponentsRef.cameraData.screenSize.y)
 }
 
 func main() {
@@ -168,10 +187,11 @@ func main() {
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 
 	game := Game{
-		entityComponentsRef: CreateAndPopulateEntitiesAndComponentsFromGameData("Assets/AssetsData.json"),
+		world: CreateAndPopulateWorldScenesAndEntitiesAndComponentsFromGameData("Assets/AssetsData.json"),
 	}
 
-	game.entityComponentsRef.cameraData.screenSize = Vector2{320, 240}
+	entityComponentsRef := game.world.scenes[game.world.currentSceneIndex].entityComponentsForScene
+	entityComponentsRef.cameraData.screenSize = Vector2{320, 240}
 
 	if err := ebiten.RunGame(&game); err != nil {
 		log.Fatal(err)

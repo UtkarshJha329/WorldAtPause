@@ -4,7 +4,7 @@
             "Tilemaps": [{
                     "Name": "Ground Tilemap",
                     "Entity Type": "Tilemap",
-                    "AssetData": [
+                    "Asset Data": [
                         {"Tilemap":{
                                 "tilemapTilesetsSource": "Assets/Maps/TilesetFloor.png",
                                 "tilemapSourceJSON": "Assets/Maps/WorldMap.json",
@@ -17,7 +17,7 @@
             "Player": [{
                     "Name": "Player Basic",
                     "Entity Type": "Player",
-                    "AssetData": [
+                    "Asset Data": [
                         {"Position": [100, 100]},
                         {"SpriteData": {
                             "SpriteTextureLocation": "Assets/Images/NinjaSpriteSheet.png",
@@ -36,7 +36,7 @@
             "Enemies": [{
                     "Name": "Skeleton",
                     "Entity Type": "Enemy",
-                    "AssetData": [
+                    "Asset Data": [
                         {"Position": [25, 25]},
                         {"SpriteData": {
                             "SpriteTextureLocation": "Assets/Images/SkeletonSpriteSheet.png",
@@ -55,7 +55,7 @@
             "Obstacles": [{
                     "Name": "Stone Block",
                     "Entity Type": "Obstacle",
-                    "AssetData": [
+                    "Asset Data": [
                         {"Position": [150, 150]},
                         {"SpriteData": {
                             "SpriteTextureLocation": "Assets/Images/TilesetDungeon.png",
@@ -72,7 +72,7 @@
                 {
                     "Name": "Stone Pyramid",
                     "Entity Type": "Obstacle",
-                    "AssetData": [
+                    "Asset Data": [
                         {"Position": [200, 150]},
                         {"SpriteData": {
                             "SpriteTextureLocation": "Assets/Images/TilesetDungeon.png",
@@ -92,7 +92,7 @@
             "Items": [{
                     "Name": "Life Pot",
                     "Entity Type": "Item",
-                    "AssetData": [
+                    "Asset Data": [
                         {"Position": [160, 120]},
                         {"SpriteData": {
                             "SpriteTextureLocation": "Assets/Images/LifePot.png",
@@ -109,5 +109,43 @@
                 }]
         }
     ],
-    "Entities": ["Ground Tilemap", "Player Basic", "Skeleton", "Stone Pyramid", "Skeleton", "Stone Block", "Skeleton", "Life Pot"]
+    "Scenes Data": [
+    {
+        "Player Entity": {
+            "Prefab Name": "Player Basic",
+            "Asset Data": [
+                {"Position": [100, 100]}
+            ]
+        },
+        "Rooms Data": [
+            {
+                "Room Index" : [0, 0],
+                "Room Entities": [
+                    {"Prefab Name": "Ground Tilemap"},
+                    {
+                        "Prefab Name": "Skeleton",
+                        "Asset Data": [
+                            {"Position": [130, 150]}
+                        ]
+                    },
+                    {"Prefab Name": "Stone Pyramid"},
+                    {
+                        "Prefab Name": "Skeleton",
+                        "Asset Data": [
+                            {"Position": [30, 30]}
+                        ]
+
+                    },
+                    {"Prefab Name": "Stone Block"},
+                    {
+                        "Prefab Name": "Skeleton",
+                        "Asset Data": [
+                            {"Position": [250, 130]}
+                        ]
+                    },
+                    {"Prefab Name": "Life Pot"}
+                ]
+            }
+        ]
+    }]
 }

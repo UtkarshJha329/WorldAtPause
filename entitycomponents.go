@@ -7,16 +7,13 @@ import (
 )
 
 type EntityComponents struct {
-	totalNumEntities  int
-	playerEntityID    int
-	cameraData        CameraData
-	tilemap           Tilemap
-	enemyEntityIDs    []int
-	obstacleEntityIDs []int
-	itemEntityIDs     []int
-	positions         []Vector2
-	sprites           []Sprite
-	collisionShapes   []CollisionShape
+	totalNumEntities int
+	playerEntityID   int
+	cameraData       CameraData
+	tilemap          Tilemap
+	positions        []Vector2
+	sprites          []Sprite
+	collisionShapes  []CollisionShape
 }
 
 func CreateEntityComponents(totalNumEntitiesToCreate int) *EntityComponents {
@@ -76,34 +73,75 @@ func PopulateEntityDataFromPrefab(prefabMap map[string]Prefab, entityComponents 
 
 }
 
-func CreateAndPopulateEntitiesAndComponents(prefabMap map[string]Prefab, prefabNames []string) *EntityComponents {
+func OverridePrefabDataForEntityWithEntityData(entityID int, entityComponents *EntityComponents, const_entitySpawnData *EntitySpawnData) {
 
-	entityComponents := CreateEntityComponents(len(prefabNames))
-	for entityID, prefabName := range prefabNames {
+	for _, assetData := range const_entitySpawnData.AssetData {
+		switch assetData.AssetType {
 
-		PopulateEntityDataFromPrefab(prefabMap, entityComponents, prefabName, entityID)
+		case "Position":
+			entityComponents.positions[entityID] = *assetData.Position
 
-		switch prefabMap[prefabName].EntityType {
-		case "Player":
-			entityComponents.playerEntityID = entityID
-		case "Enemy":
-			entityComponents.enemyEntityIDs = append(entityComponents.enemyEntityIDs, entityID)
-		case "Obstacle":
-			entityComponents.obstacleEntityIDs = append(entityComponents.obstacleEntityIDs, entityID)
-		case "Item":
-			entityComponents.itemEntityIDs = append(entityComponents.itemEntityIDs, entityID)
 		}
 	}
-
-	return entityComponents
 }
 
-func CreateAndPopulateEntitiesAndComponentsFromGameData(path string) *EntityComponents {
-	prefabMap, entityTypesToSpawn, err := LoadGameAssetData(path)
+func CreateAndPopulateEntitiesAndComponents(prefabMap map[string]Prefab, scenesData []SceneData) *World {
+
+	world := CreateWorldWithNumScenes(len(scenesData))
+	for index, sceneData := range scenesData {
+
+		totalNumEntitiesInScene := 0
+		for _, curRoomData := range sceneData.RoomsData {
+			totalNumEntitiesInScene += 1 // for player the single entity in each scene.
+			totalNumEntitiesInScene += len(curRoomData.RoomEntities)
+		}
+
+		world.scenes[index] = CreateSceneWithNumEntities(totalNumEntitiesInScene)
+
+		runningEntityID := 0
+		curSceneEntityComponents := world.scenes[index].entityComponentsForScene
+
+		PopulateEntityDataFromPrefab(prefabMap, curSceneEntityComponents, sceneData.PlayerEntityDataForScene.PrefabName, runningEntityID)
+		OverridePrefabDataForEntityWithEntityData(runningEntityID, curSceneEntityComponents, &sceneData.PlayerEntityDataForScene)
+		curSceneEntityComponents.playerEntityID = runningEntityID
+		runningEntityID++
+
+		for _, curRoomParsedData := range sceneData.RoomsData {
+
+			roomIndex := curRoomParsedData.RoomIndex
+			world.scenes[index].roomsData[roomIndex] = &Room{}
+			curRoom := world.scenes[index].roomsData[roomIndex]
+
+			for _, curEntityData := range curRoomParsedData.RoomEntities {
+
+				PopulateEntityDataFromPrefab(prefabMap, curSceneEntityComponents, curEntityData.PrefabName, runningEntityID)
+				OverridePrefabDataForEntityWithEntityData(runningEntityID, curSceneEntityComponents, &curEntityData)
+
+				switch prefabMap[curEntityData.PrefabName].EntityType {
+				case "Enemy":
+					curRoom.enemyEntityIDs = append(curRoom.enemyEntityIDs, runningEntityID)
+				case "Obstacle":
+					curRoom.obstacleEntityIDs = append(curRoom.obstacleEntityIDs, runningEntityID)
+				case "Item":
+					curRoom.itemEntityIDs = append(curRoom.itemEntityIDs, runningEntityID)
+				}
+
+				curRoom.entitiesInThisRoom = append(curRoom.entitiesInThisRoom, runningEntityID)
+				runningEntityID += 1
+			}
+		}
+
+	}
+
+	return world
+}
+
+func CreateAndPopulateWorldScenesAndEntitiesAndComponentsFromGameData(path string) *World {
+	prefabMap, scenesData, err := LoadGameAssetData(path)
 	if err != nil {
 		log.Fatal("Failed to load game data from file.")
 	}
 
-	entityComponentData := CreateAndPopulateEntitiesAndComponents(prefabMap, entityTypesToSpawn)
+	entityComponentData := CreateAndPopulateEntitiesAndComponents(prefabMap, scenesData)
 	return entityComponentData
 }
