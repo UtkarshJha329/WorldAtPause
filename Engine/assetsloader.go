@@ -25,6 +25,7 @@ type RoomEntitySpawnData struct {
 }
 
 type SceneData struct {
+	SceneType                string                `json:"Scene Type"`
 	PlayerEntityDataForScene EntitySpawnData       `json:"Player Entity"`
 	RoomsData                []RoomEntitySpawnData `json:"Rooms Data"`
 }

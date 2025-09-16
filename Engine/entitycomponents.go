@@ -97,6 +97,7 @@ func CreateAndPopulateEntitiesAndComponents(prefabMap map[string]Prefab, scenesD
 		}
 
 		world.Scenes[index] = CreateSceneWithNumEntities(totalNumEntitiesInScene)
+		world.Scenes[index].SceneType = sceneData.SceneType
 
 		runningEntityID := 0
 		curSceneEntityComponents := world.Scenes[index].EntityComponentsForScene

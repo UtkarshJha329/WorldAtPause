@@ -8,6 +8,8 @@ type Room struct {
 }
 
 type Scene struct {
+	SceneType                string
+	GameMode                 GameMode
 	EntityComponentsForScene *EntityComponents
 	RoomsData                map[Vector2Int]*Room
 }

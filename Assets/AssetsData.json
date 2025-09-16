@@ -111,6 +111,7 @@
     ],
     "Scenes Data": [
     {
+        "Scene Type": "Main Game",
         "Player Entity": {
             "Prefab Name": "Player Basic",
             "Asset Data": [
