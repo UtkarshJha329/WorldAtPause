@@ -63,7 +63,7 @@ func MoveAmountOnTangentForCircleCollider(circleObstaclePenetrationEscapeDirecti
 	return Multiply_Float_Vector2(entityMoveAmountPerFrame, &tangent)
 }
 
-func (entityComponentsRef *EntityComponents) MoveAndCollideEntityWithTilemapAndObstacles(entityID int, inputDirection Vector2, totalMoveAmount Vector2, entityMoveAmountPerFrame float64) {
+func (entityComponentsRef *EntityComponents) CollideAndMoveEntityWithTilemapAndObstacles(entityID int, inputDirection Vector2, totalMoveAmount Vector2, entityMoveAmountPerFrame float64) {
 
 	entityPos := entityComponentsRef.positions[entityID]
 	entityPosRef := &entityComponentsRef.positions[entityID]
@@ -77,13 +77,14 @@ func (entityComponentsRef *EntityComponents) MoveAndCollideEntityWithTilemapAndO
 	}
 
 	collidingOnXWithTilemap := entityComponentsRef.tilemap.PointCollidesWithTilemapCollisionLayer(&Vector2{playerToMoveXPos + moveDirectionCheckOffsetX, entityPos.y})
-
-	finalMoveAmount := totalMoveAmount
+	collidedOnXWithObstacle := false
 
 	if !collidingOnXWithTilemap {
 		obstacleCollisionResult := entityComponentsRef.DoesEntityCollideWithObstacles(&Vector2{playerToMoveXPos, entityPos.y}, entityCollisionShapeRef)
-		if obstacleCollisionResult.collidedWithObstacle {
+		collidedOnXWithObstacle = obstacleCollisionResult.collidedWithObstacle
+		if collidedOnXWithObstacle {
 
+			finalMoveAmount := Vector2{0.0, 0.0}
 			maxMoveAmountX := 0.0
 
 			if obstacleCollisionResult.collidedWithObstacleCollisionShapeRef.CollisionShapeType() == Box {
@@ -112,8 +113,6 @@ func (entityComponentsRef *EntityComponents) MoveAndCollideEntityWithTilemapAndO
 
 			entityPosRef.x += finalMoveAmount.x
 			entityPosRef.y += finalMoveAmount.y
-
-			finalMoveAmount = Vector2{0.0, 0.0}
 			entityPos = entityComponentsRef.positions[entityID]
 		}
 	}
@@ -125,11 +124,14 @@ func (entityComponentsRef *EntityComponents) MoveAndCollideEntityWithTilemapAndO
 	}
 
 	collidingOnYWithTilemap := entityComponentsRef.tilemap.PointCollidesWithTilemapCollisionLayer(&Vector2{entityPos.x, playerToMoveYPos + moveDirectionCheckOffsetY})
+	collidedOnYWithObstacle := false
 
 	if !collidingOnYWithTilemap {
 		obstacleCollisionResult := entityComponentsRef.DoesEntityCollideWithObstacles(&Vector2{entityPos.x, playerToMoveYPos}, entityCollisionShapeRef)
-		if obstacleCollisionResult.collidedWithObstacle {
+		collidedOnYWithObstacle = obstacleCollisionResult.collidedWithObstacle
+		if collidedOnYWithObstacle {
 
+			finalMoveAmount := Vector2{0.0, 0.0}
 			maxMoveAmountY := 0.0
 
 			if obstacleCollisionResult.collidedWithObstacleCollisionShapeRef.CollisionShapeType() == Box {
@@ -155,14 +157,16 @@ func (entityComponentsRef *EntityComponents) MoveAndCollideEntityWithTilemapAndO
 					finalMoveAmount = Multiply_Float_Vector2(entityMoveAmountPerFrame, &finalMoveAmount)
 				}
 			}
+
+			entityPosRef.x += finalMoveAmount.x
+			entityPosRef.y += finalMoveAmount.y
 		}
-
-		entityPosRef.x += finalMoveAmount.x
-		entityPosRef.y += finalMoveAmount.y
-
 	}
 
-	entityPosRef.x += finalMoveAmount.x
-	entityPosRef.y += finalMoveAmount.y
-
+	if !collidedOnXWithObstacle && !collidedOnYWithObstacle && !collidingOnXWithTilemap {
+		entityPosRef.x += totalMoveAmount.x
+	}
+	if !collidedOnXWithObstacle && !collidedOnYWithObstacle && !collidingOnYWithTilemap {
+		entityPosRef.y += totalMoveAmount.y
+	}
 }

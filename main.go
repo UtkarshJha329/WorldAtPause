@@ -44,7 +44,7 @@ func (g *Game) Update() error {
 		normalisedInputDir := Normalise_Vector2(&inputDirection)
 		totalMoveAmount := Multiply_Float_Vector2(playerMoveAmountPerFrame, &normalisedInputDir)
 
-		g.entityComponentsRef.MoveAndCollideEntityWithTilemapAndObstacles(g.entityComponentsRef.playerEntityID, inputDirection, totalMoveAmount, playerMoveAmountPerFrame)
+		g.entityComponentsRef.CollideAndMoveEntityWithTilemapAndObstacles(g.entityComponentsRef.playerEntityID, inputDirection, totalMoveAmount, playerMoveAmountPerFrame)
 	}
 
 	playerCollisionShapeRef := g.entityComponentsRef.collisionShapes[g.entityComponentsRef.playerEntityID]
@@ -59,7 +59,7 @@ func (g *Game) Update() error {
 
 			totalDisplacement := Multiply_Float_Vector2(skeleMoveAmountPerFrame, &directionToPlayerNormalised)
 
-			g.entityComponentsRef.MoveAndCollideEntityWithTilemapAndObstacles(enemyEntityID, directionToPlayerNormalised, totalDisplacement, skeleMoveAmountPerFrame)
+			g.entityComponentsRef.CollideAndMoveEntityWithTilemapAndObstacles(enemyEntityID, directionToPlayerNormalised, totalDisplacement, skeleMoveAmountPerFrame)
 		}
 
 		skeletonCollisionShapeRef := g.entityComponentsRef.collisionShapes[enemyEntityID]
@@ -68,13 +68,13 @@ func (g *Game) Update() error {
 		}
 	}
 
-	for _, itemEntityID := range g.entityComponentsRef.itemEntityIDs {
+	for index, itemEntityID := range g.entityComponentsRef.itemEntityIDs {
 
 		itemPosRef := &g.entityComponentsRef.positions[itemEntityID]
 		itemCollisionShapeRef := g.entityComponentsRef.collisionShapes[itemEntityID]
 
 		if CollisionShapeOverlapsWithCollisionShape(itemPosRef, itemCollisionShapeRef, &g.entityComponentsRef.positions[g.entityComponentsRef.playerEntityID], g.entityComponentsRef.collisionShapes[g.entityComponentsRef.playerEntityID]) {
-			// g.entityComponentsRef.itemEntityIDs = append(g.entityComponentsRef.itemEntityIDs[:index], g.entityComponentsRef.itemEntityIDs[index+1:]...)
+			g.entityComponentsRef.itemEntityIDs = append(g.entityComponentsRef.itemEntityIDs[:index], g.entityComponentsRef.itemEntityIDs[index+1:]...)
 			fmt.Printf("Picked up item entity ID : %d\n", itemEntityID)
 		}
 
