@@ -68,6 +68,107 @@ func MoveAmountOnTangentForCircleCollider(circleObstaclePenetrationEscapeDirecti
 	return Multiply_Float_Vector2(entityMoveAmountPerFrame, &tangent)
 }
 
+type ShapeCollisionWithTilemapResult struct {
+	Collided                  bool
+	CollidedTileIndex         Vector2Int
+	CollidedTilePos           Vector2
+	CollisionTileNormal       Vector2
+	PenetrationAmount         float64
+	CollisionSeparationNormal Vector2
+}
+
+func (curScene *Scene) BoxColliderCollidesWithTilemapCollisionLayerInRoom(boxCollider CollisionShape, colliderEntityWorldPos Vector2, roomIndex Vector2Int) ShapeCollisionWithTilemapResult {
+
+	curTilemap := curScene.EntityComponentsForScene.Tilemap
+
+	collisionResult := ShapeCollisionWithTilemapResult{
+		Collided:        false,
+		CollidedTilePos: Vector2{0.0, 0.0},
+	}
+
+	colliderCollisionPoints := boxCollider.GetCollisionPoints()
+	for _, collisionPoint := range *colliderCollisionPoints {
+		collisionPointWorldPos := Add_Vector2(&collisionPoint, &colliderEntityWorldPos)
+
+		if curTilemap.PointCollidesWithTilemapCollisionLayerInRoom(&roomIndex, &collisionPointWorldPos) {
+			collisionResult.Collided = true
+
+			curTile := curScene.EntityComponentsForScene.Tilemap.GetTileOfPointInRoom(&roomIndex, &collisionPointWorldPos)
+			curTilePos := curScene.EntityComponentsForScene.Tilemap.GetTilePosInWorld(&roomIndex, &curTile)
+			collisionResult.CollidedTilePos = curTilePos
+
+			collisionResult.CollisionSeparationNormal, collisionResult.PenetrationAmount, collisionResult.Collided = CollisionShapeOverlapsWithCollisionShape(&colliderEntityWorldPos, boxCollider, &curTilePos, &curTilemap.TileCollisionShape)
+			// fmt.Println("Box tile col Pen amount :", collisionResult.PenetrationAmount)
+			// collisionResult.CollisionNormal = Multiply_Float_Vector2(-1.0, &collisionResult.CollisionNormal)
+			if collisionResult.Collided {
+				boxColliderPos := boxCollider.GetOffsetOrigin(&colliderEntityWorldPos)
+				boxColliderBounds := boxCollider.GetBoundingBoxDims()
+				boxColliderHalfBounds := Multiply_Float_Vector2(0.5, boxColliderBounds)
+				boxColliderCentre := Add_Vector2(boxColliderPos, &boxColliderHalfBounds)
+				normalFromTileCollider := curTilemap.TileCollisionShape.GetNormalFromPoint(&curTilePos, &boxColliderCentre)
+				collisionResult.CollisionTileNormal = *normalFromTileCollider
+
+				break
+			}
+		}
+	}
+
+	return collisionResult
+}
+
+func (curScene *Scene) CircleColliderCollidesWithTilemapCollisionLayerInRoom(circleCollider CollisionShape, colliderEntityWorldPos Vector2, roomIndex Vector2Int) ShapeCollisionWithTilemapResult {
+
+	collisionResult := ShapeCollisionWithTilemapResult{
+		Collided:                  false,
+		CollisionSeparationNormal: Vector2{0.0, 0.0},
+	}
+
+	circleBoundingBoxCol := BoxCollider{
+		Collider: Collider{
+			ColliderOriginOffset: Vector2{0.0, 0.0},
+		},
+		size: *circleCollider.GetBoundingBoxDims(),
+	}
+	circleBoundingBoxCol.CreateCollisionPoints()
+
+	boundingBoxCollisionResult := curScene.BoxColliderCollidesWithTilemapCollisionLayerInRoom(&circleBoundingBoxCol, colliderEntityWorldPos, roomIndex)
+	if boundingBoxCollisionResult.Collided {
+		collisionTilePosition := boundingBoxCollisionResult.CollidedTilePos
+		tileBoundingBox := curScene.EntityComponentsForScene.Tilemap.TileCollisionShape
+
+		collisionResult.CollisionSeparationNormal, collisionResult.PenetrationAmount, collisionResult.Collided = CollisionShapeOverlapsWithCollisionShape(&colliderEntityWorldPos, circleCollider, &collisionTilePosition, &tileBoundingBox)
+		// fmt.Println("Circle tile col Pen amount :", collisionResult.PenetrationAmount)
+		if collisionResult.Collided {
+			circleColliderOrigin := circleCollider.GetOffsetOrigin(&colliderEntityWorldPos)
+			normalFromTileCollider := tileBoundingBox.GetNormalFromPoint(&collisionTilePosition, circleColliderOrigin)
+			collisionResult.CollisionTileNormal = *normalFromTileCollider
+		}
+	}
+
+	return collisionResult
+}
+
+func (curScene *Scene) ShapeCollidesWithTilemapCollisionLayer(curRoomIndex Vector2Int, entityID int, inputDirection Vector2, totalMoveAmount Vector2, entityMoveAmountPerFrame float64) ShapeCollisionWithTilemapResult {
+
+	entityCompnentsRef := curScene.EntityComponentsForScene
+
+	curEntityPos := entityCompnentsRef.Positions[entityID]
+	entityCollisionShapeRef := entityCompnentsRef.CollisionShapes[entityID]
+
+	predictedEntityPos := Add_Vector2(&curEntityPos, &totalMoveAmount)
+
+	if entityCollisionShapeRef.CollisionShapeType() == Box {
+
+		return curScene.BoxColliderCollidesWithTilemapCollisionLayerInRoom(entityCollisionShapeRef, predictedEntityPos, curRoomIndex)
+
+	} else if entityCollisionShapeRef.CollisionShapeType() == Circle {
+
+		return curScene.CircleColliderCollidesWithTilemapCollisionLayerInRoom(entityCollisionShapeRef, predictedEntityPos, curRoomIndex)
+	}
+
+	return ShapeCollisionWithTilemapResult{Collided: false}
+}
+
 func (curScene *Scene) CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex Vector2Int, entityID int, inputDirection Vector2, totalMoveAmount Vector2, entityMoveAmountPerFrame float64) {
 
 	entityComponentsRef := curScene.EntityComponentsForScene
@@ -78,15 +179,17 @@ func (curScene *Scene) CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex 
 	entityCollisionShapeRef := entityComponentsRef.CollisionShapes[entityID]
 
 	playerToMoveXPos := entityPos.X + totalMoveAmount.X
-	moveDirectionCheckOffsetX := 0.0
-	if inputDirection.X > 0 {
-		moveDirectionCheckOffsetX = entityCollisionShapeRef.GetBoundingBoxDims().X
-	}
+	// moveDirectionCheckOffsetX := 0.0
+	// if inputDirection.X > 0 {
+	// 	moveDirectionCheckOffsetX = entityCollisionShapeRef.GetBoundingBoxDims().X
+	// }
 
-	collidingOnXWithTilemap := entityComponentsRef.Tilemap.PointCollidesWithTilemapCollisionLayer(&Vector2{playerToMoveXPos + moveDirectionCheckOffsetX, entityPos.Y})
+	// collidingOnXWithTilemap := entityComponentsRef.Tilemap.PointCollidesWithTilemapCollisionLayer(&Vector2{playerToMoveXPos + moveDirectionCheckOffsetX, entityPos.Y})
+	collidingOnXWithTilemap := curScene.ShapeCollidesWithTilemapCollisionLayer(curRoomIndex, entityID, Vector2{inputDirection.X, 0.0}, Vector2{totalMoveAmount.X, 0.0}, entityMoveAmountPerFrame)
 	collidedOnXWithObstacle := false
 
-	if !collidingOnXWithTilemap {
+	// if !collidingOnXWithTilemap {
+	if !collidingOnXWithTilemap.Collided {
 		obstacleCollisionResult := curScene.DoesEntityCollideWithObstacles(curRoomIndex, &Vector2{playerToMoveXPos, entityPos.Y}, entityCollisionShapeRef)
 		collidedOnXWithObstacle = obstacleCollisionResult.CollidedWithObstacle
 		if collidedOnXWithObstacle {
@@ -125,15 +228,17 @@ func (curScene *Scene) CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex 
 	}
 
 	playerToMoveYPos := entityPos.Y + totalMoveAmount.Y
-	moveDirectionCheckOffsetY := 0.0
-	if inputDirection.Y > 0 {
-		moveDirectionCheckOffsetY = entityCollisionShapeRef.GetBoundingBoxDims().Y
-	}
+	// moveDirectionCheckOffsetY := 0.0
+	// if inputDirection.Y > 0 {
+	// 	moveDirectionCheckOffsetY = entityCollisionShapeRef.GetBoundingBoxDims().Y
+	// }
 
-	collidingOnYWithTilemap := entityComponentsRef.Tilemap.PointCollidesWithTilemapCollisionLayer(&Vector2{entityPos.X, playerToMoveYPos + moveDirectionCheckOffsetY})
+	// collidingOnYWithTilemap := entityComponentsRef.Tilemap.PointCollidesWithTilemapCollisionLayer(&Vector2{entityPos.X, playerToMoveYPos + moveDirectionCheckOffsetY})
+	collidingOnYWithTilemap := curScene.ShapeCollidesWithTilemapCollisionLayer(curRoomIndex, entityID, Vector2{0.0, inputDirection.Y}, Vector2{0.0, totalMoveAmount.Y}, entityMoveAmountPerFrame)
 	collidedOnYWithObstacle := false
 
-	if !collidingOnYWithTilemap {
+	// if !collidingOnYWithTilemap {
+	if !collidingOnYWithTilemap.Collided {
 		obstacleCollisionResult := curScene.DoesEntityCollideWithObstacles(curRoomIndex, &Vector2{entityPos.X, playerToMoveYPos}, entityCollisionShapeRef)
 		collidedOnYWithObstacle = obstacleCollisionResult.CollidedWithObstacle
 		if collidedOnYWithObstacle {
@@ -170,10 +275,12 @@ func (curScene *Scene) CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex 
 		}
 	}
 
-	if !collidedOnXWithObstacle && !collidedOnYWithObstacle && !collidingOnXWithTilemap {
+	// if !collidedOnXWithObstacle && !collidedOnYWithObstacle && !collidingOnXWithTilemap {
+	if !collidedOnXWithObstacle && !collidedOnYWithObstacle && !collidingOnXWithTilemap.Collided {
 		entityPosRef.X += totalMoveAmount.X
 	}
-	if !collidedOnXWithObstacle && !collidedOnYWithObstacle && !collidingOnYWithTilemap {
+	// if !collidedOnXWithObstacle && !collidedOnYWithObstacle && !collidingOnYWithTilemap {
+	if !collidedOnXWithObstacle && !collidedOnYWithObstacle && !collidingOnYWithTilemap.Collided {
 		entityPosRef.Y += totalMoveAmount.Y
 	}
 }

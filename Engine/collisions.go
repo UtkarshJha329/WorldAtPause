@@ -66,6 +66,38 @@ func (bc *BoxCollider) GetOffsetOrigin(const_object_origin *Vector2) *Vector2 {
 	return &boxColliderOrigin
 }
 
+func (bc *BoxCollider) GetNormalFromPoint(const_object_origin, const_point *Vector2) *Vector2 {
+	boxColliderOrigin := bc.GetOffsetOrigin(const_object_origin)
+
+	topLeft := Add_Vector2(&bc.CollisionPoints[0], boxColliderOrigin)
+	bottomRight := Add_Vector2(&bc.CollisionPoints[2], boxColliderOrigin)
+
+	// Distances to each side
+	leftDist := const_point.X - topLeft.X
+	rightDist := bottomRight.X - const_point.X
+	topDist := const_point.Y - topLeft.Y
+	bottomDist := bottomRight.Y - const_point.Y
+
+	// Pick the *smallest* distance (least penetration)
+	minDist := leftDist
+	normal := Vector2{-1, 0}
+
+	if rightDist < minDist {
+		minDist = rightDist
+		normal = Vector2{1, 0}
+	}
+	if topDist < minDist {
+		minDist = topDist
+		normal = Vector2{0, -1}
+	}
+	if bottomDist < minDist {
+		minDist = bottomDist
+		normal = Vector2{0, 1}
+	}
+
+	return &normal
+}
+
 type CircleCollider struct {
 	Collider
 	radius float64
@@ -97,12 +129,19 @@ func (cc *CircleCollider) GetOffsetOrigin(const_object_origin *Vector2) *Vector2
 	return &circleColliderOrigin
 }
 
+func (cc *CircleCollider) GetNormalFromPoint(const_object_origin *Vector2, const_point *Vector2) *Vector2 {
+	circleColliderOrigin := Add_Vector2(const_object_origin, &cc.ColliderOriginOffset)
+	normal := Subtract_Vector2(const_point, &circleColliderOrigin)
+	return &normal
+}
+
 type CollisionShape interface {
 	GetOffsetOrigin(const_object_origin *Vector2) *Vector2
 	CollisionShapeType() int
 	GetBoundingBoxDims() *Vector2
 	GetCollisionPoints() *[]Vector2
 	CreateCollisionPoints()
+	GetNormalFromPoint(const_object_origin *Vector2, const_point *Vector2) *Vector2
 	CollisionShapeIncludesPoint(const_origin *Vector2, const_point *Vector2) bool
 }
 
