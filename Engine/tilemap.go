@@ -110,7 +110,8 @@ func (t *Tilemap) GetRoomIndexOfPosition(const_pointPosition *Vector2) Vector2In
 func (t *Tilemap) PointCollidesWithTilemapCollisionLayerInRoom(roomIndex *Vector2Int, pointPosition *Vector2) bool {
 
 	roomDimsInPixels := t.GetRoomDimsInPixels(roomIndex)
-	if pointPosition.X >= roomDimsInPixels.X || pointPosition.Y >= roomDimsInPixels.Y {
+	roomPosMaxInPixels := Add_Vector2(&t.TilemapRooms[*roomIndex].roomPositionInWorld, &roomDimsInPixels)
+	if pointPosition.X >= roomPosMaxInPixels.X || pointPosition.Y >= roomPosMaxInPixels.Y {
 		return false
 	}
 
