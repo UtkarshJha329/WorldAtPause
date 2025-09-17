@@ -209,7 +209,7 @@
                         {
                             "Prefab Name": "Breakout Ball",
                             "Asset Data": [
-                                {"Position": [120, 208]}
+                                {"Position": [200, 150]}
                             ]
                         }
                     ]

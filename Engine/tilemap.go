@@ -32,6 +32,8 @@ type LevelDataJSON struct {
 	LevelPosInWorldX float64         `json:"worldX"`
 	LevelPosInWorldY float64         `json:"worldY"`
 	Layers           []LayerDataJSON `json:"layerInstances"`
+	LevelPxWidth     float64         `json:"pxWid"`
+	LevelPxHeight    float64         `json:"pxHei"`
 }
 
 type TilemapDataJSON struct {
@@ -62,6 +64,7 @@ type TilemapRoom struct {
 	roomName            string
 	roomPositionInWorld Vector2
 	layers              []Layer
+	roomDimsInTiles     Vector2Int
 }
 
 type Tilemap struct {
@@ -72,18 +75,18 @@ type Tilemap struct {
 	TileCollisionShape BoxCollider
 }
 
-func (t *Tilemap) GetTilesPerRoom() Vector2Int {
-	return Vector2Int{int(t.WorldGridSize.X) / t.GridSize, int(t.WorldGridSize.Y) / t.GridSize}
+func (t *Tilemap) GetRoomDimsInPixels(roomIndex *Vector2Int) Vector2 {
+	return Vector2{float64(t.TilemapRooms[*roomIndex].roomDimsInTiles.X * t.GridSize), float64(t.TilemapRooms[*roomIndex].roomDimsInTiles.X * t.GridSize)}
 }
 
-func (t *Tilemap) GetFlattenedTileIndex(tileXInRoom int, tileYInRoom int) int {
+func (t *Tilemap) GetFlattenedTileIndexForRoom(roomIndex *Vector2Int, tileXInRoom int, tileYInRoom int) int {
 
-	functionFlattenedTile := tileXInRoom + t.GetTilesPerRoom().X*tileYInRoom
+	functionFlattenedTile := tileXInRoom + t.TilemapRooms[*roomIndex].roomDimsInTiles.X*tileYInRoom
 	return functionFlattenedTile
 }
 
 func (t *Tilemap) GetRoomPos(roomIndex *Vector2Int) Vector2 {
-	return Vector2{float64(roomIndex.X) * t.WorldGridSize.X, float64(roomIndex.Y) * t.WorldGridSize.Y}
+	return t.TilemapRooms[*roomIndex].roomPositionInWorld
 }
 
 func (t *Tilemap) GetTilePosInWorld(roomIndex *Vector2Int, tileIndex *Vector2) Vector2 {
@@ -95,6 +98,7 @@ func (t *Tilemap) GetTilePosInWorld(roomIndex *Vector2Int, tileIndex *Vector2) V
 func (t *Tilemap) GetTileOfPointInRoom(roomIndex *Vector2Int, const_pointPosition *Vector2) Vector2 {
 
 	currentRoomPos := t.GetRoomPos(roomIndex)
+	// fmt.Println(currentRoomPos)
 	pointRoomPos := Subtract_Vector2(const_pointPosition, &currentRoomPos)
 	return Vector2{float64(int(pointRoomPos.X) / t.GridSize), float64(int(pointRoomPos.Y) / t.GridSize)}
 }
@@ -105,17 +109,20 @@ func (t *Tilemap) GetRoomIndexOfPosition(const_pointPosition *Vector2) Vector2In
 
 func (t *Tilemap) PointCollidesWithTilemapCollisionLayerInRoom(roomIndex *Vector2Int, pointPosition *Vector2) bool {
 
-	roomIndexOfPosition := t.GetRoomIndexOfPosition(pointPosition)
-	if roomIndexOfPosition.X != roomIndex.X || roomIndexOfPosition.Y != roomIndex.Y {
+	roomDimsInPixels := t.GetRoomDimsInPixels(roomIndex)
+	if pointPosition.X >= roomDimsInPixels.X || pointPosition.Y >= roomDimsInPixels.Y {
 		return false
 	}
 
 	pointCurrentTileInRoom := t.GetTileOfPointInRoom(roomIndex, pointPosition)
 
-	flattenedTileIndexInRoom := t.GetFlattenedTileIndex(int(pointCurrentTileInRoom.X), int(pointCurrentTileInRoom.Y))
+	flattenedTileIndexInRoom := t.GetFlattenedTileIndexForRoom(roomIndex, int(pointCurrentTileInRoom.X), int(pointCurrentTileInRoom.Y))
 
 	collisionData := t.TilemapRooms[*roomIndex].layers[TILEMAP_COLLISION_LAYER].collisionData
-	tileIsSolid := flattenedTileIndexInRoom >= 0 && flattenedTileIndexInRoom < len((*collisionData)) && (*collisionData)[flattenedTileIndexInRoom] == 1
+	tileIsSolid := false
+	if flattenedTileIndexInRoom >= 0 && flattenedTileIndexInRoom < len((*collisionData)) {
+		tileIsSolid = (*collisionData)[flattenedTileIndexInRoom] == 1
+	}
 
 	return tileIsSolid
 }
@@ -157,6 +164,7 @@ func NewTilemap(tileSetTexturePath string, tilemapPath string, GridSize int, til
 			roomName:            level.LevelName,
 			roomPositionInWorld: Vector2{level.LevelPosInWorldX, level.LevelPosInWorldY},
 			layers:              make([]Layer, len(level.Layers)),
+			roomDimsInTiles:     Vector2Int{int(level.LevelPxWidth) / GridSize, int(level.LevelPxHeight) / GridSize},
 		}
 		tilemapToFill.TilemapRooms[levelIndex] = &currentRoom
 
@@ -167,6 +175,16 @@ func NewTilemap(tileSetTexturePath string, tilemapPath string, GridSize int, til
 			switch layer.LayerType {
 			case "IntGrid":
 				currentRoom.layers[currentLayerIndex].collisionData = &layer.CollisionData
+
+				// if len(tilemapDataJSON.Levels) == 1 {
+				// 	for y := range int(currentRoom.roomDimsInTiles.Y) {
+				// 		for x := range int(currentRoom.roomDimsInTiles.X) {
+				// 			flattenedTileIndex := x + int(currentRoom.roomDimsInTiles.X)*y
+				// 			fmt.Print((*currentRoom.layers[currentLayerIndex].collisionData)[flattenedTileIndex], ", ")
+				// 		}
+				// 		fmt.Println("")
+				// 	}
+				// }
 
 			case "Tiles":
 
