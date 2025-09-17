@@ -2,7 +2,8 @@ package main
 
 import (
 	"WorldAtPause/Engine"
-	Games "WorldAtPause/Game/MainGame"
+	"WorldAtPause/Game/MainGame"
+	Games "WorldAtPause/Game/Minigames/Breakout"
 	"embed"
 	"image/color"
 	"log"
@@ -39,7 +40,10 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 func SetScenesGameModes(g *Game) {
 	for _, scene := range g.world.Scenes {
 		if scene.SceneType == "Main Game" {
-			scene.GameMode = &Games.MainGameMode{SceneRef: scene}
+			scene.GameMode = &MainGame.MainGameMode{SceneRef: scene}
+		}
+		if scene.SceneType == "Breakout Game" {
+			scene.GameMode = &Games.BreakoutGameMode{SceneRef: scene}
 		}
 	}
 }
@@ -56,6 +60,10 @@ func main() {
 	}
 
 	SetScenesGameModes(&game)
+
+	game.world.CurrentSceneIndex = 1
+
+	game.world.InitCurrentSceneGameMode()
 
 	entityComponentsRef := game.world.Scenes[game.world.CurrentSceneIndex].EntityComponentsForScene
 	entityComponentsRef.CameraData.ScreenSize = Engine.Vector2{X: 320, Y: 240}

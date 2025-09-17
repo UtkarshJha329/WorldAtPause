@@ -1,4 +1,4 @@
-package Games
+package MainGame
 
 import (
 	"WorldAtPause/Engine"
@@ -10,6 +10,10 @@ import (
 
 type MainGameMode struct {
 	SceneRef *Engine.Scene
+}
+
+func (mainGameMode *MainGameMode) Init() {
+
 }
 
 func (mainGameMode *MainGameMode) Update() {
