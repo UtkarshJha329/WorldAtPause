@@ -70,7 +70,7 @@ func (mainGameMode *MainGameMode) Update() {
 			}
 
 			skeletonCollisionShapeRef := entityComponentsRef.CollisionShapes[enemyEntityID]
-			if Engine.CollisionShapeOverlapsWithCollisionShape(skelePosRef, skeletonCollisionShapeRef, playerPosRef, playerCollisionShapeRef) {
+			if _, _, collided := Engine.CollisionShapeOverlapsWithCollisionShape(skelePosRef, skeletonCollisionShapeRef, playerPosRef, playerCollisionShapeRef); collided {
 				// fmt.Println("Skeleton is colliding with player!")
 			}
 		}
@@ -80,7 +80,7 @@ func (mainGameMode *MainGameMode) Update() {
 			itemPosRef := &entityComponentsRef.Positions[itemEntityID]
 			itemCollisionShapeRef := entityComponentsRef.CollisionShapes[itemEntityID]
 
-			if Engine.CollisionShapeOverlapsWithCollisionShape(itemPosRef, itemCollisionShapeRef, &entityComponentsRef.Positions[entityComponentsRef.PlayerEntityID], entityComponentsRef.CollisionShapes[entityComponentsRef.PlayerEntityID]) {
+			if _, _, collided := Engine.CollisionShapeOverlapsWithCollisionShape(itemPosRef, itemCollisionShapeRef, &entityComponentsRef.Positions[entityComponentsRef.PlayerEntityID], entityComponentsRef.CollisionShapes[entityComponentsRef.PlayerEntityID]); collided {
 				curRoom.ItemEntityIDs = append(curRoom.ItemEntityIDs[:index], curRoom.ItemEntityIDs[index+1:]...)
 				fmt.Printf("Picked up item entity ID : %d\n", itemEntityID)
 			}
