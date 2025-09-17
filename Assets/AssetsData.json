@@ -11,10 +11,23 @@
                                 "gridSize": 16
                         }}
                     ]
-                }]
+                },
+                {
+                    "Name": "Breakout Tilemap",
+                    "Entity Type": "Tilemap",
+                    "Asset Data": [
+                        {"Tilemap":{
+                                "tilemapTilesetsSource": "Assets/Maps/TilesetFloor.png",
+                                "tilemapSourceJSON": "Assets/Maps/BreakoutTilemap.json",
+                                "gridSize": 16
+                        }}
+                    ]                    
+                }
+            ]
         },
         {
-            "Player": [{
+            "Player": [
+                {
                     "Name": "Player Basic",
                     "Entity Type": "Player",
                     "Asset Data": [
@@ -28,9 +41,30 @@
                             "CollisionShapeType": "Box",
                             "Size": [16, 16],
                             "ColliderOriginOffset": [0, 0]
-                        }}
+                            }
+                        }
                     ]
-                }]
+                },{
+                    "Name": "Breakout Paddle",
+                    "Entity Type": "Player",
+                    "Asset Data": [
+                        {"Position": [88, 226]},
+                        {"SpriteData": {
+                            "SpriteTextureLocation": "Assets/Images/Paddle.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [64, 14]
+                        }},
+                        {"CollisionShapeData": {
+                            "CollisionShapeType": "Box",
+                            "Size": [64, 14],
+                            "ColliderOriginOffset": [0, 0]
+                            }
+                        }
+                    ]
+                }  
+            ]
+        },{
+            "Physics Objects": []
         },
         {
             "Enemies": [{
@@ -85,6 +119,24 @@
                             "ColliderOriginOffset": [8, 8]
                         }}
                     ]    
+                },
+                {
+                    "Name": "Breakout Ball",
+                    "Entity Type": "Obstacle",
+                    "Asset Data": [
+                        {"Position": [144, 210]},
+                        {"SpriteData": {
+                            "SpriteTextureLocation": "Assets/Images/Ball.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }},
+                        {"CollisionShapeData": {
+                            "CollisionShapeType": "Circle",
+                            "Radius": 8,
+                            "ColliderOriginOffset": [8, 8]
+                            }
+                        }
+                    ]
                 }
             ]
         },
@@ -110,43 +162,82 @@
         }
     ],
     "Scenes Data": [
-    {
-        "Scene Type": "Main Game",
-        "Player Entity": {
-            "Prefab Name": "Player Basic",
-            "Asset Data": [
-                {"Position": [100, 100]}
-            ]
-        },
-        "Rooms Data": [
-            {
-                "Room Index" : [0, 0],
-                "Room Entities": [
-                    {"Prefab Name": "Ground Tilemap"},
-                    {
-                        "Prefab Name": "Skeleton",
-                        "Asset Data": [
-                            {"Position": [130, 150]}
-                        ]
-                    },
-                    {"Prefab Name": "Stone Pyramid"},
-                    {
-                        "Prefab Name": "Skeleton",
-                        "Asset Data": [
-                            {"Position": [30, 30]}
-                        ]
-
-                    },
-                    {"Prefab Name": "Stone Block"},
-                    {
-                        "Prefab Name": "Skeleton",
-                        "Asset Data": [
-                            {"Position": [250, 130]}
-                        ]
-                    },
-                    {"Prefab Name": "Life Pot"}
+        {
+            "Scene Type": "Main Game",
+            "Player Entity": {
+                "Prefab Name": "Player Basic",
+                "Asset Data": [
+                    {"Position": [100, 100]}
                 ]
-            }
-        ]
-    }]
+            },
+            "Rooms Data": [
+                {
+                    "Room Index" : [0, 0],
+                    "Room Entities": [
+                        {"Prefab Name": "Ground Tilemap"},
+                        {
+                            "Prefab Name": "Skeleton",
+                            "Asset Data": [
+                                {"Position": [130, 150]}
+                            ]
+                        },
+                        {
+                            "Prefab Name": "Stone Pyramid",
+                            "Asset Data": [
+                                {"Position": [200, 150]}
+                            ]
+                        },
+                        {
+                            "Prefab Name": "Skeleton",
+                            "Asset Data": [
+                                {"Position": [30, 30]}
+                            ]
+
+                        },
+                        {
+                            "Prefab Name": "Stone Block",
+                            "Asset Data": [
+                                {"Position": [150, 150]}
+                            ]
+                        },
+                        {
+                            "Prefab Name": "Stone Block",
+                            "Asset Data": [
+                                {"Position": [170, 150]}
+                            ]
+                        },
+                        {
+                            "Prefab Name": "Skeleton",
+                            "Asset Data": [
+                                {"Position": [250, 130]}
+                            ]
+                        },
+                        {"Prefab Name": "Life Pot"}
+                    ]
+                }
+            ]
+        },{
+            "Scene Type": "Breakout Game",
+            "Player Entity": {
+                "Prefab Name": "Breakout Paddle",
+                "Asset Data": [
+                    {"Position": [88, 220]}
+                ]
+            },
+            "Rooms Data": [
+                {
+                    "Room Index" : [0, 0],
+                    "Room Entities": [
+                        {"Prefab Name": "Breakout Tilemap"},
+                        {
+                            "Prefab Name": "Breakout Ball",
+                            "Asset Data": [
+                                {"Position": [144, 200]}
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
 }

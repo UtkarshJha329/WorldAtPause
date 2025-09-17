@@ -16,6 +16,10 @@ type EntityComponents struct {
 	CollisionShapes  []CollisionShape
 }
 
+func (entityComponents *EntityComponents) IsEntityPlayer(entityID int) bool {
+	return entityComponents.PlayerEntityID == entityID
+}
+
 func CreateEntityComponents(totalNumEntitiesToCreate int) *EntityComponents {
 	return &EntityComponents{
 		TotalNumEntities: totalNumEntitiesToCreate,
@@ -99,8 +103,10 @@ func CreateAndPopulateEntitiesAndComponents(prefabMap map[string]Prefab, scenesD
 		world.Scenes[index] = CreateSceneWithNumEntities(totalNumEntitiesInScene)
 		world.Scenes[index].SceneType = sceneData.SceneType
 
+		curScene := world.Scenes[index]
+
 		runningEntityID := 0
-		curSceneEntityComponents := world.Scenes[index].EntityComponentsForScene
+		curSceneEntityComponents := curScene.EntityComponentsForScene
 
 		PopulateEntityDataFromPrefab(prefabMap, curSceneEntityComponents, sceneData.PlayerEntityDataForScene.PrefabName, runningEntityID)
 		OverridePrefabDataForEntityWithEntityData(runningEntityID, curSceneEntityComponents, &sceneData.PlayerEntityDataForScene)
@@ -110,8 +116,8 @@ func CreateAndPopulateEntitiesAndComponents(prefabMap map[string]Prefab, scenesD
 		for _, curRoomParsedData := range sceneData.RoomsData {
 
 			roomIndex := curRoomParsedData.RoomIndex
-			world.Scenes[index].RoomsData[roomIndex] = &Room{}
-			curRoom := world.Scenes[index].RoomsData[roomIndex]
+			curScene.RoomsData[roomIndex] = &Room{}
+			curRoom := curScene.RoomsData[roomIndex]
 
 			for _, curEntityData := range curRoomParsedData.RoomEntities {
 
@@ -119,6 +125,8 @@ func CreateAndPopulateEntitiesAndComponents(prefabMap map[string]Prefab, scenesD
 				OverridePrefabDataForEntityWithEntityData(runningEntityID, curSceneEntityComponents, &curEntityData)
 
 				switch prefabMap[curEntityData.PrefabName].EntityType {
+				case "Physics Object":
+					curRoom.PhysicsEntityIDs = append(curRoom.PhysicsEntityIDs, runningEntityID)
 				case "Enemy":
 					curRoom.EnemyEntityIDs = append(curRoom.EnemyEntityIDs, runningEntityID)
 				case "Obstacle":

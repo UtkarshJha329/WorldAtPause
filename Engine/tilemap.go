@@ -65,10 +65,11 @@ type TilemapRoom struct {
 }
 
 type Tilemap struct {
-	TileSet       TileSet
-	GridSize      int
-	WorldGridSize Vector2
-	TilemapRooms  map[Vector2Int]*TilemapRoom
+	TileSet            TileSet
+	GridSize           int
+	WorldGridSize      Vector2
+	TilemapRooms       map[Vector2Int]*TilemapRoom
+	TileCollisionShape BoxCollider
 }
 
 func (t *Tilemap) GetTilesPerLevel() Vector2Int {
@@ -80,7 +81,13 @@ func (t *Tilemap) GetFlattenedTileIndex(tileXInLevel int, tileYInLevel int) int 
 }
 
 func (t *Tilemap) GetLevelPos(levelIndex *Vector2Int) Vector2 {
-	return Vector2{float64(levelIndex.X) * t.WorldGridSize.X, float64(levelIndex.Y) * t.WorldGridSize.Y}
+	return t.TilemapRooms[*levelIndex].roomPositionInWorld
+}
+
+func (t *Tilemap) GetTilePosInWorld(roomIndex *Vector2Int, tileIndex *Vector2) Vector2 {
+	tilePos := Vector2{tileIndex.X * float64(t.GridSize), tileIndex.Y * float64(t.GridSize)}
+	roomPosInWorld := t.GetLevelPos(roomIndex)
+	return Add_Vector2(&tilePos, &roomPosInWorld)
 }
 
 func (t *Tilemap) GetTileOfPointInLevel(levelIndex *Vector2Int, const_pointPosition *Vector2) Vector2 {
@@ -90,12 +97,13 @@ func (t *Tilemap) GetTileOfPointInLevel(levelIndex *Vector2Int, const_pointPosit
 	return Vector2{float64(int(pointLevelPos.X) / t.GridSize), float64(int(pointLevelPos.Y) / t.GridSize)}
 }
 
-func (t *Tilemap) PointCollidesWithTilemapCollisionLayerInLevel(levelIndex *Vector2Int, pointPosition *Vector2) bool {
+func (t *Tilemap) PointCollidesWithTilemapCollisionLayerInRoom(levelIndex *Vector2Int, pointPosition *Vector2) bool {
 
 	pointCurrentTileInLevel := t.GetTileOfPointInLevel(levelIndex, pointPosition)
 	flattenedTileIndexInLevel := t.GetFlattenedTileIndex(int(pointCurrentTileInLevel.X), int(pointCurrentTileInLevel.Y))
 
-	return (*t.TilemapRooms[*levelIndex].layers[TILEMAP_COLLISION_LAYER].collisionData)[flattenedTileIndexInLevel] == 1
+	tilemapCollisionData := (t.TilemapRooms[*levelIndex].layers[TILEMAP_COLLISION_LAYER].collisionData)
+	return flattenedTileIndexInLevel >= 0 && flattenedTileIndexInLevel < len((*tilemapCollisionData)) && (*tilemapCollisionData)[flattenedTileIndexInLevel] == 1
 }
 
 func (t *Tilemap) GetRoomIndexOfPosition(const_pointPosition *Vector2) Vector2Int {
@@ -104,7 +112,7 @@ func (t *Tilemap) GetRoomIndexOfPosition(const_pointPosition *Vector2) Vector2In
 
 func (t *Tilemap) PointCollidesWithTilemapCollisionLayer(const_pointPosition *Vector2) bool {
 	pointLevelIndex := t.GetRoomIndexOfPosition(const_pointPosition)
-	return t.PointCollidesWithTilemapCollisionLayerInLevel(&pointLevelIndex, const_pointPosition)
+	return t.PointCollidesWithTilemapCollisionLayerInRoom(&pointLevelIndex, const_pointPosition)
 }
 
 func NewTilemap(tileSetTexturePath string, tilemapPath string, GridSize int, tilemapToFill *Tilemap, tilemapDataJSON *TilemapDataJSON) error {
@@ -118,6 +126,14 @@ func NewTilemap(tileSetTexturePath string, tilemapPath string, GridSize int, til
 
 	tilemapToFill.GridSize = GridSize
 	tilemapToFill.TilemapRooms = make(map[Vector2Int]*TilemapRoom)
+
+	tilemapToFill.TileCollisionShape = BoxCollider{
+		Collider: Collider{
+			ColliderOriginOffset: Vector2{0.0, 0.0},
+		},
+		size: Vector2{float64(tilemapToFill.GridSize), float64(tilemapToFill.GridSize)},
+	}
+	tilemapToFill.TileCollisionShape.CreateCollisionPoints()
 
 	tilemapToFill.TileSet.tileSourceImages = make(map[int]*ebiten.Image)
 

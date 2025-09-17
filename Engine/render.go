@@ -55,6 +55,10 @@ func DrawActiveRoomInScene(curSceneRef *Scene, screenRef *ebiten.Image) {
 		for _, obstacleEntityID := range curRoom.ObstacleEntityIDs {
 			DrawEntityID(entityComponentsRef, screenRef, &drawImgOptions, obstacleEntityID)
 		}
+
+		for _, physicsEntityID := range curRoom.PhysicsEntityIDs {
+			DrawEntityID(entityComponentsRef, screenRef, &drawImgOptions, physicsEntityID)
+		}
 	}
 
 	DrawEntityID(entityComponentsRef, screenRef, &drawImgOptions, entityComponentsRef.PlayerEntityID)
@@ -102,6 +106,15 @@ func DrawActiveRoomInSceneColliders(curSceneRef *Scene, screenRef *ebiten.Image)
 			itemColliderOrigin := itemCollisionShapeRef.GetOffsetOrigin(itemPosRef)
 
 			vector.StrokeCircle(screenRef, float32(itemColliderOrigin.X), float32(itemColliderOrigin.Y), float32(itemCollisionShapeRef.(*CircleCollider).radius), 1.0, color.Black, false)
+		}
+
+		for _, physicsEntityID := range curRoom.PhysicsEntityIDs {
+
+			physicsEntityPosRef := &entityComponentsRef.Positions[physicsEntityID]
+			physicsEntityCollisionShapeRef := entityComponentsRef.CollisionShapes[physicsEntityID]
+			physicsEntityColliderOrigin := physicsEntityCollisionShapeRef.GetOffsetOrigin(physicsEntityPosRef)
+
+			vector.StrokeCircle(screenRef, float32(physicsEntityColliderOrigin.X), float32(physicsEntityColliderOrigin.Y), float32(physicsEntityCollisionShapeRef.(*CircleCollider).radius), 1.0, color.Black, false)
 		}
 	}
 

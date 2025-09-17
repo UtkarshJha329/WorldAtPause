@@ -29,6 +29,15 @@ func Add_Vector2(const_a, const_b *Vector2) Vector2 {
 	return Vector2{const_a.X + const_b.X, const_a.Y + const_b.Y}
 }
 
+func Reflect_Vector2(const_a, const_b *Vector2) Vector2 {
+	// make sure n is normalized before using this!
+	dot := Dot_Vector2(const_a, const_b)
+	return Vector2{
+		const_a.X - 2*dot*const_b.X,
+		const_a.Y - 2*dot*const_b.Y,
+	}
+}
+
 func Subtract_Vector2(const_a, const_b *Vector2) Vector2 {
 	return Vector2{const_a.X - const_b.X, const_a.Y - const_b.Y}
 }

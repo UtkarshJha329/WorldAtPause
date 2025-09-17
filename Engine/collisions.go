@@ -66,6 +66,38 @@ func (bc *BoxCollider) GetOffsetOrigin(const_object_origin *Vector2) *Vector2 {
 	return &boxColliderOrigin
 }
 
+func (bc *BoxCollider) GetNormalFromPoint(const_object_origin, const_point *Vector2) *Vector2 {
+	boxColliderOrigin := bc.GetOffsetOrigin(const_object_origin)
+
+	topLeft := Add_Vector2(&bc.CollisionPoints[0], boxColliderOrigin)
+	bottomRight := Add_Vector2(&bc.CollisionPoints[2], boxColliderOrigin)
+
+	// Distances to each side
+	leftDist := const_point.X - topLeft.X
+	rightDist := bottomRight.X - const_point.X
+	topDist := const_point.Y - topLeft.Y
+	bottomDist := bottomRight.Y - const_point.Y
+
+	// Pick the *smallest* distance (least penetration)
+	minDist := leftDist
+	normal := Vector2{-1, 0}
+
+	if rightDist < minDist {
+		minDist = rightDist
+		normal = Vector2{1, 0}
+	}
+	if topDist < minDist {
+		minDist = topDist
+		normal = Vector2{0, -1}
+	}
+	if bottomDist < minDist {
+		minDist = bottomDist
+		normal = Vector2{0, 1}
+	}
+
+	return &normal
+}
+
 type CircleCollider struct {
 	Collider
 	radius float64
@@ -97,13 +129,61 @@ func (cc *CircleCollider) GetOffsetOrigin(const_object_origin *Vector2) *Vector2
 	return &circleColliderOrigin
 }
 
-type CircleBoxOverlapCirclePenetrationData struct {
-	closestPointOnBox Vector2
-	normal            Vector2
-	penetrationAmount float64
+func (cc *CircleCollider) GetNormalFromPoint(const_object_origin *Vector2, const_point *Vector2) *Vector2 {
+	circleColliderOrigin := Add_Vector2(const_object_origin, &cc.ColliderOriginOffset)
+	normal := Subtract_Vector2(const_point, &circleColliderOrigin)
+	return &normal
 }
 
-func GetCircleBoxOverlapPenetrationData(const_origin *Vector2, cc *CircleCollider, const_origin_box *Vector2, bx *BoxCollider) CircleBoxOverlapCirclePenetrationData {
+//Collision Checking Functions
+
+func BoxBoxCollisionResult(posA Vector2, boxColA *BoxCollider, posB Vector2, boxColB *BoxCollider) (normal Vector2, penetration float64, collided bool) {
+
+	boxColACollisionPoints := boxColA.GetCollisionPoints()
+	topLeftA := Add_Vector2(&posA, &(*boxColACollisionPoints)[0])
+	bottomRightA := Add_Vector2(&posA, &(*boxColACollisionPoints)[2])
+
+	boxColBCollisionPoints := boxColB.GetCollisionPoints()
+	topLeftB := Add_Vector2(&posB, &(*boxColBCollisionPoints)[0])
+	bottomRightB := Add_Vector2(&posB, &(*boxColBCollisionPoints)[2])
+
+	overlapX := math.Min(bottomRightA.X, bottomRightB.X) - math.Max(topLeftA.X, topLeftB.X)
+	overlapY := math.Min(bottomRightA.Y, bottomRightB.Y) - math.Max(topLeftA.Y, topLeftB.Y)
+
+	if overlapX <= 0 || overlapY <= 0 {
+		return Vector2{0, 0}, 0, false // no collision
+	}
+
+	centerA := Vector2{(topLeftA.X + bottomRightA.X) * 0.5, (topLeftA.Y + bottomRightA.Y) * 0.5}
+	centerB := Vector2{(topLeftB.X + bottomRightB.X) * 0.5, (topLeftB.Y + bottomRightB.Y) * 0.5}
+
+	if overlapX < overlapY {
+		penetration = overlapX
+		if centerA.X < centerB.X {
+			normal = Vector2{-1, 0}
+		} else {
+			normal = Vector2{1, 0}
+		}
+	} else {
+		penetration = overlapY
+		if centerA.Y < centerB.Y {
+			normal = Vector2{0, -1}
+		} else {
+			normal = Vector2{0, 1}
+		}
+	}
+
+	return normal, penetration, true
+}
+
+// type CircleBoxOverlapCirclePenetrationData struct {
+// 	Collided bool
+// 	// closestPointOnBox Vector2
+// 	normal            Vector2
+// 	penetrationAmount float64
+// }
+
+func GetBoxCircleOverlapPenetrationData(const_origin_box *Vector2, bx *BoxCollider, const_origin *Vector2, cc *CircleCollider) (normal Vector2, penetration float64, collided bool) {
 
 	const_offset_origin := cc.GetOffsetOrigin(const_origin)
 	closestPointOnBox := *const_offset_origin
@@ -121,18 +201,14 @@ func GetCircleBoxOverlapPenetrationData(const_origin *Vector2, cc *CircleCollide
 	}
 
 	distVector := Vector2{closestPointOnBox.X - const_offset_origin.X, closestPointOnBox.Y - const_offset_origin.Y}
-	return CircleBoxOverlapCirclePenetrationData{
-		closestPointOnBox: closestPointOnBox,
-		normal:            Normalise_Vector2(&distVector),
-		penetrationAmount: cc.radius - Magnitude_Vector2(&distVector),
-	}
-}
-
-func CircleBoxAABBOverlap(const_origin *Vector2, cc *CircleCollider, const_origin_box *Vector2, bx *BoxCollider) bool {
-
-	const_offset_origin := cc.GetOffsetOrigin(const_origin)
-	pointOnBoxToCheck := GetCircleBoxOverlapPenetrationData(const_origin, cc, const_origin_box, bx)
-	return DistanceSquare_Vector2(&pointOnBoxToCheck.closestPointOnBox, const_offset_origin) <= math.Pow(cc.radius, 2.0)
+	magDistVector := Magnitude_Vector2(&distVector)
+	// return CircleBoxOverlapCirclePenetrationData{
+	// 	Collided:          magDistVector-cc.radius <= 0,
+	// 	normal:            Normalise_Vector2(&distVector),
+	// 	penetrationAmount: magDistVector - cc.radius,
+	// }
+	return Normalise_Vector2(&distVector), magDistVector - cc.radius, magDistVector-cc.radius <= 0
+	// closestPointOnBox: closestPointOnBox,
 }
 
 type CollisionShape interface {
@@ -141,26 +217,34 @@ type CollisionShape interface {
 	GetBoundingBoxDims() *Vector2
 	GetCollisionPoints() *[]Vector2
 	CreateCollisionPoints()
+	GetNormalFromPoint(const_object_origin *Vector2, const_point *Vector2) *Vector2
 	CollisionShapeIncludesPoint(const_origin *Vector2, const_point *Vector2) bool
 }
 
-func CollisionShapeOverlapsWithCollisionShape(const_object_originA *Vector2, csA CollisionShape, const_object_originB *Vector2, csB CollisionShape) bool {
+func CollisionShapeOverlapsWithCollisionShape(const_object_originA *Vector2, csA CollisionShape, const_object_originB *Vector2, csB CollisionShape) (normal Vector2, penetration float64, collided bool) {
 
 	if csA.CollisionShapeType() == Circle && csB.CollisionShapeType() == Circle {
 		csAOffsetOrigin := csA.GetOffsetOrigin(const_object_originA)
 		csBOffsetOrigin := csB.GetOffsetOrigin(const_object_originB)
 
-		return DistanceSquare_Vector2(csAOffsetOrigin, csBOffsetOrigin) <= math.Pow(csA.(*CircleCollider).radius+csB.(*CircleCollider).radius, 2.0)
+		normal := Subtract_Vector2(csAOffsetOrigin, csBOffsetOrigin)
+		penetrationAmount := (csA.(*CircleCollider).radius + csB.(*CircleCollider).radius) - Magnitude_Vector2(&normal)
+		normal = Normalise_Vector2(&normal)
+		collided := penetrationAmount >= 0
+		return normal, penetrationAmount, collided
 	}
 	if csA.CollisionShapeType() == Circle {
-		return CircleBoxAABBOverlap(const_object_originA, csA.(*CircleCollider), const_object_originB, csB.(*BoxCollider))
+		normal, penetrationAmount, collided := GetBoxCircleOverlapPenetrationData(const_object_originB, csB.(*BoxCollider), const_object_originA, csA.(*CircleCollider))
+		normal = Multiply_Float_Vector2(-1.0, &normal)
+		return normal, penetrationAmount, collided
 	} else if csB.CollisionShapeType() == Circle {
-		return CircleBoxAABBOverlap(const_object_originB, csB.(*CircleCollider), const_object_originA, csA.(*BoxCollider))
+		return GetBoxCircleOverlapPenetrationData(const_object_originA, csA.(*BoxCollider), const_object_originB, csB.(*CircleCollider))
 	} else {
-		return (const_object_originA.X < const_object_originB.X+csB.GetBoundingBoxDims().X) &&
-			(const_object_originA.X+csA.GetBoundingBoxDims().X > const_object_originB.X) &&
-			(const_object_originA.Y < const_object_originB.Y+csB.GetBoundingBoxDims().Y) &&
-			(const_object_originA.Y+csA.GetBoundingBoxDims().Y > const_object_originB.Y)
+		// return (const_object_originA.X < const_object_originB.X+csB.GetBoundingBoxDims().X) &&
+		// 	(const_object_originA.X+csA.GetBoundingBoxDims().X > const_object_originB.X) &&
+		// 	(const_object_originA.Y < const_object_originB.Y+csB.GetBoundingBoxDims().Y) &&
+		// 	(const_object_originA.Y+csA.GetBoundingBoxDims().Y > const_object_originB.Y)
+		return BoxBoxCollisionResult(*const_object_originA, csA.(*BoxCollider), *const_object_originB, csB.(*BoxCollider))
 	}
 }
 

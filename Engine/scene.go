@@ -2,6 +2,7 @@ package Engine
 
 type Room struct {
 	EntitiesInThisRoom []int
+	PhysicsEntityIDs   []int
 	EnemyEntityIDs     []int
 	ObstacleEntityIDs  []int
 	ItemEntityIDs      []int
