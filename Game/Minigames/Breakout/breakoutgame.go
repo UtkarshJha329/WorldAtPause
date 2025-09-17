@@ -73,6 +73,16 @@ func (breakoutGameMode *BreakoutGameMode) Update() {
 		useNormal = Engine.Normalise_Vector2(&useNormal)
 
 		breakoutGameMode.ballInputDirection = Engine.Reflect_Vector2(&breakoutGameMode.ballInputDirection, &useNormal)
+
+		if ballCollidedWithObstacles {
+			for index, obstacleEntityID := range curSceneRef.RoomsData[curRoomIndex].ObstacleEntityIDs {
+				if obstacleEntityID == ballCollisions.ObstacleXMoveCollisionResult.CollidedWithObstacleEntityID ||
+					obstacleEntityID == ballCollisions.ObstacleYMoveCollisionResult.CollidedWithObstacleEntityID {
+					curSceneRef.RoomsData[curRoomIndex].ObstacleEntityIDs = append(curSceneRef.RoomsData[curRoomIndex].ObstacleEntityIDs[:index], curSceneRef.RoomsData[curRoomIndex].ObstacleEntityIDs[index+1:]...)
+				}
+			}
+		}
+
 	}
 
 }

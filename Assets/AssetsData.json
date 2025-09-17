@@ -131,6 +131,23 @@
                             "ColliderOriginOffset": [8, 8]
                         }}
                     ]    
+                },
+                {
+                    "Name": "Breakout Brick",
+                    "Entity Type": "Obstacle",
+                    "Asset Data": [
+                        {"Position": [200, 150]},
+                        {"SpriteData": {
+                            "SpriteTextureLocation": "Assets/Images/Brick.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [32, 14]
+                        }},
+                        {"CollisionShapeData": {
+                            "CollisionShapeType": "Box",
+                            "Size": [32,14],
+                            "ColliderOriginOffset": [0, 0]
+                        }}
+                    ]    
                 }
             ]
         },
@@ -211,6 +228,31 @@
                             "Prefab Name": "Breakout Ball",
                             "Asset Data": [
                                 {"Position": [200, 150]}
+                            ]
+                        },                        {
+                            "Prefab Name": "Breakout Brick",
+                            "Asset Data": [
+                                {"Position": [48, 14]}
+                            ]
+                        },                        {
+                            "Prefab Name": "Breakout Brick",
+                            "Asset Data": [
+                                {"Position": [96, 14]}
+                            ]
+                        },                        {
+                            "Prefab Name": "Breakout Brick",
+                            "Asset Data": [
+                                {"Position": [144, 14]}
+                            ]
+                        },                        {
+                            "Prefab Name": "Breakout Brick",
+                            "Asset Data": [
+                                {"Position": [192, 14]}
+                            ]
+                        },                        {
+                            "Prefab Name": "Breakout Brick",
+                            "Asset Data": [
+                                {"Position": [240, 14]}
                             ]
                         }
                     ]
