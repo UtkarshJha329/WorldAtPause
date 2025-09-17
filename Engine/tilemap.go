@@ -72,16 +72,18 @@ type Tilemap struct {
 	TileCollisionShape BoxCollider
 }
 
-func (t *Tilemap) GetTilesPerLevel() Vector2Int {
+func (t *Tilemap) GetTilesPerRoom() Vector2Int {
 	return Vector2Int{int(t.WorldGridSize.X) / t.GridSize, int(t.WorldGridSize.Y) / t.GridSize}
 }
 
-func (t *Tilemap) GetFlattenedTileIndex(tileXInLevel int, tileYInLevel int) int {
-	return tileXInLevel + t.GetTilesPerLevel().X*tileYInLevel
+func (t *Tilemap) GetFlattenedTileIndex(tileXInRoom int, tileYInRoom int) int {
+
+	functionFlattenedTile := tileXInRoom + t.GetTilesPerRoom().X*tileYInRoom
+	return functionFlattenedTile
 }
 
-func (t *Tilemap) GetRoomPos(levelIndex *Vector2Int) Vector2 {
-	return Vector2{float64(levelIndex.X) * t.WorldGridSize.X, float64(levelIndex.Y) * t.WorldGridSize.Y}
+func (t *Tilemap) GetRoomPos(roomIndex *Vector2Int) Vector2 {
+	return Vector2{float64(roomIndex.X) * t.WorldGridSize.X, float64(roomIndex.Y) * t.WorldGridSize.Y}
 }
 
 func (t *Tilemap) GetTilePosInWorld(roomIndex *Vector2Int, tileIndex *Vector2) Vector2 {
@@ -92,22 +94,30 @@ func (t *Tilemap) GetTilePosInWorld(roomIndex *Vector2Int, tileIndex *Vector2) V
 
 func (t *Tilemap) GetTileOfPointInRoom(roomIndex *Vector2Int, const_pointPosition *Vector2) Vector2 {
 
-	currentLevelPos := t.GetRoomPos(roomIndex)
-	pointLevelPos := Subtract_Vector2(const_pointPosition, &currentLevelPos)
-	return Vector2{float64(int(pointLevelPos.X) / t.GridSize), float64(int(pointLevelPos.Y) / t.GridSize)}
-}
-
-func (t *Tilemap) PointCollidesWithTilemapCollisionLayerInRoom(roomIndex *Vector2Int, pointPosition *Vector2) bool {
-
-	pointCurrentTileInLevel := t.GetTileOfPointInRoom(roomIndex, pointPosition)
-	flattenedTileIndexInLevel := t.GetFlattenedTileIndex(int(pointCurrentTileInLevel.X), int(pointCurrentTileInLevel.Y))
-
-	collisionData := t.TilemapRooms[*roomIndex].layers[TILEMAP_COLLISION_LAYER].collisionData
-	return flattenedTileIndexInLevel >= 0 && flattenedTileIndexInLevel < len((*collisionData)) && (*collisionData)[flattenedTileIndexInLevel] == 1
+	currentRoomPos := t.GetRoomPos(roomIndex)
+	pointRoomPos := Subtract_Vector2(const_pointPosition, &currentRoomPos)
+	return Vector2{float64(int(pointRoomPos.X) / t.GridSize), float64(int(pointRoomPos.Y) / t.GridSize)}
 }
 
 func (t *Tilemap) GetRoomIndexOfPosition(const_pointPosition *Vector2) Vector2Int {
 	return Vector2Int{int(const_pointPosition.X) / int(t.WorldGridSize.X), int(const_pointPosition.Y) / int(t.WorldGridSize.Y)}
+}
+
+func (t *Tilemap) PointCollidesWithTilemapCollisionLayerInRoom(roomIndex *Vector2Int, pointPosition *Vector2) bool {
+
+	roomIndexOfPosition := t.GetRoomIndexOfPosition(pointPosition)
+	if roomIndexOfPosition.X != roomIndex.X || roomIndexOfPosition.Y != roomIndex.Y {
+		return false
+	}
+
+	pointCurrentTileInRoom := t.GetTileOfPointInRoom(roomIndex, pointPosition)
+
+	flattenedTileIndexInRoom := t.GetFlattenedTileIndex(int(pointCurrentTileInRoom.X), int(pointCurrentTileInRoom.Y))
+
+	collisionData := t.TilemapRooms[*roomIndex].layers[TILEMAP_COLLISION_LAYER].collisionData
+	tileIsSolid := flattenedTileIndexInRoom >= 0 && flattenedTileIndexInRoom < len((*collisionData)) && (*collisionData)[flattenedTileIndexInRoom] == 1
+
+	return tileIsSolid
 }
 
 func (t *Tilemap) PointCollidesWithTilemapCollisionLayer(const_pointPosition *Vector2) bool {
