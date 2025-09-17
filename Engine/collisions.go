@@ -135,9 +135,19 @@ func (cc *CircleCollider) GetNormalFromPoint(const_object_origin *Vector2, const
 	return &normal
 }
 
-//Collision Checking Functions
+type CollisionShape interface {
+	GetOffsetOrigin(const_object_origin *Vector2) *Vector2
+	CollisionShapeType() int
+	GetBoundingBoxDims() *Vector2
+	GetCollisionPoints() *[]Vector2
+	CreateCollisionPoints()
+	GetNormalFromPoint(const_object_origin *Vector2, const_point *Vector2) *Vector2
+	CollisionShapeIncludesPoint(const_origin *Vector2, const_point *Vector2) bool
+}
 
-func BoxBoxCollisionResult(posA Vector2, boxColA *BoxCollider, posB Vector2, boxColB *BoxCollider) (normal Vector2, penetration float64, collided bool) {
+// Collision Checking Functions
+
+func BoxBoxCollisionResult(posA Vector2, boxColA *BoxCollider, posB Vector2, boxColB *BoxCollider) (collisionNormal Vector2, penetrationNormal Vector2, penetration float64, collided bool) {
 
 	boxColACollisionPoints := boxColA.GetCollisionPoints()
 	topLeftA := Add_Vector2(&posA, &(*boxColACollisionPoints)[0])
@@ -151,7 +161,7 @@ func BoxBoxCollisionResult(posA Vector2, boxColA *BoxCollider, posB Vector2, box
 	overlapY := math.Min(bottomRightA.Y, bottomRightB.Y) - math.Max(topLeftA.Y, topLeftB.Y)
 
 	if overlapX <= 0 || overlapY <= 0 {
-		return Vector2{0, 0}, 0, false // no collision
+		return Vector2{0, 0}, Vector2{0, 0}, 0, false // no collision
 	}
 
 	centerA := Vector2{(topLeftA.X + bottomRightA.X) * 0.5, (topLeftA.Y + bottomRightA.Y) * 0.5}
@@ -160,30 +170,23 @@ func BoxBoxCollisionResult(posA Vector2, boxColA *BoxCollider, posB Vector2, box
 	if overlapX < overlapY {
 		penetration = overlapX
 		if centerA.X < centerB.X {
-			normal = Vector2{-1, 0}
+			penetrationNormal = Vector2{-1, 0}
 		} else {
-			normal = Vector2{1, 0}
+			penetrationNormal = Vector2{1, 0}
 		}
 	} else {
 		penetration = overlapY
 		if centerA.Y < centerB.Y {
-			normal = Vector2{0, -1}
+			penetrationNormal = Vector2{0, -1}
 		} else {
-			normal = Vector2{0, 1}
+			penetrationNormal = Vector2{0, 1}
 		}
 	}
 
-	return normal, penetration, true
+	return penetrationNormal, penetrationNormal, penetration, true
 }
 
-// type CircleBoxOverlapCirclePenetrationData struct {
-// 	Collided bool
-// 	// closestPointOnBox Vector2
-// 	normal            Vector2
-// 	penetrationAmount float64
-// }
-
-func GetBoxCircleOverlapPenetrationData(const_origin_box *Vector2, bx *BoxCollider, const_origin *Vector2, cc *CircleCollider) (normal Vector2, penetration float64, collided bool) {
+func GetBoxCircleOverlapPenetrationData(const_origin_box *Vector2, bx *BoxCollider, const_origin *Vector2, cc *CircleCollider) (collisionNormal Vector2, penetrationNormal Vector2, penetration float64, collided bool) {
 
 	const_offset_origin := cc.GetOffsetOrigin(const_origin)
 	closestPointOnBox := *const_offset_origin
@@ -202,26 +205,11 @@ func GetBoxCircleOverlapPenetrationData(const_origin_box *Vector2, bx *BoxCollid
 
 	distVector := Vector2{closestPointOnBox.X - const_offset_origin.X, closestPointOnBox.Y - const_offset_origin.Y}
 	magDistVector := Magnitude_Vector2(&distVector)
-	// return CircleBoxOverlapCirclePenetrationData{
-	// 	Collided:          magDistVector-cc.radius <= 0,
-	// 	normal:            Normalise_Vector2(&distVector),
-	// 	penetrationAmount: magDistVector - cc.radius,
-	// }
-	return Normalise_Vector2(&distVector), magDistVector - cc.radius, magDistVector-cc.radius <= 0
-	// closestPointOnBox: closestPointOnBox,
+	collisionNormalToReturn := bx.GetNormalFromPoint(const_origin_box, &closestPointOnBox)
+	return *collisionNormalToReturn, Normalise_Vector2(&distVector), magDistVector - cc.radius, magDistVector-cc.radius <= 0
 }
 
-type CollisionShape interface {
-	GetOffsetOrigin(const_object_origin *Vector2) *Vector2
-	CollisionShapeType() int
-	GetBoundingBoxDims() *Vector2
-	GetCollisionPoints() *[]Vector2
-	CreateCollisionPoints()
-	GetNormalFromPoint(const_object_origin *Vector2, const_point *Vector2) *Vector2
-	CollisionShapeIncludesPoint(const_origin *Vector2, const_point *Vector2) bool
-}
-
-func CollisionShapeOverlapsWithCollisionShape(const_object_originA *Vector2, csA CollisionShape, const_object_originB *Vector2, csB CollisionShape) (normal Vector2, penetration float64, collided bool) {
+func CollisionShapeOverlapsWithCollisionShape(const_object_originA *Vector2, csA CollisionShape, const_object_originB *Vector2, csB CollisionShape) (collisionNormal Vector2, penetrationNormal Vector2, penetration float64, collided bool) {
 
 	if csA.CollisionShapeType() == Circle && csB.CollisionShapeType() == Circle {
 		csAOffsetOrigin := csA.GetOffsetOrigin(const_object_originA)
@@ -231,19 +219,13 @@ func CollisionShapeOverlapsWithCollisionShape(const_object_originA *Vector2, csA
 		penetrationAmount := (csA.(*CircleCollider).radius + csB.(*CircleCollider).radius) - Magnitude_Vector2(&normal)
 		normal = Normalise_Vector2(&normal)
 		collided := penetrationAmount >= 0
-		return normal, penetrationAmount, collided
+		return normal, normal, penetrationAmount, collided
 	}
 	if csA.CollisionShapeType() == Circle {
-		normal, penetrationAmount, collided := GetBoxCircleOverlapPenetrationData(const_object_originB, csB.(*BoxCollider), const_object_originA, csA.(*CircleCollider))
-		normal = Multiply_Float_Vector2(-1.0, &normal)
-		return normal, penetrationAmount, collided
+		return GetBoxCircleOverlapPenetrationData(const_object_originB, csB.(*BoxCollider), const_object_originA, csA.(*CircleCollider))
 	} else if csB.CollisionShapeType() == Circle {
 		return GetBoxCircleOverlapPenetrationData(const_object_originA, csA.(*BoxCollider), const_object_originB, csB.(*CircleCollider))
 	} else {
-		// return (const_object_originA.X < const_object_originB.X+csB.GetBoundingBoxDims().X) &&
-		// 	(const_object_originA.X+csA.GetBoundingBoxDims().X > const_object_originB.X) &&
-		// 	(const_object_originA.Y < const_object_originB.Y+csB.GetBoundingBoxDims().Y) &&
-		// 	(const_object_originA.Y+csA.GetBoundingBoxDims().Y > const_object_originB.Y)
 		return BoxBoxCollisionResult(*const_object_originA, csA.(*BoxCollider), *const_object_originB, csB.(*BoxCollider))
 	}
 }

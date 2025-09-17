@@ -1,4 +1,4 @@
-package Minigames
+package Games
 
 import (
 	"WorldAtPause/Engine"
@@ -9,60 +9,71 @@ import (
 type BreakoutGameMode struct {
 	SceneRef *Engine.Scene
 
-	ballVelocity Engine.Vector2
+	ballInputDirection Engine.Vector2
 }
 
 func (breakoutGameMode *BreakoutGameMode) Init() {
-	breakoutGameMode.ballVelocity = Engine.Vector2{X: -1.0, Y: -1.0}
+	breakoutGameMode.ballInputDirection = Engine.Vector2{X: -1.0, Y: -1.0}
 }
 
 func (breakoutGameMode *BreakoutGameMode) Update() {
 
-	roomIndex := Engine.Vector2Int{X: 0, Y: 0}
-	ballEntityID := breakoutGameMode.SceneRef.RoomsData[roomIndex].ObstacleEntityIDs[0]
-
 	curSceneRef := breakoutGameMode.SceneRef
-	entityComponentsRef := curSceneRef.EntityComponentsForScene
+	entityComponentsRef := breakoutGameMode.SceneRef.EntityComponentsForScene
+	curRoomIndex := Engine.Vector2Int{X: 0, Y: 0}
 
 	paddleMoveAmountPerFrame := 2.0
 
 	inputX := 0.0
-
 	if ebiten.IsKeyPressed(ebiten.KeyRight) {
-		inputX += 1
+		inputX += 1.0
 	}
 
 	if ebiten.IsKeyPressed(ebiten.KeyLeft) {
-		inputX -= 1
+		inputX -= 1.0
 	}
 
-	paddleTotalMoveAmount := Engine.Vector2{X: inputX * paddleMoveAmountPerFrame, Y: 0.0}
-	curSceneRef.CollideAndMoveEntityWithTilemapAndObstacles(roomIndex, entityComponentsRef.PlayerEntityID, Engine.Vector2{X: inputX, Y: 0.0}, paddleTotalMoveAmount, paddleMoveAmountPerFrame)
-	// paddleMovementCollisionResult := curSceneRef.CollideAndMoveEntityWithTilemapAndObstacles(roomIndex, entityComponentsRef.PlayerEntityID, Engine.Vector2{X: inputX, Y: 0.0}, paddleTotalMoveAmount, paddleMoveAmountPerFrame)
-	// paddleCollidedWithObstacle := paddleMovementCollisionResult.ObstacleXMoveCollisionResult.CollidedWithObstacle || paddleMovementCollisionResult.ObstacleYMoveCollisionResult.CollidedWithObstacle
+	paddleCollideAndMoveParameters := Engine.CollideAndMoveCollisionParameters{
+		CollideWithTiles:     true,
+		CollideWithObstacles: false,
+		SlideWhenCollide:     false,
+	}
 
-	ballInputDirection := Engine.Vector2{X: breakoutGameMode.ballVelocity.X, Y: breakoutGameMode.ballVelocity.Y}
-	collisionResult := curSceneRef.CollideAndMoveEntityWithTilemapAndObstacles(roomIndex, ballEntityID, ballInputDirection, breakoutGameMode.ballVelocity, 1.0)
+	paddleInputDirection := Engine.Vector2{X: inputX, Y: 0.0}
+	paddleTotalMoveAmount := Engine.Multiply_Float_Vector2(paddleMoveAmountPerFrame, &paddleInputDirection)
 
-	collidedObstacle := collisionResult.ObstacleXMoveCollisionResult.CollidedWithObstacle || collisionResult.ObstacleYMoveCollisionResult.CollidedWithObstacle
-	collidedTilemap := collisionResult.TilemapXMoveCollisionResult.Collided || collisionResult.TilemapYMoveCollisionResult.Collided
+	breakoutGameMode.SceneRef.CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex, entityComponentsRef.PlayerEntityID, paddleInputDirection, paddleTotalMoveAmount, paddleMoveAmountPerFrame, paddleCollideAndMoveParameters)
 
-	if collidedObstacle || collidedTilemap {
+	ballEntityID := curSceneRef.RoomsData[curRoomIndex].ObstacleEntityIDs[0]
+	ballMoveAmountPerFrame := 1.0
 
-		obstacleCollisionNormalTotal := Engine.Add_Vector2(&collisionResult.ObstacleXMoveCollisionResult.CollisionNormalFromObstacle, &collisionResult.ObstacleYMoveCollisionResult.CollisionNormalFromObstacle)
-		tilemapCollisionNormalTotal := Engine.Add_Vector2(&collisionResult.TilemapXMoveCollisionResult.CollisionTileNormal, &collisionResult.TilemapYMoveCollisionResult.CollisionTileNormal)
+	ballInputDirection := breakoutGameMode.ballInputDirection
+	ballTotalMoveAmount := Engine.Multiply_Float_Vector2(ballMoveAmountPerFrame, &ballInputDirection)
 
-		usageNormal := Engine.Normalise_Vector2(&tilemapCollisionNormalTotal)
-		if collidedObstacle {
-			usageNormal = Engine.Normalise_Vector2(&obstacleCollisionNormalTotal)
+	ballCollideAndMoveParameters := Engine.CollideAndMoveCollisionParameters{
+		CollideWithTiles:     true,
+		CollideWithObstacles: false,
+		SlideWhenCollide:     false,
+	}
+
+	ballCollisions := breakoutGameMode.SceneRef.CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex, ballEntityID, ballInputDirection, ballTotalMoveAmount, ballMoveAmountPerFrame, ballCollideAndMoveParameters)
+
+	ballCollidedWithTilemap := ballCollisions.TilemapXMoveCollisionResult.Collided || ballCollisions.TilemapYMoveCollisionResult.Collided
+	ballCollidedWithObstacles := ballCollisions.ObstacleXMoveCollisionResult.CollidedWithObstacle || ballCollisions.ObstacleYMoveCollisionResult.CollidedWithObstacle
+
+	if ballCollidedWithTilemap || ballCollidedWithObstacles {
+
+		ballCollidedTileNormal := Engine.Add_Vector2(&ballCollisions.TilemapXMoveCollisionResult.CollisionTileNormal, &ballCollisions.TilemapYMoveCollisionResult.CollisionTileNormal)
+		ballCollidedObstacleNormal := Engine.Add_Vector2(&ballCollisions.ObstacleXMoveCollisionResult.CollisionNormal, &ballCollisions.ObstacleYMoveCollisionResult.CollisionNormal)
+
+		useNormal := ballCollidedTileNormal
+		if !ballCollidedWithTilemap {
+			useNormal = ballCollidedObstacleNormal
 		}
+		useNormal = Engine.Normalise_Vector2(&useNormal)
 
-		breakoutGameMode.ballVelocity = Engine.Reflect_Vector2(&breakoutGameMode.ballVelocity, &usageNormal)
+		breakoutGameMode.ballInputDirection = Engine.Reflect_Vector2(&breakoutGameMode.ballInputDirection, &useNormal)
 	}
-	// else if paddleCollidedWithObstacle {
-	// 	paddleNormal := Engine.Vector2{X: 0.0, Y: -1.0}
-	// 	breakoutGameMode.ballVelocity = Engine.Reflect_Vector2(&breakoutGameMode.ballVelocity, &paddleNormal)
-	// }
 
 }
 

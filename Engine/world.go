@@ -14,6 +14,10 @@ func CreateWorldWithNumScenes(totalNumScenesToCreate int) *World {
 	}
 }
 
+func (w *World) InitCurrentSceneGameMode() {
+	w.Scenes[w.CurrentSceneIndex].GameMode.Init()
+}
+
 func (w *World) UpdateCurrentSceneGameMode() {
 	w.Scenes[w.CurrentSceneIndex].GameMode.Update()
 }

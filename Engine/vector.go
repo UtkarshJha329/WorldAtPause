@@ -54,6 +54,15 @@ func Dot_Vector2(const_a *Vector2, const_b *Vector2) float64 {
 	return const_a.X*const_b.X + const_a.Y*const_b.Y
 }
 
+func Reflect_Vector2(const_a, const_b *Vector2) Vector2 {
+	// make sure n is normalized before using this!
+	dot := Dot_Vector2(const_a, const_b)
+	return Vector2{
+		const_a.X - 2*dot*const_b.X,
+		const_a.Y - 2*dot*const_b.Y,
+	}
+}
+
 type Vector2Int struct {
 	X, Y int
 }

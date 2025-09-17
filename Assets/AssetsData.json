@@ -1,7 +1,8 @@
 {
     "Prefabs":[
         {
-            "Tilemaps": [{
+            "Tilemaps": [
+                {
                     "Name": "Ground Tilemap",
                     "Entity Type": "Tilemap",
                     "Asset Data": [
@@ -11,19 +12,17 @@
                                 "gridSize": 16
                         }}
                     ]
-                },
-                {
+                },{
                     "Name": "Breakout Tilemap",
                     "Entity Type": "Tilemap",
                     "Asset Data": [
                         {"Tilemap":{
                                 "tilemapTilesetsSource": "Assets/Maps/TilesetFloor.png",
-                                "tilemapSourceJSON": "Assets/Maps/BreakoutTilemap.json",
+                                "tilemapSourceJSON": "Assets/Maps/Breakout.json",
                                 "gridSize": 16
                         }}
-                    ]                    
-                }
-            ]
+                    ]
+                }]
         },
         {
             "Player": [
@@ -45,10 +44,10 @@
                         }
                     ]
                 },{
-                    "Name": "Breakout Paddle",
+                    "Name": "Player Breakout",
                     "Entity Type": "Player",
                     "Asset Data": [
-                        {"Position": [88, 226]},
+                        {"Position": [100, 100]},
                         {"SpriteData": {
                             "SpriteTextureLocation": "Assets/Images/Paddle.png",
                             "RenderRectStart": [0, 0],
@@ -58,13 +57,9 @@
                             "CollisionShapeType": "Box",
                             "Size": [64, 14],
                             "ColliderOriginOffset": [0, 0]
-                            }
-                        }
+                        }}
                     ]
-                }  
-            ]
-        },{
-            "Physics Objects": []
+                }]
         },
         {
             "Enemies": [{
@@ -124,7 +119,7 @@
                     "Name": "Breakout Ball",
                     "Entity Type": "Obstacle",
                     "Asset Data": [
-                        {"Position": [144, 210]},
+                        {"Position": [200, 150]},
                         {"SpriteData": {
                             "SpriteTextureLocation": "Assets/Images/Ball.png",
                             "RenderRectStart": [0, 0],
@@ -134,9 +129,8 @@
                             "CollisionShapeType": "Circle",
                             "Radius": 8,
                             "ColliderOriginOffset": [8, 8]
-                            }
-                        }
-                    ]
+                        }}
+                    ]    
                 }
             ]
         },
@@ -181,12 +175,7 @@
                                 {"Position": [130, 150]}
                             ]
                         },
-                        {
-                            "Prefab Name": "Stone Pyramid",
-                            "Asset Data": [
-                                {"Position": [200, 150]}
-                            ]
-                        },
+                        {"Prefab Name": "Stone Pyramid"},
                         {
                             "Prefab Name": "Skeleton",
                             "Asset Data": [
@@ -194,18 +183,7 @@
                             ]
 
                         },
-                        {
-                            "Prefab Name": "Stone Block",
-                            "Asset Data": [
-                                {"Position": [150, 150]}
-                            ]
-                        },
-                        {
-                            "Prefab Name": "Stone Block",
-                            "Asset Data": [
-                                {"Position": [170, 150]}
-                            ]
-                        },
+                        {"Prefab Name": "Stone Block"},
                         {
                             "Prefab Name": "Skeleton",
                             "Asset Data": [
@@ -219,9 +197,9 @@
         },{
             "Scene Type": "Breakout Game",
             "Player Entity": {
-                "Prefab Name": "Breakout Paddle",
+                "Prefab Name": "Player Breakout",
                 "Asset Data": [
-                    {"Position": [88, 220]}
+                    {"Position": [128, 224]}
                 ]
             },
             "Rooms Data": [
@@ -232,7 +210,7 @@
                         {
                             "Prefab Name": "Breakout Ball",
                             "Asset Data": [
-                                {"Position": [144, 200]}
+                                {"Position": [200, 150]}
                             ]
                         }
                     ]

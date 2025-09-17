@@ -1,4 +1,4 @@
-package Games
+package MainGame
 
 import (
 	"WorldAtPause/Engine"
@@ -52,8 +52,13 @@ func (mainGameMode *MainGameMode) Update() {
 		normalisedInputDir := Engine.Normalise_Vector2(&inputDirection)
 		totalMoveAmount := Engine.Multiply_Float_Vector2(playerMoveAmountPerFrame, &normalisedInputDir)
 
-		// curSceneRef.CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex, curSceneRef.EntityComponentsForScene.PlayerEntityID, inputDirection, totalMoveAmount, playerMoveAmountPerFrame, collideAndSlide)
-		curSceneRef.CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex, curSceneRef.EntityComponentsForScene.PlayerEntityID, inputDirection, totalMoveAmount, playerMoveAmountPerFrame)
+		playerCollideAndMoveParameters := Engine.CollideAndMoveCollisionParameters{
+			CollideWithTiles:     true,
+			CollideWithObstacles: true,
+			SlideWhenCollide:     true,
+		}
+
+		curSceneRef.CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex, curSceneRef.EntityComponentsForScene.PlayerEntityID, inputDirection, totalMoveAmount, playerMoveAmountPerFrame, playerCollideAndMoveParameters)
 	}
 
 	if curRoomHasSomeData {
@@ -69,12 +74,17 @@ func (mainGameMode *MainGameMode) Update() {
 
 				totalDisplacement := Engine.Multiply_Float_Vector2(skeleMoveAmountPerFrame, &directionToPlayerNormalised)
 
-				// curSceneRef.CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex, enemyEntityID, directionToPlayerNormalised, totalDisplacement, skeleMoveAmountPerFrame, collideAndSlide)
-				curSceneRef.CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex, enemyEntityID, directionToPlayerNormalised, totalDisplacement, skeleMoveAmountPerFrame)
+				skeletonCollideAndMoveParameters := Engine.CollideAndMoveCollisionParameters{
+					CollideWithTiles:     true,
+					CollideWithObstacles: true,
+					SlideWhenCollide:     true,
+				}
+
+				curSceneRef.CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex, enemyEntityID, directionToPlayerNormalised, totalDisplacement, skeleMoveAmountPerFrame, skeletonCollideAndMoveParameters)
 			}
 
 			skeletonCollisionShapeRef := entityComponentsRef.CollisionShapes[enemyEntityID]
-			if _, _, collided := Engine.CollisionShapeOverlapsWithCollisionShape(skelePosRef, skeletonCollisionShapeRef, playerPosRef, playerCollisionShapeRef); collided {
+			if _, _, _, collided := Engine.CollisionShapeOverlapsWithCollisionShape(skelePosRef, skeletonCollisionShapeRef, playerPosRef, playerCollisionShapeRef); collided {
 				// fmt.Println("Skeleton is colliding with player!")
 			}
 		}
@@ -84,7 +94,7 @@ func (mainGameMode *MainGameMode) Update() {
 			itemPosRef := &entityComponentsRef.Positions[itemEntityID]
 			itemCollisionShapeRef := entityComponentsRef.CollisionShapes[itemEntityID]
 
-			if _, _, collided := Engine.CollisionShapeOverlapsWithCollisionShape(itemPosRef, itemCollisionShapeRef, &entityComponentsRef.Positions[entityComponentsRef.PlayerEntityID], entityComponentsRef.CollisionShapes[entityComponentsRef.PlayerEntityID]); collided {
+			if _, _, _, collided := Engine.CollisionShapeOverlapsWithCollisionShape(itemPosRef, itemCollisionShapeRef, &entityComponentsRef.Positions[entityComponentsRef.PlayerEntityID], entityComponentsRef.CollisionShapes[entityComponentsRef.PlayerEntityID]); collided {
 				curRoom.ItemEntityIDs = append(curRoom.ItemEntityIDs[:index], curRoom.ItemEntityIDs[index+1:]...)
 				fmt.Printf("Picked up item entity ID : %d\n", itemEntityID)
 			}
