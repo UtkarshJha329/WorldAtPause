@@ -61,7 +61,7 @@ func main() {
 
 	SetScenesGameModes(&game)
 
-	game.world.CurrentSceneIndex = 0
+	game.world.CurrentSceneIndex = 1
 
 	game.world.InitCurrentSceneGameMode()
 

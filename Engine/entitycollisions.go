@@ -48,6 +48,24 @@ func (curScene *Scene) DoesEntityCollideWithObstacles(roomIndex Vector2Int, enti
 		}
 	}
 
+	if entityID != curScene.EntityComponentsForScene.PlayerEntityID {
+
+		playerPos := curScene.EntityComponentsForScene.Positions[curScene.EntityComponentsForScene.PlayerEntityID]
+		playerCollisionShapeRef := curScene.EntityComponentsForScene.CollisionShapes[curScene.EntityComponentsForScene.PlayerEntityID]
+
+		curCollisionData.CollisionNormal, curCollisionData.CollisionPenetrationNormal, curCollisionData.CollisionPenetrationAmount, curCollisionData.CollidedWithObstacle = CollisionShapeOverlapsWithCollisionShape(const_entityPositionRef, const_entityCollisionShapeRef, &playerPos, playerCollisionShapeRef)
+		if curCollisionData.CollidedWithObstacle {
+
+			curCollisionData.CollidedWithObstacleEntityID = curScene.EntityComponentsForScene.PlayerEntityID
+			curCollisionData.PositionOfCollidedWithObstacle = playerPos
+			curCollisionData.CollidedWithObstacleCollisionShapeRef = playerCollisionShapeRef
+			curCollisionData.ColliderOffsetOriginPosition = *playerCollisionShapeRef.GetOffsetOrigin(&playerPos)
+
+			return curCollisionData
+		}
+
+	}
+
 	return curCollisionData
 }
 

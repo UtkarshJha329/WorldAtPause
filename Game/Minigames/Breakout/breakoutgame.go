@@ -13,7 +13,7 @@ type BreakoutGameMode struct {
 }
 
 func (breakoutGameMode *BreakoutGameMode) Init() {
-	breakoutGameMode.ballInputDirection = Engine.Vector2{X: 0.0, Y: 1.0}
+	breakoutGameMode.ballInputDirection = Engine.Vector2{X: -1.0, Y: -1.0}
 }
 
 func (breakoutGameMode *BreakoutGameMode) Update() {
@@ -52,7 +52,7 @@ func (breakoutGameMode *BreakoutGameMode) Update() {
 
 	ballCollideAndMoveParameters := Engine.CollideAndMoveCollisionParameters{
 		CollideWithTiles:     true,
-		CollideWithObstacles: true,
+		CollideWithObstacles: false,
 		SlideWhenCollide:     false,
 	}
 
