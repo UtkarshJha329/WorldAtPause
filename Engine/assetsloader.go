@@ -18,6 +18,7 @@ type Prefab struct {
 
 type EntitySpawnData struct {
 	PrefabName string      `json:"Prefab Name"`
+	EntityName string      `json:"Entity Spawn Name"`
 	AssetData  []AssetData `json:"Asset Data"`
 }
 

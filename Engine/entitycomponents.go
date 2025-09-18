@@ -51,13 +51,13 @@ func PopulateEntityDataFromPrefab(prefabMap map[string]Prefab, curSceneRef *Scen
 		switch assetData.AssetType {
 		case "Position":
 			entityComponentsRef.Positions[entityID] = *assetData.Position
-		case "SpriteData":
+		case "Sprite Data":
 			entityComponentsRef.Sprites[entityID] = Sprite{
 				Image:           LoadImageFromFileSystem(assetData.SpriteAssetData.SpriteTextureLocation),
 				RenderRectStart: assetData.SpriteAssetData.RenderRectStart,
 				RenderRectEnd:   assetData.SpriteAssetData.RenderRectEnd,
 			}
-		case "CollisionShapeData":
+		case "Collision Shape Data":
 			switch assetData.CollisionShapeData.CollisionShapeType {
 			case "Box":
 				entityComponentsRef.CollisionShapes[entityID] = &BoxCollider{
@@ -84,7 +84,7 @@ func PopulateEntityDataFromPrefab(prefabMap map[string]Prefab, curSceneRef *Scen
 				font.LoadFontWithFontFromPath(fontPath)
 				font.Face = &text.GoTextFace{
 					Source:   font.Font,
-					Size:     24,
+					Size:     16,
 					Language: language.English,
 				}
 				curSceneRef.Fonts[assetData.textAssetData.FontName] = font
@@ -148,6 +148,7 @@ func CreateAndPopulateEntitiesAndComponents(prefabMap map[string]Prefab, scenesD
 		PopulateEntityDataFromPrefab(prefabMap, curScene, sceneData.PlayerEntityDataForScene.PrefabName, runningEntityID)
 		OverridePrefabDataForEntityWithEntityData(runningEntityID, curSceneEntityComponents, &sceneData.PlayerEntityDataForScene)
 		curSceneEntityComponents.PlayerEntityID = runningEntityID
+		curScene.EntityIDsByName[sceneData.PlayerEntityDataForScene.EntityName] = runningEntityID
 		runningEntityID++
 
 		for _, curRoomParsedData := range sceneData.RoomsData {
@@ -166,11 +167,14 @@ func CreateAndPopulateEntitiesAndComponents(prefabMap map[string]Prefab, scenesD
 					curRoom.EnemyEntityIDs = append(curRoom.EnemyEntityIDs, runningEntityID)
 				case "Obstacle":
 					curRoom.ObstacleEntityIDs = append(curRoom.ObstacleEntityIDs, runningEntityID)
+				case "Trigger":
+					curRoom.TriggerEntityIDs = append(curRoom.TriggerEntityIDs, runningEntityID)
 				case "Item":
 					curRoom.ItemEntityIDs = append(curRoom.ItemEntityIDs, runningEntityID)
 				}
 
 				curRoom.EntitiesInThisRoom = append(curRoom.EntitiesInThisRoom, runningEntityID)
+				curScene.EntityIDsByName[curEntityData.EntityName] = runningEntityID
 				runningEntityID += 1
 			}
 		}

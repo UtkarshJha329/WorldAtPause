@@ -31,12 +31,12 @@
                     "Asset Type": "Player",
                     "Asset Data": [
                         {"Position": [100, 100]},
-                        {"SpriteData": {
+                        {"Sprite Data": {
                             "SpriteTextureLocation": "Assets/Images/NinjaSpriteSheet.png",
                             "RenderRectStart": [0, 0],
                             "RenderRectEnd": [16, 16]
                         }},
-                        {"CollisionShapeData": {
+                        {"Collision Shape Data": {
                             "CollisionShapeType": "Box",
                             "Size": [16, 16],
                             "ColliderOriginOffset": [0, 0]
@@ -48,12 +48,12 @@
                     "Asset Type": "Player",
                     "Asset Data": [
                         {"Position": [100, 100]},
-                        {"SpriteData": {
+                        {"Sprite Data": {
                             "SpriteTextureLocation": "Assets/Images/NinjaSpriteSheet.png",
                             "RenderRectStart": [0, 0],
                             "RenderRectEnd": [16, 16]
                         }},
-                        {"CollisionShapeData": {
+                        {"Collision Shape Data": {
                             "CollisionShapeType": "Circle",
                             "Radius": 8,
                             "ColliderOriginOffset": [8, 8]
@@ -65,12 +65,12 @@
                     "Asset Type": "Player",
                     "Asset Data": [
                         {"Position": [100, 100]},
-                        {"SpriteData": {
+                        {"Sprite Data": {
                             "SpriteTextureLocation": "Assets/Images/Paddle.png",
                             "RenderRectStart": [0, 0],
                             "RenderRectEnd": [64, 14]
                         }},
-                        {"CollisionShapeData": {
+                        {"Collision Shape Data": {
                             "CollisionShapeType": "Box",
                             "Size": [64, 14],
                             "ColliderOriginOffset": [0, 0]
@@ -84,12 +84,12 @@
                     "Asset Type": "Enemy",
                     "Asset Data": [
                         {"Position": [25, 25]},
-                        {"SpriteData": {
+                        {"Sprite Data": {
                             "SpriteTextureLocation": "Assets/Images/SkeletonSpriteSheet.png",
                             "RenderRectStart": [0, 0],
                             "RenderRectEnd": [16, 16]
                         }},
-                        {"CollisionShapeData": {
+                        {"Collision Shape Data": {
                             "CollisionShapeType": "Box",
                             "Size": [16, 16],
                             "ColliderOriginOffset": [0, 0]
@@ -100,12 +100,12 @@
                     "Asset Type": "Enemy",
                     "Asset Data": [
                         {"Position": [25, 25]},
-                        {"SpriteData": {
+                        {"Sprite Data": {
                             "SpriteTextureLocation": "Assets/Images/SkeletonSpriteSheet.png",
                             "RenderRectStart": [0, 0],
                             "RenderRectEnd": [16, 16]
                         }},
-                        {"CollisionShapeData": {
+                        {"Collision Shape Data": {
                             "CollisionShapeType": "Circle",
                             "Radius": 8,
                             "ColliderOriginOffset": [8, 8]
@@ -114,17 +114,32 @@
                 }]
         },
         {
+            "Triggers":[{
+                    "Name": "Breakout Ball Failure Trigger",
+                    "Asset Type": "Trigger",
+                    "Asset Data":[
+                        {"Position": [-64, 304]},
+                        {"Collision Shape Data": {
+                            "CollisionShapeType": "Box",
+                            "Size": [400, 200],
+                            "ColliderOriginOffset": [0, 0]
+                        }}
+                    ]
+            }]
+
+        },
+        {
             "Obstacles": [{
                     "Name": "Stone Block",
                     "Asset Type": "Obstacle",
                     "Asset Data": [
                         {"Position": [150, 150]},
-                        {"SpriteData": {
+                        {"Sprite Data": {
                             "SpriteTextureLocation": "Assets/Images/TilesetDungeon.png",
                             "RenderRectStart": [128, 48],
                             "RenderRectEnd": [144, 64]
                         }},
-                        {"CollisionShapeData": {
+                        {"Collision Shape Data": {
                             "CollisionShapeType": "Box",
                             "Size": [16, 16],
                             "ColliderOriginOffset": [0, 0]
@@ -136,12 +151,12 @@
                     "Asset Type": "Obstacle",
                     "Asset Data": [
                         {"Position": [200, 150]},
-                        {"SpriteData": {
+                        {"Sprite Data": {
                             "SpriteTextureLocation": "Assets/Images/TilesetDungeon.png",
                             "RenderRectStart": [112, 48],
                             "RenderRectEnd": [128, 64]
                         }},
-                        {"CollisionShapeData": {
+                        {"Collision Shape Data": {
                             "CollisionShapeType": "Circle",
                             "Radius": 8,
                             "ColliderOriginOffset": [8, 8]
@@ -153,12 +168,12 @@
                     "Asset Type": "Obstacle",
                     "Asset Data": [
                         {"Position": [200, 150]},
-                        {"SpriteData": {
+                        {"Sprite Data": {
                             "SpriteTextureLocation": "Assets/Images/Ball.png",
                             "RenderRectStart": [0, 0],
                             "RenderRectEnd": [16, 16]
                         }},
-                        {"CollisionShapeData": {
+                        {"Collision Shape Data": {
                             "CollisionShapeType": "Circle",
                             "Radius": 4,
                             "ColliderOriginOffset": [4, 4]
@@ -170,12 +185,12 @@
                     "Asset Type": "Obstacle",
                     "Asset Data": [
                         {"Position": [200, 150]},
-                        {"SpriteData": {
+                        {"Sprite Data": {
                             "SpriteTextureLocation": "Assets/Images/Brick.png",
                             "RenderRectStart": [0, 0],
                             "RenderRectEnd": [32, 14]
                         }},
-                        {"CollisionShapeData": {
+                        {"Collision Shape Data": {
                             "CollisionShapeType": "Box",
                             "Size": [32,14],
                             "ColliderOriginOffset": [0, 0]
@@ -190,12 +205,12 @@
                     "Asset Type": "Item",
                     "Asset Data": [
                         {"Position": [160, 120]},
-                        {"SpriteData": {
+                        {"Sprite Data": {
                             "SpriteTextureLocation": "Assets/Images/LifePot.png",
                             "RenderRectStart": [0, 0],
                             "RenderRectEnd": [16, 16]
                         }},
-                        {"CollisionShapeData": {
+                        {"Collision Shape Data": {
                             "CollisionShapeType": "Circle",
                             "Radius": 4,
                             "ColliderOriginOffset": [5, 5]
@@ -246,6 +261,7 @@
             "Scene Type": "Main Game",
             "Player Entity": {
                 "Prefab Name": "Player Basic Circle",
+                "Entity Spawn Name": "Player",
                 "Asset Data": [
                     {"Position": [100, 100]}
                 ]
@@ -254,16 +270,24 @@
                 {
                     "Room Index" : [0, 0],
                     "Room Entities": [
-                        {"Prefab Name": "Ground Tilemap"},
+                        {
+                            "Prefab Name": "Ground Tilemap",
+                            "Entity Spawn Name": "Ground Tilemap"
+                        },
                         {
                             "Prefab Name": "Skeleton",
+                            "Entity Spawn Name": "Skeleton Box A",
                             "Asset Data": [
                                 {"Position": [130, 150]}
                             ]
                         },
-                        {"Prefab Name": "Stone Pyramid"},
+                        {
+                            "Prefab Name": "Stone Pyramid",
+                            "Entity Spawn Name": "Random Circle Obstacle"
+                        },
                         {
                             "Prefab Name": "Skeleton Circle",
+                            "Entity Spawn Name": "Skeleton Circle A",
                             "Asset Data": [
                                 {"Position": [30, 30]}
                             ]
@@ -272,11 +296,15 @@
                         {"Prefab Name": "Stone Block"},
                         {
                             "Prefab Name": "Skeleton Circle",
+                            "Entity Spawn Name": "Skeleton Circle B",
                             "Asset Data": [
                                 {"Position": [250, 130]}
                             ]
                         },
-                        {"Prefab Name": "Life Pot"}
+                        {
+                            "Prefab Name": "Life Pot",
+                            "Entity Spawn Name": "Life Pot"
+                        }
                     ]
                 }
             ]
@@ -284,6 +312,7 @@
             "Scene Type": "Breakout Game",
             "Player Entity": {
                 "Prefab Name": "Player Breakout",
+                "Entity Spawn Name": "Player",
                 "Asset Data": [
                     {"Position": [128, 224]}
                 ]
@@ -292,40 +321,59 @@
                 {
                     "Room Index" : [0, 0],
                     "Room Entities": [
-                        {"Prefab Name": "Breakout Tilemap"},
+                        {
+                            "Prefab Name": "Breakout Tilemap",
+                            "Entity Spawn Name": "Breakout Tilemap"
+
+                        },
+                        {
+                            "Prefab Name": "Breakout Ball Failure Trigger",
+                            "Entity Spawn Name": "Breakout Ball Failure Trigger"
+                        },
                         {
                             "Prefab Name": "Breakout Ball",
+                            "Entity Spawn Name": "Breakout Ball",
                             "Asset Data": [
                                 {"Position": [200, 150]}
                             ]
                         },                        {
                             "Prefab Name": "Breakout Brick",
+                            "Entity Spawn Name": "Breakout Brick 1",
                             "Asset Data": [
                                 {"Position": [48, 16]}
                             ]
                         },                        {
                             "Prefab Name": "Breakout Brick",
+                            "Entity Spawn Name": "Breakout Brick 2",
                             "Asset Data": [
                                 {"Position": [96, 16]}
                             ]
                         },                        {
                             "Prefab Name": "Breakout Brick",
+                            "Entity Spawn Name": "Breakout Brick 3",
                             "Asset Data": [
                                 {"Position": [144, 16]}
                             ]
                         },                        {
                             "Prefab Name": "Breakout Brick",
+                            "Entity Spawn Name": "Breakout Brick 4",
                             "Asset Data": [
                                 {"Position": [192, 16]}
                             ]
                         },                        {
                             "Prefab Name": "Breakout Brick",
+                            "Entity Spawn Name": "Breakout Brick 5",
                             "Asset Data": [
                                 {"Position": [240, 16]}
                             ]
                         },
                         {
-                            "Prefab Name": "Breakout You Win Text"    
+                            "Prefab Name": "Breakout You Win Text",
+                            "Entity Spawn Name": "Breakout You Win Text"
+                        },
+                        {
+                            "Prefab Name": "Breakout You Lose Text",
+                            "Entity Spawn Name": "Breakout You Lose Text"
                         }
                     ]
                 }

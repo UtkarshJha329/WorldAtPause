@@ -3,6 +3,7 @@ package Engine
 type Room struct {
 	EntitiesInThisRoom []int
 	EnemyEntityIDs     []int
+	TriggerEntityIDs   []int
 	ObstacleEntityIDs  []int
 	ItemEntityIDs      []int
 }
@@ -14,6 +15,7 @@ type Scene struct {
 	RoomsData                map[Vector2Int]*Room
 	Fonts                    map[string]*Font
 	Texts                    map[string]string
+	EntityIDsByName          map[string]int
 }
 
 func CreateSceneWithNumEntities(numEntitiesToCreateInScene int) *Scene {
@@ -22,5 +24,6 @@ func CreateSceneWithNumEntities(numEntitiesToCreateInScene int) *Scene {
 		RoomsData:                make(map[Vector2Int]*Room),
 		Fonts:                    make(map[string]*Font),
 		Texts:                    make(map[string]string),
+		EntityIDsByName:          make(map[string]int),
 	}
 }

@@ -93,16 +93,18 @@ func (mainGameMode *MainGameMode) Update() {
 			}
 		}
 
-		for index, itemEntityID := range curRoom.ItemEntityIDs {
+		for _, itemEntityID := range curRoom.ItemEntityIDs {
 
-			itemPosRef := &entityComponentsRef.Positions[itemEntityID]
-			itemCollisionShapeRef := entityComponentsRef.CollisionShapes[itemEntityID]
+			if curSceneRef.EntityComponentsForScene.IsEntityAlive(itemEntityID) {
+				itemPosRef := &entityComponentsRef.Positions[itemEntityID]
+				itemCollisionShapeRef := entityComponentsRef.CollisionShapes[itemEntityID]
 
-			if _, _, _, collided := Engine.CollisionShapeOverlapsWithCollisionShape(itemPosRef, itemCollisionShapeRef, &entityComponentsRef.Positions[entityComponentsRef.PlayerEntityID], entityComponentsRef.CollisionShapes[entityComponentsRef.PlayerEntityID]); collided {
-				curRoom.ItemEntityIDs = append(curRoom.ItemEntityIDs[:index], curRoom.ItemEntityIDs[index+1:]...)
-				fmt.Printf("Picked up item entity ID : %d\n", itemEntityID)
+				if _, _, _, collided := Engine.CollisionShapeOverlapsWithCollisionShape(itemPosRef, itemCollisionShapeRef, &entityComponentsRef.Positions[entityComponentsRef.PlayerEntityID], entityComponentsRef.CollisionShapes[entityComponentsRef.PlayerEntityID]); collided {
+					// curRoom.ItemEntityIDs = append(curRoom.ItemEntityIDs[:index], curRoom.ItemEntityIDs[index+1:]...)
+					curSceneRef.EntityComponentsForScene.EntityDead[itemEntityID] = true
+					fmt.Printf("Picked up item entity ID : %d\n", itemEntityID)
+				}
 			}
-
 		}
 	}
 	currentLevelIndex := entityComponentsRef.Tilemap.GetRoomIndexOfPosition(playerPosRef)

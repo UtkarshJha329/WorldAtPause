@@ -39,13 +39,13 @@ func (assetData *AssetData) UnmarshalJSON(data []byte) error {
 				return err
 			}
 			assetData.Position = &pos
-		case "SpriteData":
+		case "Sprite Data":
 			var spriteAssetData SpriteAssetData
 			if err := json.Unmarshal(val, &spriteAssetData); err != nil {
 				return err
 			}
 			assetData.SpriteAssetData = &spriteAssetData
-		case "CollisionShapeData":
+		case "Collision Shape Data":
 			var collisionShapeAssetData CollisionShapeAssetData
 			if err := json.Unmarshal(val, &collisionShapeAssetData); err != nil {
 				return err
