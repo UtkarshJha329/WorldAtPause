@@ -59,7 +59,10 @@ func (breakoutGameMode *BreakoutGameMode) Update() {
 	ballCollisions := breakoutGameMode.SceneRef.CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex, ballEntityID, ballInputDirection, ballTotalMoveAmount, ballMoveAmountPerFrame, ballCollideAndMoveParameters)
 
 	ballCollidedWithTilemap := ballCollisions.TilemapXMoveCollisionResult.Collided || ballCollisions.TilemapYMoveCollisionResult.Collided
-	ballCollidedWithObstacles := ballCollisions.ObstacleXMoveCollisionResult.CollidedWithObstacle || ballCollisions.ObstacleYMoveCollisionResult.CollidedWithObstacle
+
+	ballXCollidedWithObstacle := ballCollisions.ObstacleXMoveCollisionResult.CollidedWithObstacle
+	ballYCollidedWithObstacle := ballCollisions.ObstacleYMoveCollisionResult.CollidedWithObstacle
+	ballCollidedWithObstacles := ballXCollidedWithObstacle || ballYCollidedWithObstacle
 
 	if ballCollidedWithTilemap || ballCollidedWithObstacles {
 
@@ -75,10 +78,16 @@ func (breakoutGameMode *BreakoutGameMode) Update() {
 		breakoutGameMode.ballInputDirection = Engine.Reflect_Vector2(&breakoutGameMode.ballInputDirection, &useNormal)
 
 		if ballCollidedWithObstacles {
-			for index, obstacleEntityID := range curSceneRef.RoomsData[curRoomIndex].ObstacleEntityIDs {
-				if obstacleEntityID == ballCollisions.ObstacleXMoveCollisionResult.CollidedWithObstacleEntityID ||
-					obstacleEntityID == ballCollisions.ObstacleYMoveCollisionResult.CollidedWithObstacleEntityID {
-					curSceneRef.RoomsData[curRoomIndex].ObstacleEntityIDs = append(curSceneRef.RoomsData[curRoomIndex].ObstacleEntityIDs[:index], curSceneRef.RoomsData[curRoomIndex].ObstacleEntityIDs[index+1:]...)
+			if ballXCollidedWithObstacle {
+				obstacleEntityID := ballCollisions.ObstacleXMoveCollisionResult.CollidedWithObstacleEntityID
+				if entityComponentsRef.PlayerEntityID != obstacleEntityID {
+					entityComponentsRef.EntityDead[obstacleEntityID] = true
+				}
+			}
+			if ballYCollidedWithObstacle {
+				obstacleEntityID := ballCollisions.ObstacleYMoveCollisionResult.CollidedWithObstacleEntityID
+				if entityComponentsRef.PlayerEntityID != obstacleEntityID {
+					entityComponentsRef.EntityDead[obstacleEntityID] = true
 				}
 			}
 		}

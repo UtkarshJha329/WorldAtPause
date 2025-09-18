@@ -14,9 +14,11 @@ func (sprite Sprite) DrawSprite(screenRef *ebiten.Image, drawImgOptionsRef *ebit
 	drawImgOptionsRef.GeoM.Reset()
 }
 
-func DrawEntityID(entityComponentsRef *EntityComponents, screenRef *ebiten.Image, drawImgOptionsRef *ebiten.DrawImageOptions, entityID int) {
-	drawPositionWithCameraOffser := Add_Vector2(&entityComponentsRef.Positions[entityID], &entityComponentsRef.CameraData.TargetFollowOffset)
-	entityComponentsRef.Sprites[entityID].DrawSprite(screenRef, drawImgOptionsRef, &drawPositionWithCameraOffser)
+func DrawEntityIDIfAlive(entityComponentsRef *EntityComponents, screenRef *ebiten.Image, drawImgOptionsRef *ebiten.DrawImageOptions, entityID int) {
+	if entityComponentsRef.IsEntityAlive(entityID) {
+		drawPositionWithCameraOffser := Add_Vector2(&entityComponentsRef.Positions[entityID], &entityComponentsRef.CameraData.TargetFollowOffset)
+		entityComponentsRef.Sprites[entityID].DrawSprite(screenRef, drawImgOptionsRef, &drawPositionWithCameraOffser)
+	}
 }
 
 func DrawTileMapLevel(roomToDrawRef *TilemapRoom, entityComponentsRef *EntityComponents, screenRef *ebiten.Image, drawImgOptionsRef *ebiten.DrawImageOptions) {
@@ -45,23 +47,37 @@ func DrawActiveRoomInScene(curSceneRef *Scene, screenRef *ebiten.Image) {
 	if curRoomHasSomeData {
 
 		for _, itemEntityID := range curRoom.ItemEntityIDs {
-			DrawEntityID(entityComponentsRef, screenRef, &drawImgOptions, itemEntityID)
+			DrawEntityIDIfAlive(entityComponentsRef, screenRef, &drawImgOptions, itemEntityID)
 		}
 
 		for _, enemyEntityID := range curRoom.EnemyEntityIDs {
-			DrawEntityID(entityComponentsRef, screenRef, &drawImgOptions, enemyEntityID)
+			DrawEntityIDIfAlive(entityComponentsRef, screenRef, &drawImgOptions, enemyEntityID)
 		}
 
 		for _, obstacleEntityID := range curRoom.ObstacleEntityIDs {
-			DrawEntityID(entityComponentsRef, screenRef, &drawImgOptions, obstacleEntityID)
+			DrawEntityIDIfAlive(entityComponentsRef, screenRef, &drawImgOptions, obstacleEntityID)
 		}
 
 		for _, physicsEntityID := range curRoom.PhysicsEntityIDs {
-			DrawEntityID(entityComponentsRef, screenRef, &drawImgOptions, physicsEntityID)
+			DrawEntityIDIfAlive(entityComponentsRef, screenRef, &drawImgOptions, physicsEntityID)
 		}
 	}
 
-	DrawEntityID(entityComponentsRef, screenRef, &drawImgOptions, entityComponentsRef.PlayerEntityID)
+	DrawEntityIDIfAlive(entityComponentsRef, screenRef, &drawImgOptions, entityComponentsRef.PlayerEntityID)
+}
+
+func DrawColliderForEntityIfAlive(entityComponentsRef *EntityComponents, screenRef *ebiten.Image, entityID int) {
+	if entityComponentsRef.IsEntityAlive(entityID) {
+		entityPos := entityComponentsRef.Positions[entityID]
+		entityCollisionShapeRef := entityComponentsRef.CollisionShapes[entityID]
+
+		if entityCollisionShapeRef.CollisionShapeType() == Box {
+			vector.StrokeRect(screenRef, float32(entityPos.X), float32(entityPos.Y), float32(entityCollisionShapeRef.(*BoxCollider).size.X), float32(entityCollisionShapeRef.(*BoxCollider).size.Y), 1.0, color.Black, false)
+		} else if entityCollisionShapeRef.CollisionShapeType() == Circle {
+			offsetCentre := entityCollisionShapeRef.GetOffsetOrigin(&entityPos)
+			vector.StrokeCircle(screenRef, float32(offsetCentre.X), float32(offsetCentre.Y), float32(entityCollisionShapeRef.GetBoundingBoxDims().X*0.5), 1.0, color.Black, false)
+		}
+	}
 }
 
 func DrawActiveRoomInSceneColliders(curSceneRef *Scene, screenRef *ebiten.Image) {
@@ -69,10 +85,7 @@ func DrawActiveRoomInSceneColliders(curSceneRef *Scene, screenRef *ebiten.Image)
 	entityComponentsRef := curSceneRef.EntityComponentsForScene
 	playerPos := entityComponentsRef.Positions[entityComponentsRef.PlayerEntityID]
 
-	playerCollisionShapeRef := entityComponentsRef.CollisionShapes[entityComponentsRef.PlayerEntityID]
-	topLeft := playerCollisionShapeRef.GetOffsetOrigin(&playerPos)
-	size := playerCollisionShapeRef.GetBoundingBoxDims()
-	vector.StrokeRect(screenRef, float32(topLeft.X), float32(topLeft.Y), float32(size.X), float32(size.Y), 1.0, color.Black, false)
+	DrawColliderForEntityIfAlive(entityComponentsRef, screenRef, entityComponentsRef.PlayerEntityID)
 
 	curRoomIndex := entityComponentsRef.Tilemap.GetRoomIndexOfPosition(&playerPos)
 	curRoom, curRoomHasSomeData := curSceneRef.RoomsData[curRoomIndex]
@@ -80,41 +93,19 @@ func DrawActiveRoomInSceneColliders(curSceneRef *Scene, screenRef *ebiten.Image)
 	if curRoomHasSomeData {
 
 		for _, enemyEntityID := range curRoom.EnemyEntityIDs {
-			skelePosRef := &entityComponentsRef.Positions[enemyEntityID]
-
-			skeletonCollisionShapeRef := entityComponentsRef.CollisionShapes[enemyEntityID]
-			vector.StrokeRect(screenRef, float32(skelePosRef.X), float32(skelePosRef.Y), float32(skeletonCollisionShapeRef.(*BoxCollider).size.X), float32(skeletonCollisionShapeRef.(*BoxCollider).size.Y), 1.0, color.Black, false)
+			DrawColliderForEntityIfAlive(entityComponentsRef, screenRef, enemyEntityID)
 		}
 
-		for _, obstacleIndex := range curRoom.ObstacleEntityIDs {
-
-			obstaclePosRef := &entityComponentsRef.Positions[obstacleIndex]
-			obstacleCollisionShapeRef := entityComponentsRef.CollisionShapes[obstacleIndex]
-
-			if obstacleCollisionShapeRef.CollisionShapeType() == Box {
-				vector.StrokeRect(screenRef, float32(obstaclePosRef.X), float32(obstaclePosRef.Y), float32(obstacleCollisionShapeRef.(*BoxCollider).size.X), float32(obstacleCollisionShapeRef.(*BoxCollider).size.Y), 1.0, color.Black, false)
-			} else if obstacleCollisionShapeRef.CollisionShapeType() == Circle {
-				offsetCentre := obstacleCollisionShapeRef.GetOffsetOrigin(obstaclePosRef)
-				vector.StrokeCircle(screenRef, float32(offsetCentre.X), float32(offsetCentre.Y), float32(obstacleCollisionShapeRef.GetBoundingBoxDims().X*0.5), 1.0, color.Black, false)
-			}
+		for _, obstacleEntityID := range curRoom.ObstacleEntityIDs {
+			DrawColliderForEntityIfAlive(entityComponentsRef, screenRef, obstacleEntityID)
 		}
 
 		for _, itemEntityID := range curRoom.ItemEntityIDs {
-
-			itemPosRef := &entityComponentsRef.Positions[itemEntityID]
-			itemCollisionShapeRef := entityComponentsRef.CollisionShapes[itemEntityID]
-			itemColliderOrigin := itemCollisionShapeRef.GetOffsetOrigin(itemPosRef)
-
-			vector.StrokeCircle(screenRef, float32(itemColliderOrigin.X), float32(itemColliderOrigin.Y), float32(itemCollisionShapeRef.(*CircleCollider).radius), 1.0, color.Black, false)
+			DrawColliderForEntityIfAlive(entityComponentsRef, screenRef, itemEntityID)
 		}
 
 		for _, physicsEntityID := range curRoom.PhysicsEntityIDs {
-
-			physicsEntityPosRef := &entityComponentsRef.Positions[physicsEntityID]
-			physicsEntityCollisionShapeRef := entityComponentsRef.CollisionShapes[physicsEntityID]
-			physicsEntityColliderOrigin := physicsEntityCollisionShapeRef.GetOffsetOrigin(physicsEntityPosRef)
-
-			vector.StrokeCircle(screenRef, float32(physicsEntityColliderOrigin.X), float32(physicsEntityColliderOrigin.Y), float32(physicsEntityCollisionShapeRef.(*CircleCollider).radius), 1.0, color.Black, false)
+			DrawColliderForEntityIfAlive(entityComponentsRef, screenRef, physicsEntityID)
 		}
 	}
 

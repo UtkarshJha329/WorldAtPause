@@ -17,8 +17,8 @@ type EntityObstacleCollisionData struct {
 
 func (curScene *Scene) DoesEntityCollideWithObstacles(roomIndex Vector2Int, entityID int, const_entityPositionRef *Vector2, const_entityCollisionShapeRef CollisionShape) EntityObstacleCollisionData {
 
-	entityComponents := curScene.EntityComponentsForScene
 	curRoom, curRoomHasSomeData := curScene.RoomsData[roomIndex]
+	entityComponents := curScene.EntityComponentsForScene
 
 	curCollisionData := EntityObstacleCollisionData{
 		CollidedWithObstacle: false,
@@ -30,7 +30,7 @@ func (curScene *Scene) DoesEntityCollideWithObstacles(roomIndex Vector2Int, enti
 
 	for _, obstacleEntityID := range curRoom.ObstacleEntityIDs {
 
-		if obstacleEntityID == entityID {
+		if obstacleEntityID == entityID || entityComponents.IsEntityDead(obstacleEntityID) {
 			continue
 		}
 
@@ -48,7 +48,7 @@ func (curScene *Scene) DoesEntityCollideWithObstacles(roomIndex Vector2Int, enti
 		}
 	}
 
-	if entityID != curScene.EntityComponentsForScene.PlayerEntityID {
+	if entityID != curScene.EntityComponentsForScene.PlayerEntityID && entityComponents.IsEntityAlive(curScene.EntityComponentsForScene.PlayerEntityID) {
 
 		playerPos := curScene.EntityComponentsForScene.Positions[curScene.EntityComponentsForScene.PlayerEntityID]
 		playerCollisionShapeRef := curScene.EntityComponentsForScene.CollisionShapes[curScene.EntityComponentsForScene.PlayerEntityID]

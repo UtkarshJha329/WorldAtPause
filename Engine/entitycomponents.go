@@ -11,6 +11,7 @@ type EntityComponents struct {
 	PlayerEntityID   int
 	CameraData       CameraData
 	Tilemap          Tilemap
+	EntityDead       []bool
 	Positions        []Vector2
 	Sprites          []Sprite
 	CollisionShapes  []CollisionShape
@@ -23,9 +24,18 @@ func (entityComponents *EntityComponents) IsEntityPlayer(entityID int) bool {
 func CreateEntityComponents(totalNumEntitiesToCreate int) *EntityComponents {
 	return &EntityComponents{
 		TotalNumEntities: totalNumEntitiesToCreate,
-		Sprites:          make([]Sprite, totalNumEntitiesToCreate),
+		EntityDead:       make([]bool, totalNumEntitiesToCreate),
 		Positions:        make([]Vector2, totalNumEntitiesToCreate),
+		Sprites:          make([]Sprite, totalNumEntitiesToCreate),
 		CollisionShapes:  make([]CollisionShape, totalNumEntitiesToCreate)}
+}
+
+func (entityComponents *EntityComponents) IsEntityAlive(entityID int) bool {
+	return !entityComponents.EntityDead[entityID]
+}
+
+func (entityComponents *EntityComponents) IsEntityDead(entityID int) bool {
+	return entityComponents.EntityDead[entityID]
 }
 
 func PopulateEntityDataFromPrefab(prefabMap map[string]Prefab, entityComponents *EntityComponents, prefabName string, entityID int) {
