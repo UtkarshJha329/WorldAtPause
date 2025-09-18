@@ -84,7 +84,9 @@ func (breakoutGameMode *BreakoutGameMode) Update() {
 		breakoutGameMode.failureTriggerTriggered = true
 		ballCollideAndMoveParameters.MovementLock = Engine.Vector2{X: 0.0, Y: 0.0}
 		curSceneRef.EntityComponentsForScene.Positions[ballEntityID] = Engine.Vector2{X: 160, Y: 120}
-	} else {
+	}
+
+	if !breakoutGameMode.failureTriggerTriggered {
 		ballCollisions := breakoutGameMode.SceneRef.CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex, ballEntityID, ballInputDirection, ballTotalMoveAmount, breakoutGameMode.ballMoveAmountPerFrame, ballCollideAndMoveParameters)
 
 		ballCollidedWithTilemap := ballCollisions.TilemapXMoveCollisionResult.Collided || ballCollisions.TilemapYMoveCollisionResult.Collided
@@ -140,12 +142,14 @@ func (breakoutGameMode *BreakoutGameMode) Draw(screenRef *ebiten.Image) {
 	if breakoutGameMode.numBricks <= 0 {
 		textEntity := breakoutGameMode.SceneRef.EntityIDsByName["Breakout You Win Text"]
 		op := &text.DrawOptions{}
+		op.Filter = ebiten.FilterNearest
 		op.GeoM.Translate(100.0, 100.0)
 		currentText := breakoutGameMode.SceneRef.Texts[breakoutGameMode.SceneRef.EntityComponentsForScene.Texts[textEntity].TextName]
 		text.Draw(screenRef, currentText, breakoutGameMode.SceneRef.EntityComponentsForScene.Texts[textEntity].Font.Face, op)
 	} else if breakoutGameMode.failureTriggerTriggered {
 		textEntity := breakoutGameMode.SceneRef.EntityIDsByName["Breakout You Lose Text"]
 		op := &text.DrawOptions{}
+		op.Filter = ebiten.FilterNearest
 		op.GeoM.Translate(35.0, 100.0)
 		currentText := breakoutGameMode.SceneRef.Texts[breakoutGameMode.SceneRef.EntityComponentsForScene.Texts[textEntity].TextName]
 		text.Draw(screenRef, currentText, breakoutGameMode.SceneRef.EntityComponentsForScene.Texts[textEntity].Font.Face, op)
