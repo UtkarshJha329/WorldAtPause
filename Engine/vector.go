@@ -22,7 +22,11 @@ func MagnitudeSquare_Vector2(const_a *Vector2) float64 {
 
 func Normalise_Vector2(const_a *Vector2) Vector2 {
 	magnitude := Magnitude_Vector2(const_a)
-	return Vector2{const_a.X / magnitude, const_a.Y / magnitude}
+	if magnitude != 0 {
+		return Vector2{const_a.X / magnitude, const_a.Y / magnitude}
+	} else {
+		return Vector2{0.0, 0.0}
+	}
 }
 
 func Add_Vector2(const_a, const_b *Vector2) Vector2 {

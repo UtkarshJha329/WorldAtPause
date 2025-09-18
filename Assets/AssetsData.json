@@ -127,8 +127,8 @@
                         }},
                         {"CollisionShapeData": {
                             "CollisionShapeType": "Circle",
-                            "Radius": 8,
-                            "ColliderOriginOffset": [8, 8]
+                            "Radius": 4,
+                            "ColliderOriginOffset": [4, 4]
                         }}
                     ]    
                 },

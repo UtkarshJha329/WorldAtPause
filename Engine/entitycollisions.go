@@ -15,7 +15,7 @@ type EntityObstacleCollisionData struct {
 	CollidedWithObstacleCollisionShapeRef CollisionShape
 }
 
-func (curScene *Scene) DoesEntityCollideWithObstacles(roomIndex Vector2Int, entityID int, const_entityPositionRef *Vector2, const_entityCollisionShapeRef CollisionShape) EntityObstacleCollisionData {
+func (curScene *Scene) DoesEntityCollideWithObstacles(roomIndex Vector2Int, entityID int, const_entityPositionRef *Vector2, const_entityCollisionShapeRef CollisionShape, CollideWithPlayer bool) EntityObstacleCollisionData {
 
 	curRoom, curRoomHasSomeData := curScene.RoomsData[roomIndex]
 	entityComponents := curScene.EntityComponentsForScene
@@ -48,7 +48,7 @@ func (curScene *Scene) DoesEntityCollideWithObstacles(roomIndex Vector2Int, enti
 		}
 	}
 
-	if entityID != curScene.EntityComponentsForScene.PlayerEntityID && entityComponents.IsEntityAlive(curScene.EntityComponentsForScene.PlayerEntityID) {
+	if CollideWithPlayer && entityID != curScene.EntityComponentsForScene.PlayerEntityID && entityComponents.IsEntityAlive(curScene.EntityComponentsForScene.PlayerEntityID) {
 
 		playerPos := curScene.EntityComponentsForScene.Positions[curScene.EntityComponentsForScene.PlayerEntityID]
 		playerCollisionShapeRef := curScene.EntityComponentsForScene.CollisionShapes[curScene.EntityComponentsForScene.PlayerEntityID]
@@ -195,6 +195,8 @@ type CollideAndMoveCollisionParameters struct {
 	CollideWithTiles     bool
 	CollideWithObstacles bool
 	SlideWhenCollide     bool
+	CollideWithPlayer    bool
+	MovementLock         Vector2
 }
 
 func (curScene *Scene) CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex Vector2Int, entityID int, inputDirection Vector2, totalMoveAmount Vector2, entityMoveAmountPerFrame float64, collideAndMoveParameters CollideAndMoveCollisionParameters) CollideAndMoveCollisionResultSteps {
@@ -226,7 +228,7 @@ func (curScene *Scene) CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex 
 	collidedOnXWithObstacle := false
 
 	if !collidingOnXWithTilemap.Collided && collideAndMoveParameters.CollideWithObstacles {
-		obstacleCollisionResult := curScene.DoesEntityCollideWithObstacles(curRoomIndex, entityID, &Vector2{playerToMoveXPos, entityPos.Y}, entityCollisionShapeRef)
+		obstacleCollisionResult := curScene.DoesEntityCollideWithObstacles(curRoomIndex, entityID, &Vector2{playerToMoveXPos, entityPos.Y}, entityCollisionShapeRef, collideAndMoveParameters.CollideWithPlayer)
 		collideAndMoveResultData.ObstacleXMoveCollisionResult = obstacleCollisionResult
 		collidedOnXWithObstacle = obstacleCollisionResult.CollidedWithObstacle
 		if collidedOnXWithObstacle {
@@ -265,8 +267,8 @@ func (curScene *Scene) CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex 
 				}
 			}
 
-			entityPosRef.X += finalMoveAmount.X
-			entityPosRef.Y += finalMoveAmount.Y
+			entityPosRef.X += finalMoveAmount.X * collideAndMoveParameters.MovementLock.X
+			entityPosRef.Y += finalMoveAmount.Y * collideAndMoveParameters.MovementLock.Y
 			entityPos = entityComponentsRef.Positions[entityID]
 		}
 	}
@@ -283,7 +285,7 @@ func (curScene *Scene) CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex 
 	collidedOnYWithObstacle := false
 
 	if !collidingOnYWithTilemap.Collided {
-		obstacleCollisionResult := curScene.DoesEntityCollideWithObstacles(curRoomIndex, entityID, &Vector2{entityPos.X, playerToMoveYPos}, entityCollisionShapeRef)
+		obstacleCollisionResult := curScene.DoesEntityCollideWithObstacles(curRoomIndex, entityID, &Vector2{entityPos.X, playerToMoveYPos}, entityCollisionShapeRef, collideAndMoveParameters.CollideWithPlayer)
 		collideAndMoveResultData.ObstacleYMoveCollisionResult = obstacleCollisionResult
 		collidedOnYWithObstacle = obstacleCollisionResult.CollidedWithObstacle
 		if collidedOnYWithObstacle {
@@ -322,16 +324,16 @@ func (curScene *Scene) CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex 
 				}
 			}
 
-			entityPosRef.X += finalMoveAmount.X
-			entityPosRef.Y += finalMoveAmount.Y
+			entityPosRef.X += finalMoveAmount.X * collideAndMoveParameters.MovementLock.X
+			entityPosRef.Y += finalMoveAmount.Y * collideAndMoveParameters.MovementLock.Y
 		}
 	}
 
 	if !collidedOnXWithObstacle && !collidedOnYWithObstacle && !collidingOnXWithTilemap.Collided {
-		entityPosRef.X += totalMoveAmount.X
+		entityPosRef.X += totalMoveAmount.X * collideAndMoveParameters.MovementLock.X
 	}
 	if !collidedOnXWithObstacle && !collidedOnYWithObstacle && !collidingOnYWithTilemap.Collided {
-		entityPosRef.Y += totalMoveAmount.Y
+		entityPosRef.Y += totalMoveAmount.Y * collideAndMoveParameters.MovementLock.Y
 	}
 
 	return collideAndMoveResultData

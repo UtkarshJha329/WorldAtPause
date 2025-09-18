@@ -42,7 +42,10 @@ func DrawActiveRoomInScene(curSceneRef *Scene, screenRef *ebiten.Image) {
 	curRoomIndex := entityComponentsRef.Tilemap.GetRoomIndexOfPosition(playerPosRef)
 	curRoom, curRoomHasSomeData := curSceneRef.RoomsData[curRoomIndex]
 
-	DrawTileMapLevel(entityComponentsRef.Tilemap.TilemapRooms[curRoomIndex], entityComponentsRef, screenRef, &drawImgOptions)
+	curTilemapRoomRef, ok := entityComponentsRef.Tilemap.TilemapRooms[curRoomIndex]
+	if ok {
+		DrawTileMapLevel(curTilemapRoomRef, entityComponentsRef, screenRef, &drawImgOptions)
+	}
 
 	if curRoomHasSomeData {
 

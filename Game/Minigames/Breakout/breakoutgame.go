@@ -17,7 +17,7 @@ type BreakoutGameMode struct {
 
 func (breakoutGameMode *BreakoutGameMode) Init() {
 	breakoutGameMode.ballInputDirection = Engine.Vector2{X: -1.0, Y: -1.0}
-	breakoutGameMode.ballMoveAmountPerFrame = 4.0
+	breakoutGameMode.ballMoveAmountPerFrame = 2.0
 	breakoutGameMode.numBricks = 5.0
 }
 
@@ -27,7 +27,11 @@ func (breakoutGameMode *BreakoutGameMode) Update() {
 	entityComponentsRef := breakoutGameMode.SceneRef.EntityComponentsForScene
 	curRoomIndex := Engine.Vector2Int{X: 0, Y: 0}
 
-	paddleMoveAmountPerFrame := 2.0
+	paddleMoveAmountPerFrame := 4.0
+	ballEntityID := curSceneRef.RoomsData[curRoomIndex].ObstacleEntityIDs[0]
+	ballPos := curSceneRef.EntityComponentsForScene.Positions[ballEntityID]
+
+	entityComponentsRef.Positions[entityComponentsRef.PlayerEntityID].Y = 240 - 20
 
 	inputX := 0.0
 	if ebiten.IsKeyPressed(ebiten.KeyRight) {
@@ -38,11 +42,16 @@ func (breakoutGameMode *BreakoutGameMode) Update() {
 		inputX -= 1.0
 	}
 
+	playerBottomPos := curSceneRef.EntityComponentsForScene.Positions[entityComponentsRef.PlayerEntityID].Y + curSceneRef.EntityComponentsForScene.CollisionShapes[entityComponentsRef.PlayerEntityID].GetBoundingBoxDims().Y
 	paddleCollideAndMoveParameters := Engine.CollideAndMoveCollisionParameters{
 		CollideWithTiles:     true,
-		CollideWithObstacles: false,
+		CollideWithObstacles: ballPos.Y < playerBottomPos,
 		SlideWhenCollide:     false,
+		CollideWithPlayer:    false,
+		MovementLock:         Engine.Vector2{X: 1.0, Y: 0.0},
 	}
+
+	// fmt.Println("Paddle collides with obstacles : ", paddleCollideAndMoveParameters.CollideWithObstacles)
 
 	paddleInputDirection := Engine.Vector2{X: inputX, Y: 0.0}
 	paddleTotalMoveAmount := Engine.Multiply_Float_Vector2(paddleMoveAmountPerFrame, &paddleInputDirection)
@@ -50,18 +59,18 @@ func (breakoutGameMode *BreakoutGameMode) Update() {
 	breakoutGameMode.SceneRef.CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex, entityComponentsRef.PlayerEntityID, paddleInputDirection, paddleTotalMoveAmount, paddleMoveAmountPerFrame, paddleCollideAndMoveParameters)
 
 	if breakoutGameMode.numBricks <= 0 {
-		breakoutGameMode.ballInputDirection = Engine.Vector2{X: 0.0, Y: 0.0}
+		// breakoutGameMode.ballInputDirection = Engine.Vector2{X: 0.0, Y: 0.0}
 	}
-
-	ballEntityID := curSceneRef.RoomsData[curRoomIndex].ObstacleEntityIDs[0]
 
 	ballInputDirection := breakoutGameMode.ballInputDirection
 	ballTotalMoveAmount := Engine.Multiply_Float_Vector2(breakoutGameMode.ballMoveAmountPerFrame, &ballInputDirection)
 
 	ballCollideAndMoveParameters := Engine.CollideAndMoveCollisionParameters{
 		CollideWithTiles:     true,
-		CollideWithObstacles: false,
+		CollideWithObstacles: true,
 		SlideWhenCollide:     false,
+		CollideWithPlayer:    ballPos.Y < playerBottomPos,
+		MovementLock:         Engine.Vector2{X: 1.0, Y: 1.0},
 	}
 
 	ballCollisions := breakoutGameMode.SceneRef.CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex, ballEntityID, ballInputDirection, ballTotalMoveAmount, breakoutGameMode.ballMoveAmountPerFrame, ballCollideAndMoveParameters)
