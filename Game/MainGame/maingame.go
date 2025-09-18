@@ -56,6 +56,8 @@ func (mainGameMode *MainGameMode) Update() {
 			CollideWithTiles:     true,
 			CollideWithObstacles: true,
 			SlideWhenCollide:     true,
+			CollideWithPlayer:    false,
+			MovementLock:         Engine.Vector2{X: 1.0, Y: 1.0},
 		}
 
 		curSceneRef.CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex, curSceneRef.EntityComponentsForScene.PlayerEntityID, inputDirection, totalMoveAmount, playerMoveAmountPerFrame, playerCollideAndMoveParameters)
@@ -78,6 +80,8 @@ func (mainGameMode *MainGameMode) Update() {
 					CollideWithTiles:     true,
 					CollideWithObstacles: true,
 					SlideWhenCollide:     true,
+					CollideWithPlayer:    true,
+					MovementLock:         Engine.Vector2{X: 1.0, Y: 1.0},
 				}
 
 				curSceneRef.CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex, enemyEntityID, directionToPlayerNormalised, totalDisplacement, skeleMoveAmountPerFrame, skeletonCollideAndMoveParameters)

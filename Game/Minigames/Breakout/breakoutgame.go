@@ -29,7 +29,7 @@ func (breakoutGameMode *BreakoutGameMode) Update() {
 
 	paddleMoveAmountPerFrame := 4.0
 	ballEntityID := curSceneRef.RoomsData[curRoomIndex].ObstacleEntityIDs[0]
-	ballPos := curSceneRef.EntityComponentsForScene.Positions[ballEntityID]
+	// ballPos := curSceneRef.EntityComponentsForScene.Positions[ballEntityID]
 
 	entityComponentsRef.Positions[entityComponentsRef.PlayerEntityID].Y = 240 - 20
 
@@ -42,10 +42,10 @@ func (breakoutGameMode *BreakoutGameMode) Update() {
 		inputX -= 1.0
 	}
 
-	playerBottomPos := curSceneRef.EntityComponentsForScene.Positions[entityComponentsRef.PlayerEntityID].Y + curSceneRef.EntityComponentsForScene.CollisionShapes[entityComponentsRef.PlayerEntityID].GetBoundingBoxDims().Y
+	// playerBottomPos := curSceneRef.EntityComponentsForScene.Positions[entityComponentsRef.PlayerEntityID].Y + curSceneRef.EntityComponentsForScene.CollisionShapes[entityComponentsRef.PlayerEntityID].GetBoundingBoxDims().Y
 	paddleCollideAndMoveParameters := Engine.CollideAndMoveCollisionParameters{
 		CollideWithTiles:     true,
-		CollideWithObstacles: ballPos.Y < playerBottomPos,
+		CollideWithObstacles: false,
 		SlideWhenCollide:     false,
 		CollideWithPlayer:    false,
 		MovementLock:         Engine.Vector2{X: 1.0, Y: 0.0},
@@ -69,7 +69,7 @@ func (breakoutGameMode *BreakoutGameMode) Update() {
 		CollideWithTiles:     true,
 		CollideWithObstacles: true,
 		SlideWhenCollide:     false,
-		CollideWithPlayer:    ballPos.Y < playerBottomPos,
+		CollideWithPlayer:    true,
 		MovementLock:         Engine.Vector2{X: 1.0, Y: 1.0},
 	}
 

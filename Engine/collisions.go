@@ -206,7 +206,9 @@ func GetBoxCircleOverlapPenetrationData(const_origin_box *Vector2, bx *BoxCollid
 	distVector := Vector2{closestPointOnBox.X - const_offset_origin.X, closestPointOnBox.Y - const_offset_origin.Y}
 	magDistVector := Magnitude_Vector2(&distVector)
 	collisionNormalToReturn := bx.GetNormalFromPoint(const_origin_box, &closestPointOnBox)
-	return *collisionNormalToReturn, Normalise_Vector2(&distVector), magDistVector - cc.radius, magDistVector-cc.radius <= 0
+	colliding := magDistVector-cc.radius < 0
+
+	return *collisionNormalToReturn, Normalise_Vector2(&distVector), magDistVector - cc.radius, colliding
 }
 
 func CollisionShapeOverlapsWithCollisionShape(const_object_originA *Vector2, csA CollisionShape, const_object_originB *Vector2, csB CollisionShape) (collisionNormal Vector2, penetrationNormal Vector2, penetration float64, collided bool) {
