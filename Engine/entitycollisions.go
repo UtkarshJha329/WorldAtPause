@@ -202,12 +202,18 @@ func MoveAmountOnTangentForCircleCollider(circleObstaclePenetrationEscapeDirecti
 
 	absNormal := Vector2{math.Abs(normal.X), math.Abs(normal.Y)}
 
-	tangent := normal
-	if inputDirection.X != 0 {
-		tangent = Vector2{math.Copysign(1.0, inputDirection.X) * absNormal.Y, relPos.Y * absNormal.X}
-	}
-	if inputDirection.Y != 0 {
-		tangent = Vector2{relPos.X * absNormal.Y, math.Copysign(1.0, inputDirection.Y) * absNormal.X}
+	tangentA := Vector2{math.Copysign(1.0, inputDirection.X) * absNormal.Y, relPos.Y * absNormal.X}
+	tangentA = Normalise_Vector2(&tangentA)
+	tangentB := Vector2{relPos.X * absNormal.Y, math.Copysign(1.0, inputDirection.Y) * absNormal.X}
+	tangentB = Normalise_Vector2(&tangentB)
+
+	normalisedInputDir := Normalise_Vector2(&inputDirection)
+	inputDirDotTangentA := Dot_Vector2(&tangentA, &normalisedInputDir)
+	inputDirDotTangentB := Dot_Vector2(&tangentB, &normalisedInputDir)
+
+	tangent := tangentA
+	if inputDirDotTangentB > inputDirDotTangentA {
+		tangent = tangentB
 	}
 
 	tangent = Normalise_Vector2(&tangent)
