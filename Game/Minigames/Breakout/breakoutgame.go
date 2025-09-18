@@ -81,7 +81,8 @@ func (breakoutGameMode *BreakoutGameMode) Update() {
 	ballYCollidedWithObstacle := ballCollisions.ObstacleYMoveCollisionResult.CollidedWithObstacle
 	ballCollidedWithObstacles := ballXCollidedWithObstacle || ballYCollidedWithObstacle
 
-	if breakoutGameMode.numBricks > 0 && (ballCollidedWithTilemap || ballCollidedWithObstacles) {
+	// if breakoutGameMode.numBricks > 0 && (ballCollidedWithTilemap || ballCollidedWithObstacles) {
+	if ballCollidedWithTilemap || ballCollidedWithObstacles {
 
 		ballCollidedTileNormal := Engine.Add_Vector2(&ballCollisions.TilemapXMoveCollisionResult.CollisionTileNormal, &ballCollisions.TilemapYMoveCollisionResult.CollisionTileNormal)
 		ballCollidedObstacleNormal := Engine.Add_Vector2(&ballCollisions.ObstacleXMoveCollisionResult.CollisionNormal, &ballCollisions.ObstacleYMoveCollisionResult.CollisionNormal)

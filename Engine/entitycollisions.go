@@ -1,8 +1,6 @@
 package Engine
 
-import (
-	"math"
-)
+import "math"
 
 type EntityObstacleCollisionData struct {
 	CollidedWithObstacle                  bool
@@ -69,28 +67,6 @@ func (curScene *Scene) DoesEntityCollideWithObstacles(roomIndex Vector2Int, enti
 	return curCollisionData
 }
 
-func MoveAmountOnTangentForCircleCollider(circleObstaclePenetrationEscapeDirectionX Vector2, circleColliderOriginPosition Vector2, entityPos Vector2, inputDirection Vector2, entityCollisionShapeRef CollisionShape, entityMoveAmountPerFrame float64) Vector2 {
-
-	normal := circleObstaclePenetrationEscapeDirectionX
-	entityBBDims := entityCollisionShapeRef.GetBoundingBoxDims()
-	entityColliderCentrePos := Vector2{entityPos.X + entityBBDims.X*0.5, entityPos.Y + entityBBDims.Y*0.5}
-	relPos := Subtract_Vector2(&entityColliderCentrePos, &circleColliderOriginPosition)
-	relPos = Vector2{math.Copysign(1.0, relPos.X), math.Copysign(1.0, relPos.Y)}
-
-	absNormal := Vector2{math.Abs(normal.X), math.Abs(normal.Y)}
-
-	tangent := normal
-	if inputDirection.X != 0 {
-		tangent = Vector2{math.Copysign(1.0, inputDirection.X) * absNormal.Y, relPos.Y * absNormal.X}
-	}
-	if inputDirection.Y != 0 {
-		tangent = Vector2{relPos.X * absNormal.Y, math.Copysign(1.0, inputDirection.Y) * absNormal.X}
-	}
-
-	tangent = Normalise_Vector2(&tangent)
-	return Multiply_Float_Vector2(entityMoveAmountPerFrame, &tangent)
-}
-
 type ShapeCollisionWithTilemapResult struct {
 	Collided                  bool
 	CollidedTileIndex         Vector2Int
@@ -146,16 +122,33 @@ func (curScene *Scene) CircleColliderCollidesWithTilemapCollisionLayerInRoom(cir
 	}
 	circleBoundingBoxCol.CreateCollisionPoints()
 
-	boundingBoxCollisionResult := curScene.BoxColliderCollidesWithTilemapCollisionLayerInRoom(&circleBoundingBoxCol, colliderEntityWorldPos, roomIndex)
-	if boundingBoxCollisionResult.Collided {
-		collisionTilePosition := boundingBoxCollisionResult.CollidedTilePos
-		tileBoundingBox := curScene.EntityComponentsForScene.Tilemap.TileCollisionShape
+	curTilemap := curScene.EntityComponentsForScene.Tilemap
 
-		collisionResult.CollisionTileNormal, collisionResult.CollisionSeparationNormal, collisionResult.PenetrationAmount, collisionResult.Collided = CollisionShapeOverlapsWithCollisionShape(&colliderEntityWorldPos, circleCollider, &collisionTilePosition, &tileBoundingBox)
-		if collisionResult.Collided {
-			circleColliderOrigin := circleCollider.GetOffsetOrigin(&colliderEntityWorldPos)
-			normalFromTileCollider := tileBoundingBox.GetNormalFromPoint(&collisionTilePosition, circleColliderOrigin)
-			collisionResult.CollisionTileNormal = *normalFromTileCollider
+	colliderCollisionPoints := circleBoundingBoxCol.GetCollisionPoints()
+	for _, collisionPoint := range *colliderCollisionPoints {
+		collisionPointWorldPos := Add_Vector2(&collisionPoint, &colliderEntityWorldPos)
+
+		if curTilemap.PointCollidesWithTilemapCollisionLayerInRoom(&roomIndex, &collisionPointWorldPos) {
+			collisionResult.Collided = true
+
+			curTile := curScene.EntityComponentsForScene.Tilemap.GetTileOfPointInRoom(&roomIndex, &collisionPointWorldPos)
+			curTilePos := curScene.EntityComponentsForScene.Tilemap.GetTilePosInWorld(&roomIndex, &curTile)
+
+			_, _, _, collided := CollisionShapeOverlapsWithCollisionShape(&colliderEntityWorldPos, &circleBoundingBoxCol, &curTilePos, &curTilemap.TileCollisionShape)
+
+			if collided {
+				tileBoundingBox := curScene.EntityComponentsForScene.Tilemap.TileCollisionShape
+
+				collisionResult.CollisionTileNormal, collisionResult.CollisionSeparationNormal, collisionResult.PenetrationAmount, collisionResult.Collided = CollisionShapeOverlapsWithCollisionShape(&colliderEntityWorldPos, circleCollider, &curTilePos, &tileBoundingBox)
+
+				if collisionResult.Collided {
+					circleColliderOrigin := circleCollider.GetOffsetOrigin(&colliderEntityWorldPos)
+					normalFromTileCollider := tileBoundingBox.GetNormalFromPoint(&curTilePos, circleColliderOrigin)
+					collisionResult.CollisionTileNormal = *normalFromTileCollider
+
+					break
+				}
+			}
 		}
 	}
 
@@ -199,6 +192,64 @@ type CollideAndMoveCollisionParameters struct {
 	MovementLock         Vector2
 }
 
+func MoveAmountOnTangentForCircleCollider(circleObstaclePenetrationEscapeDirection Vector2, circleColliderOriginPosition Vector2, entityPos Vector2, inputDirection Vector2, entityCollisionShapeRef CollisionShape, entityMoveAmountPerFrame float64) Vector2 {
+
+	normal := circleObstaclePenetrationEscapeDirection
+	entityBBDims := entityCollisionShapeRef.GetBoundingBoxDims()
+	entityColliderCentrePos := Vector2{entityPos.X + entityBBDims.X*0.5, entityPos.Y + entityBBDims.Y*0.5}
+	relPos := Subtract_Vector2(&entityColliderCentrePos, &circleColliderOriginPosition)
+	relPos = Vector2{math.Copysign(1.0, relPos.X), math.Copysign(1.0, relPos.Y)}
+
+	absNormal := Vector2{math.Abs(normal.X), math.Abs(normal.Y)}
+
+	tangent := normal
+	if inputDirection.X != 0 {
+		tangent = Vector2{math.Copysign(1.0, inputDirection.X) * absNormal.Y, relPos.Y * absNormal.X}
+	}
+	if inputDirection.Y != 0 {
+		tangent = Vector2{relPos.X * absNormal.Y, math.Copysign(1.0, inputDirection.Y) * absNormal.X}
+	}
+
+	tangent = Normalise_Vector2(&tangent)
+	return Multiply_Float_Vector2(entityMoveAmountPerFrame, &tangent)
+}
+
+func FinalMoveAmountIfObstacleObjectHasCircleCollider(axis int, entityID int, entityPos Vector2, entityCollisionShapeRef CollisionShape, inputDirection Vector2, totalMoveAmount Vector2, entityMoveAmountPerFrame float64, obstacleCollisionResult *EntityObstacleCollisionData, collideAndMoveParameters *CollideAndMoveCollisionParameters) (finalMoveAmount Vector2) {
+
+	boxCircleCollisionEpsilon := -0.1
+	boxCircleNormalMultiplier := -1.0
+
+	circleCircleCollisionEpsilon := 0.1
+	circleCircleNormalMultiplier := 1.0
+
+	normalPlusEpsilon := boxCircleNormalMultiplier + boxCircleCollisionEpsilon
+
+	if entityCollisionShapeRef.CollisionShapeType() == Circle {
+		normalPlusEpsilon = circleCircleNormalMultiplier + circleCircleCollisionEpsilon
+	}
+
+	penetrationDistance := obstacleCollisionResult.CollisionPenetrationAmount
+	circleColliderOriginPosition := obstacleCollisionResult.ColliderOffsetOriginPosition
+
+	circleObstaclePenetrationEscapeDirection := Multiply_Float_Vector2(penetrationDistance, &obstacleCollisionResult.CollisionPenetrationNormal)
+
+	if collideAndMoveParameters.SlideWhenCollide {
+		moveAmountOnTangentForThisCircleObstacle := MoveAmountOnTangentForCircleCollider(circleObstaclePenetrationEscapeDirection, circleColliderOriginPosition, entityPos, inputDirection, entityCollisionShapeRef, entityMoveAmountPerFrame)
+
+		finalMoveAmount = moveAmountOnTangentForThisCircleObstacle
+	} else {
+		totalMoveAmount := Vector2{totalMoveAmount.X, 0.0}
+		if axis == 1 {
+			totalMoveAmount = Vector2{0.0, totalMoveAmount.Y}
+		}
+
+		circleObstaclePenetrationEscapeDirection = Multiply_Float_Vector2(normalPlusEpsilon, &circleObstaclePenetrationEscapeDirection)
+		finalMoveAmount = Add_Vector2(&circleObstaclePenetrationEscapeDirection, &totalMoveAmount)
+	}
+
+	return finalMoveAmount
+}
+
 func (curScene *Scene) CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex Vector2Int, entityID int, inputDirection Vector2, totalMoveAmount Vector2, entityMoveAmountPerFrame float64, collideAndMoveParameters CollideAndMoveCollisionParameters) CollideAndMoveCollisionResultSteps {
 
 	collideAndMoveResultData := CollideAndMoveCollisionResultSteps{
@@ -226,7 +277,6 @@ func (curScene *Scene) CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex 
 		collideAndMoveResultData.TilemapXMoveCollisionResult = collidingOnXWithTilemap
 	}
 	collidedOnXWithObstacle := false
-	circleCollisionEpsilon := -0.1
 
 	if !collidingOnXWithTilemap.Collided && collideAndMoveParameters.CollideWithObstacles {
 		obstacleCollisionResult := curScene.DoesEntityCollideWithObstacles(curRoomIndex, entityID, &Vector2{playerToMoveXPos, entityPos.Y}, entityCollisionShapeRef, collideAndMoveParameters.CollideWithPlayer)
@@ -237,28 +287,28 @@ func (curScene *Scene) CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex 
 			finalMoveAmount := Vector2{0.0, 0.0}
 			maxMoveAmountX := 0.0
 
-			if obstacleCollisionResult.CollidedWithObstacleCollisionShapeRef.CollisionShapeType() == Box {
-				if inputDirection.X > 0 {
-					maxMoveAmountX = obstacleCollisionResult.PositionOfCollidedWithObstacle.X - (entityPos.X + entityCollisionShapeRef.GetBoundingBoxDims().X)
-				} else if inputDirection.X < 0 {
-					maxMoveAmountX = entityPos.X - (obstacleCollisionResult.PositionOfCollidedWithObstacle.X + obstacleCollisionResult.CollidedWithObstacleCollisionShapeRef.GetBoundingBoxDims().X)
+			if entityCollisionShapeRef.CollisionShapeType() == Box {
+
+				if obstacleCollisionResult.CollidedWithObstacleCollisionShapeRef.CollisionShapeType() == Box {
+					if inputDirection.X > 0 {
+						maxMoveAmountX = obstacleCollisionResult.PositionOfCollidedWithObstacle.X - (entityPos.X + entityCollisionShapeRef.GetBoundingBoxDims().X)
+					} else if inputDirection.X < 0 {
+						maxMoveAmountX = entityPos.X - (obstacleCollisionResult.PositionOfCollidedWithObstacle.X + obstacleCollisionResult.CollidedWithObstacleCollisionShapeRef.GetBoundingBoxDims().X)
+					}
+					finalMoveAmount = Vector2{inputDirection.X * maxMoveAmountX, inputDirection.Y * entityMoveAmountPerFrame}
+				} else if obstacleCollisionResult.CollidedWithObstacleCollisionShapeRef.CollisionShapeType() == Circle {
+
+					finalMoveAmount = FinalMoveAmountIfObstacleObjectHasCircleCollider(0, entityID, entityPos, entityCollisionShapeRef, inputDirection, totalMoveAmount, entityMoveAmountPerFrame, &obstacleCollisionResult, &collideAndMoveParameters)
 				}
-				finalMoveAmount = Vector2{inputDirection.X * maxMoveAmountX, inputDirection.Y * entityMoveAmountPerFrame}
-			} else if obstacleCollisionResult.CollidedWithObstacleCollisionShapeRef.CollisionShapeType() == Circle {
-				penetrationDistance := obstacleCollisionResult.CollisionPenetrationAmount
-				circleColliderOriginPosition := obstacleCollisionResult.ColliderOffsetOriginPosition
+			} else if entityCollisionShapeRef.CollisionShapeType() == Circle {
 
-				circleObstaclePenetrationEscapeDirectionX := Multiply_Float_Vector2(penetrationDistance, &obstacleCollisionResult.CollisionPenetrationNormal)
+				if obstacleCollisionResult.CollidedWithObstacleCollisionShapeRef.CollisionShapeType() == Box {
 
-				if collideAndMoveParameters.SlideWhenCollide {
-					moveAmountOnTangentForThisCircleObstacle := MoveAmountOnTangentForCircleCollider(circleObstaclePenetrationEscapeDirectionX, circleColliderOriginPosition, entityPos, inputDirection, entityCollisionShapeRef, entityMoveAmountPerFrame)
+					finalMoveAmount = FinalMoveAmountIfObstacleObjectHasCircleCollider(0, entityID, entityPos, entityCollisionShapeRef, inputDirection, totalMoveAmount, entityMoveAmountPerFrame, &obstacleCollisionResult, &collideAndMoveParameters)
 
-					finalMoveAmount = moveAmountOnTangentForThisCircleObstacle
-				} else {
-					totalMoveAmountX := Vector2{totalMoveAmount.X, 0.0}
+				} else if obstacleCollisionResult.CollidedWithObstacleCollisionShapeRef.CollisionShapeType() == Circle {
 
-					circleObstaclePenetrationEscapeDirectionX = Multiply_Float_Vector2(-1.0+circleCollisionEpsilon, &circleObstaclePenetrationEscapeDirectionX)
-					finalMoveAmount = Add_Vector2(&circleObstaclePenetrationEscapeDirectionX, &totalMoveAmountX)
+					finalMoveAmount = FinalMoveAmountIfObstacleObjectHasCircleCollider(0, entityID, entityPos, entityCollisionShapeRef, inputDirection, totalMoveAmount, entityMoveAmountPerFrame, &obstacleCollisionResult, &collideAndMoveParameters)
 				}
 			}
 
@@ -288,33 +338,33 @@ func (curScene *Scene) CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex 
 			finalMoveAmount := Vector2{0.0, 0.0}
 			maxMoveAmountY := 0.0
 
-			if obstacleCollisionResult.CollidedWithObstacleCollisionShapeRef.CollisionShapeType() == Box {
-				if inputDirection.Y > 0 {
-					maxMoveAmountY = obstacleCollisionResult.PositionOfCollidedWithObstacle.Y - (entityPos.Y + entityCollisionShapeRef.GetBoundingBoxDims().Y)
-				} else if inputDirection.Y < 0 {
-					maxMoveAmountY = entityPos.Y - (obstacleCollisionResult.PositionOfCollidedWithObstacle.Y + obstacleCollisionResult.CollidedWithObstacleCollisionShapeRef.GetBoundingBoxDims().Y)
+			if entityCollisionShapeRef.CollisionShapeType() == Box {
+
+				if obstacleCollisionResult.CollidedWithObstacleCollisionShapeRef.CollisionShapeType() == Box {
+					if inputDirection.Y > 0 {
+						maxMoveAmountY = obstacleCollisionResult.PositionOfCollidedWithObstacle.Y - (entityPos.Y + entityCollisionShapeRef.GetBoundingBoxDims().Y)
+					} else if inputDirection.Y < 0 {
+						maxMoveAmountY = entityPos.Y - (obstacleCollisionResult.PositionOfCollidedWithObstacle.Y + obstacleCollisionResult.CollidedWithObstacleCollisionShapeRef.GetBoundingBoxDims().Y)
+					}
+					finalMoveAmount = Vector2{inputDirection.X * entityMoveAmountPerFrame, inputDirection.Y * maxMoveAmountY}
+
+				} else if obstacleCollisionResult.CollidedWithObstacleCollisionShapeRef.CollisionShapeType() == Circle {
+
+					finalMoveAmount = FinalMoveAmountIfObstacleObjectHasCircleCollider(1, entityID, entityPos, entityCollisionShapeRef, inputDirection, totalMoveAmount, entityMoveAmountPerFrame, &obstacleCollisionResult, &collideAndMoveParameters)
+
 				}
-				finalMoveAmount = Vector2{inputDirection.X * entityMoveAmountPerFrame, inputDirection.Y * maxMoveAmountY}
+			} else if entityCollisionShapeRef.CollisionShapeType() == Circle {
 
-			} else if obstacleCollisionResult.CollidedWithObstacleCollisionShapeRef.CollisionShapeType() == Circle {
+				if obstacleCollisionResult.CollidedWithObstacleCollisionShapeRef.CollisionShapeType() == Box {
 
-				penetrationDistance := obstacleCollisionResult.CollisionPenetrationAmount
-				circleColliderOriginPosition := obstacleCollisionResult.ColliderOffsetOriginPosition
+					finalMoveAmount = FinalMoveAmountIfObstacleObjectHasCircleCollider(1, entityID, entityPos, entityCollisionShapeRef, inputDirection, totalMoveAmount, entityMoveAmountPerFrame, &obstacleCollisionResult, &collideAndMoveParameters)
 
-				circleObstaclePenetrationEscapeDirectionY := Multiply_Float_Vector2(penetrationDistance, &obstacleCollisionResult.CollisionPenetrationNormal)
+				} else if obstacleCollisionResult.CollidedWithObstacleCollisionShapeRef.CollisionShapeType() == Circle {
 
-				if collideAndMoveParameters.SlideWhenCollide {
-					moveAmountOnTangentForThisCircleObstacle := MoveAmountOnTangentForCircleCollider(circleObstaclePenetrationEscapeDirectionY, circleColliderOriginPosition, entityPos, inputDirection, entityCollisionShapeRef, entityMoveAmountPerFrame)
-
-					finalMoveAmount = moveAmountOnTangentForThisCircleObstacle
-				} else {
-					totalMoveAmountY := Vector2{0.0, totalMoveAmount.Y}
-
-					circleObstaclePenetrationEscapeDirectionY = Multiply_Float_Vector2(-1.0+circleCollisionEpsilon, &circleObstaclePenetrationEscapeDirectionY)
-					finalMoveAmount = Add_Vector2(&circleObstaclePenetrationEscapeDirectionY, &totalMoveAmountY)
+					finalMoveAmount = FinalMoveAmountIfObstacleObjectHasCircleCollider(1, entityID, entityPos, entityCollisionShapeRef, inputDirection, totalMoveAmount, entityMoveAmountPerFrame, &obstacleCollisionResult, &collideAndMoveParameters)
 				}
+
 			}
-
 			entityPosRef.X += finalMoveAmount.X * collideAndMoveParameters.MovementLock.X
 			entityPosRef.Y += finalMoveAmount.Y * collideAndMoveParameters.MovementLock.Y
 		}

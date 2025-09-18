@@ -43,6 +43,23 @@
                             }
                         }
                     ]
+                },                {
+                    "Name": "Player Basic Circle",
+                    "Asset Type": "Player",
+                    "Asset Data": [
+                        {"Position": [100, 100]},
+                        {"SpriteData": {
+                            "SpriteTextureLocation": "Assets/Images/NinjaSpriteSheet.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }},
+                        {"CollisionShapeData": {
+                            "CollisionShapeType": "Circle",
+                            "Radius": 8,
+                            "ColliderOriginOffset": [8, 8]
+                            }
+                        }
+                    ]
                 },{
                     "Name": "Player Breakout",
                     "Asset Type": "Player",
@@ -76,6 +93,22 @@
                             "CollisionShapeType": "Box",
                             "Size": [16, 16],
                             "ColliderOriginOffset": [0, 0]
+                        }}
+                    ]
+                },{
+                    "Name": "Skeleton Circle",
+                    "Asset Type": "Enemy",
+                    "Asset Data": [
+                        {"Position": [25, 25]},
+                        {"SpriteData": {
+                            "SpriteTextureLocation": "Assets/Images/SkeletonSpriteSheet.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }},
+                        {"CollisionShapeData": {
+                            "CollisionShapeType": "Circle",
+                            "Radius": 8,
+                            "ColliderOriginOffset": [8, 8]
                         }}
                     ]
                 }]
@@ -127,8 +160,8 @@
                         }},
                         {"CollisionShapeData": {
                             "CollisionShapeType": "Circle",
-                            "Radius": 8,
-                            "ColliderOriginOffset": [8, 8]
+                            "Radius": 4,
+                            "ColliderOriginOffset": [4, 4]
                         }}
                     ]    
                 },
@@ -212,7 +245,7 @@
         {
             "Scene Type": "Main Game",
             "Player Entity": {
-                "Prefab Name": "Player Basic",
+                "Prefab Name": "Player Basic Circle",
                 "Asset Data": [
                     {"Position": [100, 100]}
                 ]
@@ -230,7 +263,7 @@
                         },
                         {"Prefab Name": "Stone Pyramid"},
                         {
-                            "Prefab Name": "Skeleton",
+                            "Prefab Name": "Skeleton Circle",
                             "Asset Data": [
                                 {"Position": [30, 30]}
                             ]
@@ -238,7 +271,7 @@
                         },
                         {"Prefab Name": "Stone Block"},
                         {
-                            "Prefab Name": "Skeleton",
+                            "Prefab Name": "Skeleton Circle",
                             "Asset Data": [
                                 {"Position": [250, 130]}
                             ]
