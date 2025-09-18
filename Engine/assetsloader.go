@@ -6,11 +6,13 @@ type AssetData struct {
 	SpriteAssetData    *SpriteAssetData
 	CollisionShapeData *CollisionShapeAssetData
 	tilemapAssetData   *TilemapAssetData
+	fontAssetData      *FontAssetData
+	textAssetData      *TextAssetData
 }
 
 type Prefab struct {
 	Name       string      `json:"Name"`
-	EntityType string      `json:"Entity Type"`
+	AssetType  string      `json:"Asset Type"`
 	AssetDatas []AssetData `json:"Asset Data"`
 }
 

@@ -51,6 +51,18 @@ func (assetData *AssetData) UnmarshalJSON(data []byte) error {
 				return err
 			}
 			assetData.CollisionShapeData = &collisionShapeAssetData
+		case "Font":
+			var fontAssetData FontAssetData
+			if err := json.Unmarshal(val, &fontAssetData); err != nil {
+				return err
+			}
+			assetData.fontAssetData = &fontAssetData
+		case "Text":
+			var textAssetData TextAssetData
+			if err := json.Unmarshal(val, &textAssetData); err != nil {
+				return err
+			}
+			assetData.textAssetData = &textAssetData
 		case "Tilemap":
 			var tilemapAssetData TilemapAssetData
 			if err := json.Unmarshal(val, &tilemapAssetData); err != nil {

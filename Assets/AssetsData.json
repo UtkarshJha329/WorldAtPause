@@ -4,7 +4,7 @@
             "Tilemaps": [
                 {
                     "Name": "Ground Tilemap",
-                    "Entity Type": "Tilemap",
+                    "Asset Type": "Tilemap",
                     "Asset Data": [
                         {"Tilemap":{
                                 "tilemapTilesetsSource": "Assets/Maps/TilesetFloor.png",
@@ -14,7 +14,7 @@
                     ]
                 },{
                     "Name": "Breakout Tilemap",
-                    "Entity Type": "Tilemap",
+                    "Asset Type": "Tilemap",
                     "Asset Data": [
                         {"Tilemap":{
                                 "tilemapTilesetsSource": "Assets/Maps/TilesetFloor.png",
@@ -28,7 +28,7 @@
             "Player": [
                 {
                     "Name": "Player Basic",
-                    "Entity Type": "Player",
+                    "Asset Type": "Player",
                     "Asset Data": [
                         {"Position": [100, 100]},
                         {"SpriteData": {
@@ -45,7 +45,7 @@
                     ]
                 },{
                     "Name": "Player Breakout",
-                    "Entity Type": "Player",
+                    "Asset Type": "Player",
                     "Asset Data": [
                         {"Position": [100, 100]},
                         {"SpriteData": {
@@ -64,7 +64,7 @@
         {
             "Enemies": [{
                     "Name": "Skeleton",
-                    "Entity Type": "Enemy",
+                    "Asset Type": "Enemy",
                     "Asset Data": [
                         {"Position": [25, 25]},
                         {"SpriteData": {
@@ -83,7 +83,7 @@
         {
             "Obstacles": [{
                     "Name": "Stone Block",
-                    "Entity Type": "Obstacle",
+                    "Asset Type": "Obstacle",
                     "Asset Data": [
                         {"Position": [150, 150]},
                         {"SpriteData": {
@@ -100,7 +100,7 @@
                 },
                 {
                     "Name": "Stone Pyramid",
-                    "Entity Type": "Obstacle",
+                    "Asset Type": "Obstacle",
                     "Asset Data": [
                         {"Position": [200, 150]},
                         {"SpriteData": {
@@ -117,7 +117,7 @@
                 },
                 {
                     "Name": "Breakout Ball",
-                    "Entity Type": "Obstacle",
+                    "Asset Type": "Obstacle",
                     "Asset Data": [
                         {"Position": [200, 150]},
                         {"SpriteData": {
@@ -134,7 +134,7 @@
                 },
                 {
                     "Name": "Breakout Brick",
-                    "Entity Type": "Obstacle",
+                    "Asset Type": "Obstacle",
                     "Asset Data": [
                         {"Position": [200, 150]},
                         {"SpriteData": {
@@ -154,7 +154,7 @@
         {
             "Items": [{
                     "Name": "Life Pot",
-                    "Entity Type": "Item",
+                    "Asset Type": "Item",
                     "Asset Data": [
                         {"Position": [160, 120]},
                         {"SpriteData": {
@@ -168,6 +168,42 @@
                             "ColliderOriginOffset": [5, 5]
                         }}
 
+                    ]
+                }]
+        },
+        {
+            "Fonts": [{
+                    "Name": "FONT - Courier Bold",
+                    "Asset Type": "Font",
+                    "Asset Data": [
+                        {"Font":{
+                                "Font Name": "FONT - Courier Bold",
+                                "Font Location": "Assets/Fonts/Courier/courbd.ttf"   
+                        }}
+                    ]
+                }]
+        },
+        {
+            "Text Data": [{
+                    "Name": "Breakout You Win Text",
+                    "Asset Type": "Text",
+                    "Asset Data": [
+                        {"Text": {
+                                "Text Name": "You Win Text",
+                                "Font Name": "FONT - Courier Bold",
+                                "Text String": "You Win!"
+                        }}
+                    ]
+                },
+                {
+                    "Name": "Breakout You Lose Text",
+                    "Asset Type": "Text",
+                    "Asset Data": [
+                        {"Text": {
+                                "Text Name": "You Lose Text",
+                                "Font Name": "FONT - Courier Bold",
+                                "Text String": "You Lose, rather excitedly."
+                        }}
                     ]
                 }]
         }
@@ -232,28 +268,31 @@
                         },                        {
                             "Prefab Name": "Breakout Brick",
                             "Asset Data": [
-                                {"Position": [48, 14]}
+                                {"Position": [48, 16]}
                             ]
                         },                        {
                             "Prefab Name": "Breakout Brick",
                             "Asset Data": [
-                                {"Position": [96, 14]}
+                                {"Position": [96, 16]}
                             ]
                         },                        {
                             "Prefab Name": "Breakout Brick",
                             "Asset Data": [
-                                {"Position": [144, 14]}
+                                {"Position": [144, 16]}
                             ]
                         },                        {
                             "Prefab Name": "Breakout Brick",
                             "Asset Data": [
-                                {"Position": [192, 14]}
+                                {"Position": [192, 16]}
                             ]
                         },                        {
                             "Prefab Name": "Breakout Brick",
                             "Asset Data": [
-                                {"Position": [240, 14]}
+                                {"Position": [240, 16]}
                             ]
+                        },
+                        {
+                            "Prefab Name": "Breakout You Win Text"    
                         }
                     ]
                 }

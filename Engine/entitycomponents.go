@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
+	"golang.org/x/text/language"
 )
 
 type EntityComponents struct {
@@ -15,6 +18,7 @@ type EntityComponents struct {
 	Positions        []Vector2
 	Sprites          []Sprite
 	CollisionShapes  []CollisionShape
+	Texts            []Text
 }
 
 func (entityComponents *EntityComponents) IsEntityPlayer(entityID int) bool {
@@ -27,7 +31,8 @@ func CreateEntityComponents(totalNumEntitiesToCreate int) *EntityComponents {
 		EntityDead:       make([]bool, totalNumEntitiesToCreate),
 		Positions:        make([]Vector2, totalNumEntitiesToCreate),
 		Sprites:          make([]Sprite, totalNumEntitiesToCreate),
-		CollisionShapes:  make([]CollisionShape, totalNumEntitiesToCreate)}
+		CollisionShapes:  make([]CollisionShape, totalNumEntitiesToCreate),
+		Texts:            make([]Text, totalNumEntitiesToCreate)}
 }
 
 func (entityComponents *EntityComponents) IsEntityAlive(entityID int) bool {
@@ -38,14 +43,16 @@ func (entityComponents *EntityComponents) IsEntityDead(entityID int) bool {
 	return entityComponents.EntityDead[entityID]
 }
 
-func PopulateEntityDataFromPrefab(prefabMap map[string]Prefab, entityComponents *EntityComponents, prefabName string, entityID int) {
+func PopulateEntityDataFromPrefab(prefabMap map[string]Prefab, curSceneRef *Scene, prefabName string, entityID int) {
+
+	entityComponentsRef := curSceneRef.EntityComponentsForScene
 
 	for _, assetData := range prefabMap[prefabName].AssetDatas {
 		switch assetData.AssetType {
 		case "Position":
-			entityComponents.Positions[entityID] = *assetData.Position
+			entityComponentsRef.Positions[entityID] = *assetData.Position
 		case "SpriteData":
-			entityComponents.Sprites[entityID] = Sprite{
+			entityComponentsRef.Sprites[entityID] = Sprite{
 				Image:           LoadImageFromFileSystem(assetData.SpriteAssetData.SpriteTextureLocation),
 				RenderRectStart: assetData.SpriteAssetData.RenderRectStart,
 				RenderRectEnd:   assetData.SpriteAssetData.RenderRectEnd,
@@ -53,22 +60,42 @@ func PopulateEntityDataFromPrefab(prefabMap map[string]Prefab, entityComponents 
 		case "CollisionShapeData":
 			switch assetData.CollisionShapeData.CollisionShapeType {
 			case "Box":
-				entityComponents.CollisionShapes[entityID] = &BoxCollider{
+				entityComponentsRef.CollisionShapes[entityID] = &BoxCollider{
 					size: *assetData.CollisionShapeData.Size,
 					Collider: Collider{
 						ColliderOriginOffset: *assetData.CollisionShapeData.ColliderOriginOffset,
 					},
 				}
-				entityComponents.CollisionShapes[entityID].CreateCollisionPoints()
+				entityComponentsRef.CollisionShapes[entityID].CreateCollisionPoints()
 			case "Circle":
-				entityComponents.CollisionShapes[entityID] = &CircleCollider{
+				entityComponentsRef.CollisionShapes[entityID] = &CircleCollider{
 					radius: *assetData.CollisionShapeData.Radius,
 					Collider: Collider{
 						ColliderOriginOffset: *assetData.CollisionShapeData.ColliderOriginOffset,
 					},
 				}
-				entityComponents.CollisionShapes[entityID].CreateCollisionPoints()
+				entityComponentsRef.CollisionShapes[entityID].CreateCollisionPoints()
 			}
+		case "Text":
+			font, ok := curSceneRef.Fonts[assetData.textAssetData.FontName]
+			if !ok {
+				fontPath := prefabMap[assetData.textAssetData.FontName].AssetDatas[0].fontAssetData.FontLocation
+				font = &Font{}
+				font.LoadFontWithFontFromPath(fontPath)
+				font.Face = &text.GoTextFace{
+					Source:   font.Font,
+					Size:     24,
+					Language: language.English,
+				}
+				curSceneRef.Fonts[assetData.textAssetData.FontName] = font
+			}
+
+			curSceneRef.Texts[assetData.textAssetData.TextName] = assetData.textAssetData.TextString
+			entityComponentsRef.Texts[entityID] = Text{
+				Font:     font,
+				TextName: assetData.textAssetData.TextName,
+			}
+
 		case "Tilemap":
 
 			var tilemapDataJSON TilemapDataJSON
@@ -77,7 +104,7 @@ func PopulateEntityDataFromPrefab(prefabMap map[string]Prefab, entityComponents 
 				fmt.Println(err, "Failed to loaad tilemapJSON contents.")
 			}
 
-			err := NewTilemap(assetData.tilemapAssetData.TilemapTilesetFilePath, assetData.tilemapAssetData.TilemapWorldJSONFilePath, assetData.tilemapAssetData.TilemapGridSize, &entityComponents.Tilemap, &tilemapDataJSON)
+			err := NewTilemap(assetData.tilemapAssetData.TilemapTilesetFilePath, assetData.tilemapAssetData.TilemapWorldJSONFilePath, assetData.tilemapAssetData.TilemapGridSize, &entityComponentsRef.Tilemap, &tilemapDataJSON)
 			if err != nil {
 				log.Fatal(err, "\nFailed to create tilemap.")
 			}
@@ -118,7 +145,7 @@ func CreateAndPopulateEntitiesAndComponents(prefabMap map[string]Prefab, scenesD
 		runningEntityID := 0
 		curSceneEntityComponents := curScene.EntityComponentsForScene
 
-		PopulateEntityDataFromPrefab(prefabMap, curSceneEntityComponents, sceneData.PlayerEntityDataForScene.PrefabName, runningEntityID)
+		PopulateEntityDataFromPrefab(prefabMap, curScene, sceneData.PlayerEntityDataForScene.PrefabName, runningEntityID)
 		OverridePrefabDataForEntityWithEntityData(runningEntityID, curSceneEntityComponents, &sceneData.PlayerEntityDataForScene)
 		curSceneEntityComponents.PlayerEntityID = runningEntityID
 		runningEntityID++
@@ -131,12 +158,10 @@ func CreateAndPopulateEntitiesAndComponents(prefabMap map[string]Prefab, scenesD
 
 			for _, curEntityData := range curRoomParsedData.RoomEntities {
 
-				PopulateEntityDataFromPrefab(prefabMap, curSceneEntityComponents, curEntityData.PrefabName, runningEntityID)
+				PopulateEntityDataFromPrefab(prefabMap, curScene, curEntityData.PrefabName, runningEntityID)
 				OverridePrefabDataForEntityWithEntityData(runningEntityID, curSceneEntityComponents, &curEntityData)
 
-				switch prefabMap[curEntityData.PrefabName].EntityType {
-				case "Physics Object":
-					curRoom.PhysicsEntityIDs = append(curRoom.PhysicsEntityIDs, runningEntityID)
+				switch prefabMap[curEntityData.PrefabName].AssetType {
 				case "Enemy":
 					curRoom.EnemyEntityIDs = append(curRoom.EnemyEntityIDs, runningEntityID)
 				case "Obstacle":

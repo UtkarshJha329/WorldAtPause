@@ -4,16 +4,21 @@ import (
 	"WorldAtPause/Engine"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/text/v2"
 )
 
 type BreakoutGameMode struct {
 	SceneRef *Engine.Scene
 
-	ballInputDirection Engine.Vector2
+	ballInputDirection     Engine.Vector2
+	ballMoveAmountPerFrame float64
+	numBricks              int
 }
 
 func (breakoutGameMode *BreakoutGameMode) Init() {
 	breakoutGameMode.ballInputDirection = Engine.Vector2{X: -1.0, Y: -1.0}
+	breakoutGameMode.ballMoveAmountPerFrame = 4.0
+	breakoutGameMode.numBricks = 5.0
 }
 
 func (breakoutGameMode *BreakoutGameMode) Update() {
@@ -44,11 +49,14 @@ func (breakoutGameMode *BreakoutGameMode) Update() {
 
 	breakoutGameMode.SceneRef.CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex, entityComponentsRef.PlayerEntityID, paddleInputDirection, paddleTotalMoveAmount, paddleMoveAmountPerFrame, paddleCollideAndMoveParameters)
 
+	if breakoutGameMode.numBricks <= 0 {
+		breakoutGameMode.ballInputDirection = Engine.Vector2{X: 0.0, Y: 0.0}
+	}
+
 	ballEntityID := curSceneRef.RoomsData[curRoomIndex].ObstacleEntityIDs[0]
-	ballMoveAmountPerFrame := 1.0
 
 	ballInputDirection := breakoutGameMode.ballInputDirection
-	ballTotalMoveAmount := Engine.Multiply_Float_Vector2(ballMoveAmountPerFrame, &ballInputDirection)
+	ballTotalMoveAmount := Engine.Multiply_Float_Vector2(breakoutGameMode.ballMoveAmountPerFrame, &ballInputDirection)
 
 	ballCollideAndMoveParameters := Engine.CollideAndMoveCollisionParameters{
 		CollideWithTiles:     true,
@@ -56,7 +64,7 @@ func (breakoutGameMode *BreakoutGameMode) Update() {
 		SlideWhenCollide:     false,
 	}
 
-	ballCollisions := breakoutGameMode.SceneRef.CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex, ballEntityID, ballInputDirection, ballTotalMoveAmount, ballMoveAmountPerFrame, ballCollideAndMoveParameters)
+	ballCollisions := breakoutGameMode.SceneRef.CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex, ballEntityID, ballInputDirection, ballTotalMoveAmount, breakoutGameMode.ballMoveAmountPerFrame, ballCollideAndMoveParameters)
 
 	ballCollidedWithTilemap := ballCollisions.TilemapXMoveCollisionResult.Collided || ballCollisions.TilemapYMoveCollisionResult.Collided
 
@@ -64,7 +72,7 @@ func (breakoutGameMode *BreakoutGameMode) Update() {
 	ballYCollidedWithObstacle := ballCollisions.ObstacleYMoveCollisionResult.CollidedWithObstacle
 	ballCollidedWithObstacles := ballXCollidedWithObstacle || ballYCollidedWithObstacle
 
-	if ballCollidedWithTilemap || ballCollidedWithObstacles {
+	if breakoutGameMode.numBricks > 0 && (ballCollidedWithTilemap || ballCollidedWithObstacles) {
 
 		ballCollidedTileNormal := Engine.Add_Vector2(&ballCollisions.TilemapXMoveCollisionResult.CollisionTileNormal, &ballCollisions.TilemapYMoveCollisionResult.CollisionTileNormal)
 		ballCollidedObstacleNormal := Engine.Add_Vector2(&ballCollisions.ObstacleXMoveCollisionResult.CollisionNormal, &ballCollisions.ObstacleYMoveCollisionResult.CollisionNormal)
@@ -81,12 +89,18 @@ func (breakoutGameMode *BreakoutGameMode) Update() {
 			if ballXCollidedWithObstacle {
 				obstacleEntityID := ballCollisions.ObstacleXMoveCollisionResult.CollidedWithObstacleEntityID
 				if entityComponentsRef.PlayerEntityID != obstacleEntityID {
+					if !entityComponentsRef.EntityDead[obstacleEntityID] {
+						breakoutGameMode.numBricks -= 1
+					}
 					entityComponentsRef.EntityDead[obstacleEntityID] = true
 				}
 			}
 			if ballYCollidedWithObstacle {
 				obstacleEntityID := ballCollisions.ObstacleYMoveCollisionResult.CollidedWithObstacleEntityID
 				if entityComponentsRef.PlayerEntityID != obstacleEntityID {
+					if !entityComponentsRef.EntityDead[obstacleEntityID] {
+						breakoutGameMode.numBricks -= 1
+					}
 					entityComponentsRef.EntityDead[obstacleEntityID] = true
 				}
 			}
@@ -100,5 +114,13 @@ func (breakoutGameMode *BreakoutGameMode) Draw(screenRef *ebiten.Image) {
 
 	Engine.DrawActiveRoomInScene(breakoutGameMode.SceneRef, screenRef)
 	Engine.DrawActiveRoomInSceneColliders(breakoutGameMode.SceneRef, screenRef)
+
+	if breakoutGameMode.numBricks <= 0 {
+		textEntity := 8
+		op := &text.DrawOptions{}
+		op.GeoM.Translate(100.0, 100.0)
+		currentText := breakoutGameMode.SceneRef.Texts[breakoutGameMode.SceneRef.EntityComponentsForScene.Texts[textEntity].TextName]
+		text.Draw(screenRef, currentText, breakoutGameMode.SceneRef.EntityComponentsForScene.Texts[textEntity].Font.Face, op)
+	}
 
 }

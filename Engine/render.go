@@ -57,10 +57,6 @@ func DrawActiveRoomInScene(curSceneRef *Scene, screenRef *ebiten.Image) {
 		for _, obstacleEntityID := range curRoom.ObstacleEntityIDs {
 			DrawEntityIDIfAlive(entityComponentsRef, screenRef, &drawImgOptions, obstacleEntityID)
 		}
-
-		for _, physicsEntityID := range curRoom.PhysicsEntityIDs {
-			DrawEntityIDIfAlive(entityComponentsRef, screenRef, &drawImgOptions, physicsEntityID)
-		}
 	}
 
 	DrawEntityIDIfAlive(entityComponentsRef, screenRef, &drawImgOptions, entityComponentsRef.PlayerEntityID)
@@ -102,10 +98,6 @@ func DrawActiveRoomInSceneColliders(curSceneRef *Scene, screenRef *ebiten.Image)
 
 		for _, itemEntityID := range curRoom.ItemEntityIDs {
 			DrawColliderForEntityIfAlive(entityComponentsRef, screenRef, itemEntityID)
-		}
-
-		for _, physicsEntityID := range curRoom.PhysicsEntityIDs {
-			DrawColliderForEntityIfAlive(entityComponentsRef, screenRef, physicsEntityID)
 		}
 	}
 
