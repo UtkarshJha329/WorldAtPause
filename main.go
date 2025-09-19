@@ -61,12 +61,9 @@ func main() {
 
 	SetScenesGameModes(&game)
 
-	game.world.CurrentSceneIndex = 1
-
+	game.world.SceneStack.Push(0)
+	game.world.CurrentSceneIndex = 0
 	game.world.InitCurrentSceneGameMode()
-
-	entityComponentsRef := game.world.Scenes[game.world.CurrentSceneIndex].EntityComponentsForScene
-	entityComponentsRef.CameraData.ScreenSize = Engine.Vector2{X: 320, Y: 240}
 
 	if err := ebiten.RunGame(&game); err != nil {
 		log.Fatal(err)

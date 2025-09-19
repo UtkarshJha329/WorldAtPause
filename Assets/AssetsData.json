@@ -114,7 +114,8 @@
                 }]
         },
         {
-            "Triggers":[{
+            "Triggers":[
+                {
                     "Name": "Breakout Ball Failure Trigger",
                     "Asset Type": "Trigger",
                     "Asset Data":[
@@ -125,8 +126,24 @@
                             "ColliderOriginOffset": [0, 0]
                         }}
                     ]
-            }]
-
+                },{
+                    "Name": "Main Game Breakout Ball Trigger",
+                    "Asset Type": "Trigger",
+                    "Asset Data":[
+                        {"Position": [64, 48]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/TilesetDungeon.png",
+                            "RenderRectStart":[32, 16],
+                            "RenderRectEnd":[48, 32]
+                        }},
+                        {"Collision Shape Data": {
+                            "CollisionShapeType": "Box",
+                            "Size": [16, 16],
+                            "ColliderOriginOffset": [0, 0]
+                        }}
+                    ]
+                }
+            ]
         },
         {
             "Obstacles": [{
@@ -280,6 +297,10 @@
                             "Asset Data": [
                                 {"Position": [130, 150]}
                             ]
+                        },
+                        {
+                            "Prefab Name": "Main Game Breakout Ball Trigger",
+                            "Entity Spawn Name": "Main Game Breakout Ball Trigger"
                         },
                         {
                             "Prefab Name": "Stone Pyramid",

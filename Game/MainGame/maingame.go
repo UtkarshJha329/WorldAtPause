@@ -10,18 +10,27 @@ import (
 
 type MainGameMode struct {
 	SceneRef *Engine.Scene
+
+	waitingForGameSceneFromTriggerIndex int
+
+	deactivateBreakoutTrigger bool
+
+	playerSpeed float64
 }
 
 func (mainGameMode *MainGameMode) Init() {
-
+	mainGameMode.deactivateBreakoutTrigger = false
+	mainGameMode.playerSpeed = 2.0
 }
 
-func (mainGameMode *MainGameMode) Update() {
+func (mainGameMode *MainGameMode) Update() Engine.GameStateData {
+
+	gameState := Engine.GameStateData{GameState: Engine.GAMEMODE_IN_PROGRESS}
 
 	curSceneRef := mainGameMode.SceneRef
 	entityComponentsRef := curSceneRef.EntityComponentsForScene
 
-	playerMoveAmountPerFrame := 2.0
+	playerMoveAmountPerFrame := mainGameMode.playerSpeed
 
 	// collideAndSlide := true
 
@@ -106,6 +115,20 @@ func (mainGameMode *MainGameMode) Update() {
 				}
 			}
 		}
+
+		if !mainGameMode.deactivateBreakoutTrigger {
+
+			breakoutTriggerEntityID := curSceneRef.EntityIDsByName["Main Game Breakout Ball Trigger"]
+			breakoutTriggerEntityPos := entityComponentsRef.Positions[breakoutTriggerEntityID]
+			breakoutTriggerCollisionShapeRef := entityComponentsRef.CollisionShapes[breakoutTriggerEntityID]
+			if _, _, _, collided := Engine.CollisionShapeOverlapsWithCollisionShape(playerPosRef, playerCollisionShapeRef, &breakoutTriggerEntityPos, breakoutTriggerCollisionShapeRef); collided {
+				fmt.Println("Triggered Breakout trigger!")
+				gameState.GameState = Engine.GAMEMODE_WAITING_FOR_CHILD
+				gameState.SceneChangeMode = Engine.SCENE_CHANGE_TO_CHILD
+				gameState.SceneChangeToIndex = 1
+				mainGameMode.waitingForGameSceneFromTriggerIndex = breakoutTriggerEntityID
+			}
+		}
 	}
 	currentLevelIndex := entityComponentsRef.Tilemap.GetRoomIndexOfPosition(playerPosRef)
 	playerInLevel := Engine.Vector2{X: float64(currentLevelIndex.X), Y: float64(currentLevelIndex.Y)}
@@ -115,10 +138,38 @@ func (mainGameMode *MainGameMode) Update() {
 	currentLevelCentre := Engine.Add_Vector2(&currentLevelPos, &levelHalfSize)
 
 	Engine.CameraFollowTarget(currentLevelCentre, entityComponentsRef)
+
+	return gameState
 }
 
 func (mainGameMode *MainGameMode) Draw(screenRef *ebiten.Image) {
 
 	Engine.DrawActiveRoomInScene(mainGameMode.SceneRef, screenRef)
 	Engine.DrawActiveRoomInSceneColliders(mainGameMode.SceneRef, screenRef)
+
+	breakoutTriggerEntityID := mainGameMode.SceneRef.EntityIDsByName["Main Game Breakout Ball Trigger"]
+	breakoutTriggerEntityPosition := mainGameMode.SceneRef.EntityComponentsForScene.Positions[breakoutTriggerEntityID]
+	breakoutTriggerSprite := mainGameMode.SceneRef.EntityComponentsForScene.Sprites[breakoutTriggerEntityID]
+
+	drawOptions := ebiten.DrawImageOptions{}
+	breakoutTriggerSprite.DrawSprite(screenRef, &drawOptions, &breakoutTriggerEntityPosition)
+
+}
+
+func (mainGameMode *MainGameMode) SceneTransitionHandler(previousGameStateData Engine.GameStateData) {
+
+	breakoutTriggerEntityID := mainGameMode.SceneRef.EntityIDsByName["Main Game Breakout Ball Trigger"]
+	if mainGameMode.waitingForGameSceneFromTriggerIndex == breakoutTriggerEntityID {
+		fmt.Println("Finished breakout.")
+		mainGameMode.deactivateBreakoutTrigger = true
+
+		if previousGameStateData.GameState == Engine.GAMEMODE_WON {
+			fmt.Println("Won at breakout! Speed increased!")
+			mainGameMode.playerSpeed += 1.0
+		} else if previousGameStateData.GameState == Engine.GAMEMODE_LOST {
+			fmt.Println("Lost at breakout! Speed decreased.")
+			mainGameMode.playerSpeed -= 1.0
+		}
+	}
+
 }

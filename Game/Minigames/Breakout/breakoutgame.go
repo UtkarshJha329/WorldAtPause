@@ -2,6 +2,7 @@ package Games
 
 import (
 	"WorldAtPause/Engine"
+	"fmt"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
@@ -20,16 +21,17 @@ func (breakoutGameMode *BreakoutGameMode) Init() {
 	breakoutGameMode.ballInputDirection = Engine.Vector2{X: -1.0, Y: -1.0}
 	breakoutGameMode.ballMoveAmountPerFrame = 2.0
 	breakoutGameMode.numBricks = 5.0
+	fmt.Println("Init breakout scene.")
 }
 
-func (breakoutGameMode *BreakoutGameMode) Update() {
+func (breakoutGameMode *BreakoutGameMode) Update() Engine.GameStateData {
 
 	curSceneRef := breakoutGameMode.SceneRef
 	entityComponentsRef := breakoutGameMode.SceneRef.EntityComponentsForScene
 	curRoomIndex := Engine.Vector2Int{X: 0, Y: 0}
 
 	paddleMoveAmountPerFrame := 4.0
-	ballEntityID := curSceneRef.RoomsData[curRoomIndex].ObstacleEntityIDs[0]
+	ballEntityID := curSceneRef.EntityIDsByName["Breakout Ball"]
 	ballPos := curSceneRef.EntityComponentsForScene.Positions[ballEntityID]
 	ballCollisionShapeRef := curSceneRef.EntityComponentsForScene.CollisionShapes[ballEntityID]
 
@@ -132,6 +134,24 @@ func (breakoutGameMode *BreakoutGameMode) Update() {
 
 		}
 	}
+
+	// fmt.Println("Finished breakout update.")
+
+	gameUpdateData := Engine.GameStateData{}
+	if !breakoutGameMode.failureTriggerTriggered && breakoutGameMode.numBricks > 0 {
+		gameUpdateData.GameState = Engine.GAMEMODE_IN_PROGRESS
+	} else if breakoutGameMode.numBricks <= 0 {
+		fmt.Println("Breakout Win triggered.")
+		gameUpdateData.GameState = Engine.GAMEMODE_WON
+		gameUpdateData.SceneChangeMode = Engine.SCENE_CHANGE_TO_PARENT
+	} else if breakoutGameMode.failureTriggerTriggered {
+		fmt.Println("Breakout failure triggered.")
+		gameUpdateData.GameState = Engine.GAMEMODE_LOST
+		gameUpdateData.SceneChangeMode = Engine.SCENE_CHANGE_TO_PARENT
+	}
+
+	return gameUpdateData
+
 }
 
 func (breakoutGameMode *BreakoutGameMode) Draw(screenRef *ebiten.Image) {
@@ -143,7 +163,7 @@ func (breakoutGameMode *BreakoutGameMode) Draw(screenRef *ebiten.Image) {
 		textEntity := breakoutGameMode.SceneRef.EntityIDsByName["Breakout You Win Text"]
 		op := &text.DrawOptions{}
 		op.Filter = ebiten.FilterNearest
-		op.GeoM.Translate(100.0, 100.0)
+		op.GeoM.Translate(125.0, 100.0)
 		currentText := breakoutGameMode.SceneRef.Texts[breakoutGameMode.SceneRef.EntityComponentsForScene.Texts[textEntity].TextName]
 		text.Draw(screenRef, currentText, breakoutGameMode.SceneRef.EntityComponentsForScene.Texts[textEntity].Font.Face, op)
 	} else if breakoutGameMode.failureTriggerTriggered {
@@ -155,5 +175,9 @@ func (breakoutGameMode *BreakoutGameMode) Draw(screenRef *ebiten.Image) {
 		text.Draw(screenRef, currentText, breakoutGameMode.SceneRef.EntityComponentsForScene.Texts[textEntity].Font.Face, op)
 
 	}
+
+}
+
+func (breakoutGameMode *BreakoutGameMode) SceneTransitionHandler(previousGameStateData Engine.GameStateData) {
 
 }
