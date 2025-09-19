@@ -24,7 +24,7 @@ func (breakoutGameMode *BreakoutGameMode) Init() {
 	fmt.Println("Init breakout scene.")
 }
 
-func (breakoutGameMode *BreakoutGameMode) Update() Engine.GameStateData {
+func (breakoutGameMode *BreakoutGameMode) Update() {
 
 	curSceneRef := breakoutGameMode.SceneRef
 	entityComponentsRef := breakoutGameMode.SceneRef.EntityComponentsForScene
@@ -137,21 +137,15 @@ func (breakoutGameMode *BreakoutGameMode) Update() Engine.GameStateData {
 
 	// fmt.Println("Finished breakout update.")
 
-	gameUpdateData := Engine.GameStateData{}
 	if !breakoutGameMode.failureTriggerTriggered && breakoutGameMode.numBricks > 0 {
-		gameUpdateData.GameState = Engine.GAMEMODE_IN_PROGRESS
+		curSceneRef.SceneGameStateData.GameState = Engine.GAMEMODE_IN_PROGRESS
 	} else if breakoutGameMode.numBricks <= 0 {
-		fmt.Println("Breakout Win triggered.")
-		gameUpdateData.GameState = Engine.GAMEMODE_WON
-		gameUpdateData.SceneChangeMode = Engine.SCENE_CHANGE_TO_PARENT
+		curSceneRef.SceneGameStateData.GameState = Engine.GAMEMODE_WON
+		curSceneRef.SceneGameStateData.SceneChangeMode = Engine.SCENE_CHANGE_TO_PARENT
 	} else if breakoutGameMode.failureTriggerTriggered {
-		fmt.Println("Breakout failure triggered.")
-		gameUpdateData.GameState = Engine.GAMEMODE_LOST
-		gameUpdateData.SceneChangeMode = Engine.SCENE_CHANGE_TO_PARENT
+		curSceneRef.SceneGameStateData.GameState = Engine.GAMEMODE_LOST
+		curSceneRef.SceneGameStateData.SceneChangeMode = Engine.SCENE_CHANGE_TO_PARENT
 	}
-
-	return gameUpdateData
-
 }
 
 func (breakoutGameMode *BreakoutGameMode) Draw(screenRef *ebiten.Image) {

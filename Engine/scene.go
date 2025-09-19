@@ -11,6 +11,7 @@ type Room struct {
 type Scene struct {
 	SceneType                string
 	GameMode                 GameMode
+	SceneGameStateData       GameStateData
 	EntityComponentsForScene *EntityComponents
 	RoomsData                map[Vector2Int]*Room
 	Fonts                    map[string]*Font

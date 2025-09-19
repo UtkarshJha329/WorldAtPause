@@ -24,7 +24,7 @@ type GameStateData struct {
 
 type GameMode interface {
 	Init()
-	Update() GameStateData
+	Update()
 	Draw(screenRef *ebiten.Image)
 	SceneTransitionHandler(previousGameStateData GameStateData)
 }

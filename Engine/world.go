@@ -29,11 +29,17 @@ func (w *World) InitCurrentSceneGameMode() {
 }
 
 func (w *World) UpdateCurrentSceneGameMode() {
-	currentSceneGameState := w.Scenes[w.CurrentSceneIndex].GameMode.Update()
+
+	w.Scenes[w.CurrentSceneIndex].GameMode.Update()
+
+	currentSceneGameState := w.Scenes[w.CurrentSceneIndex].SceneGameStateData
+
 	if currentSceneGameState.GameState != GAMEMODE_IN_PROGRESS {
+
 		switch currentSceneGameState.SceneChangeMode {
 
 		case SCENE_CHANGE_TO_CHILD:
+			w.SceneStack.Push(w.CurrentSceneIndex)
 			w.SceneStack.Push(currentSceneGameState.SceneChangeToIndex)
 			w.CurrentSceneIndex = currentSceneGameState.SceneChangeToIndex
 			w.InitCurrentSceneGameMode()
@@ -43,11 +49,9 @@ func (w *World) UpdateCurrentSceneGameMode() {
 		case SCENE_CHANGE_TO_PARENT:
 
 			// Remove previous scene index from top of stack
-			_, ok := w.SceneStack.Pop()
-
-			if ok && !w.SceneStack.IsEmpty() {
-				w.CurrentSceneIndex, _ = w.SceneStack.Peek()
-			}
+			w.SceneStack.Pop()
+			// Now the current scene is the previous scene that spawned the current scene
+			w.CurrentSceneIndex, _ = w.SceneStack.Pop()
 
 			w.Scenes[w.CurrentSceneIndex].GameMode.SceneTransitionHandler(currentSceneGameState)
 			w.changedScenes = true

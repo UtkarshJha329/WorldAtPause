@@ -23,9 +23,7 @@ func (mainGameMode *MainGameMode) Init() {
 	mainGameMode.playerSpeed = 2.0
 }
 
-func (mainGameMode *MainGameMode) Update() Engine.GameStateData {
-
-	gameState := Engine.GameStateData{GameState: Engine.GAMEMODE_IN_PROGRESS}
+func (mainGameMode *MainGameMode) Update() {
 
 	curSceneRef := mainGameMode.SceneRef
 	entityComponentsRef := curSceneRef.EntityComponentsForScene
@@ -39,6 +37,8 @@ func (mainGameMode *MainGameMode) Update() Engine.GameStateData {
 	curRoom, curRoomHasSomeData := curSceneRef.RoomsData[curRoomIndex]
 
 	inputDirection := Engine.Vector2{X: 0.0, Y: 0.0}
+
+	curSceneRef.SceneGameStateData.GameState = Engine.GAMEMODE_IN_PROGRESS
 
 	if ebiten.IsKeyPressed(ebiten.KeyRight) {
 		inputDirection.X += 1
@@ -121,11 +121,12 @@ func (mainGameMode *MainGameMode) Update() Engine.GameStateData {
 			breakoutTriggerEntityID := curSceneRef.EntityIDsByName["Main Game Breakout Ball Trigger"]
 			breakoutTriggerEntityPos := entityComponentsRef.Positions[breakoutTriggerEntityID]
 			breakoutTriggerCollisionShapeRef := entityComponentsRef.CollisionShapes[breakoutTriggerEntityID]
+
 			if _, _, _, collided := Engine.CollisionShapeOverlapsWithCollisionShape(playerPosRef, playerCollisionShapeRef, &breakoutTriggerEntityPos, breakoutTriggerCollisionShapeRef); collided {
-				fmt.Println("Triggered Breakout trigger!")
-				gameState.GameState = Engine.GAMEMODE_WAITING_FOR_CHILD
-				gameState.SceneChangeMode = Engine.SCENE_CHANGE_TO_CHILD
-				gameState.SceneChangeToIndex = 1
+
+				curSceneRef.SceneGameStateData.GameState = Engine.GAMEMODE_WAITING_FOR_CHILD
+				curSceneRef.SceneGameStateData.SceneChangeMode = Engine.SCENE_CHANGE_TO_CHILD
+				curSceneRef.SceneGameStateData.SceneChangeToIndex = 1
 				mainGameMode.waitingForGameSceneFromTriggerIndex = breakoutTriggerEntityID
 			}
 		}
@@ -138,8 +139,6 @@ func (mainGameMode *MainGameMode) Update() Engine.GameStateData {
 	currentLevelCentre := Engine.Add_Vector2(&currentLevelPos, &levelHalfSize)
 
 	Engine.CameraFollowTarget(currentLevelCentre, entityComponentsRef)
-
-	return gameState
 }
 
 func (mainGameMode *MainGameMode) Draw(screenRef *ebiten.Image) {
