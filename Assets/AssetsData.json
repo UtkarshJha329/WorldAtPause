@@ -184,6 +184,22 @@
                             "ColliderOriginOffset": [0, 0]
                         }}
                     ]
+                },{
+                    "Name": "Main Game Magical Ride Trigger",
+                    "Asset Type": "Trigger",
+                    "Asset Data":[
+                        {"Position": [128, 48]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/TilesetDungeon.png",
+                            "RenderRectStart":[32, 16],
+                            "RenderRectEnd":[48, 32]
+                        }},
+                        {"Collision Shape Data": {
+                            "CollisionShapeType": "Box",
+                            "Size": [16, 16],
+                            "ColliderOriginOffset": [0, 0]
+                        }}
+                    ]
                 }
             ]
         },
@@ -343,6 +359,10 @@
                         {
                             "Prefab Name": "Main Game Breakout Ball Trigger",
                             "Entity Spawn Name": "Main Game Breakout Ball Trigger"
+                        },
+                        {
+                            "Prefab Name": "Main Game Magical Ride Trigger",
+                            "Entity Spawn Name": "Main Game Magical Ride Trigger"
                         },
                         {
                             "Prefab Name": "Stone Pyramid",

@@ -13,7 +13,8 @@ type MainGameMode struct {
 
 	waitingForGameSceneFromTriggerIndex int
 
-	deactivateBreakoutTrigger bool
+	deactivateBreakoutTrigger    bool
+	deactivateMagicalRideTrigger bool
 
 	playerSpeed float64
 }
@@ -126,8 +127,22 @@ func (mainGameMode *MainGameMode) Update() {
 
 				curSceneRef.SceneGameStateData.GameState = Engine.GAMEMODE_WAITING_FOR_CHILD
 				curSceneRef.SceneGameStateData.SceneChangeMode = Engine.SCENE_CHANGE_TO_CHILD
-				curSceneRef.SceneGameStateData.SceneChangeToIndex = 2
+				curSceneRef.SceneGameStateData.SceneChangeToIndex = 1
 				mainGameMode.waitingForGameSceneFromTriggerIndex = breakoutTriggerEntityID
+			}
+		}
+		if !mainGameMode.deactivateMagicalRideTrigger {
+
+			magicalRideTriggerEntityID := curSceneRef.EntityIDsByName["Main Game Magical Ride Trigger"]
+			magicalRideTriggerEntityPos := entityComponentsRef.Positions[magicalRideTriggerEntityID]
+			magicalRideTriggerCollisionShapeRef := entityComponentsRef.CollisionShapes[magicalRideTriggerEntityID]
+
+			if _, _, _, collided := Engine.CollisionShapeOverlapsWithCollisionShape(playerPosRef, playerCollisionShapeRef, &magicalRideTriggerEntityPos, magicalRideTriggerCollisionShapeRef); collided {
+
+				curSceneRef.SceneGameStateData.GameState = Engine.GAMEMODE_WAITING_FOR_CHILD
+				curSceneRef.SceneGameStateData.SceneChangeMode = Engine.SCENE_CHANGE_TO_CHILD
+				curSceneRef.SceneGameStateData.SceneChangeToIndex = 2
+				mainGameMode.waitingForGameSceneFromTriggerIndex = magicalRideTriggerEntityID
 			}
 		}
 	}
@@ -153,6 +168,12 @@ func (mainGameMode *MainGameMode) Draw(screenRef *ebiten.Image) {
 	drawOptions := ebiten.DrawImageOptions{}
 	breakoutTriggerSprite.DrawSprite(screenRef, &drawOptions, &breakoutTriggerEntityPosition)
 
+	magicalRideTriggerEntityID := mainGameMode.SceneRef.EntityIDsByName["Main Game Magical Ride Trigger"]
+	magicalRideTriggerEntityPosition := mainGameMode.SceneRef.EntityComponentsForScene.Positions[magicalRideTriggerEntityID]
+	magicalRideTriggerSprite := mainGameMode.SceneRef.EntityComponentsForScene.Sprites[magicalRideTriggerEntityID]
+
+	magicalRideTriggerSprite.DrawSprite(screenRef, &drawOptions, &magicalRideTriggerEntityPosition)
+
 }
 
 func (mainGameMode *MainGameMode) SceneTransitionHandler(previousGameStateData Engine.GameStateData) {
@@ -161,6 +182,19 @@ func (mainGameMode *MainGameMode) SceneTransitionHandler(previousGameStateData E
 	if mainGameMode.waitingForGameSceneFromTriggerIndex == breakoutTriggerEntityID {
 		fmt.Println("Finished breakout.")
 		mainGameMode.deactivateBreakoutTrigger = true
+
+		if previousGameStateData.GameState == Engine.GAMEMODE_WON {
+			fmt.Println("Won at breakout! Speed increased!")
+			mainGameMode.playerSpeed += 1.0
+		} else if previousGameStateData.GameState == Engine.GAMEMODE_LOST {
+			fmt.Println("Lost at breakout! Speed decreased.")
+			mainGameMode.playerSpeed -= 1.0
+		}
+	}
+	magicalRideTriggerEntityID := mainGameMode.SceneRef.EntityIDsByName["Main Game Magical Ride Trigger"]
+	if mainGameMode.waitingForGameSceneFromTriggerIndex == magicalRideTriggerEntityID {
+		fmt.Println("Finished Magical Ride.")
+		mainGameMode.deactivateMagicalRideTrigger = true
 
 		if previousGameStateData.GameState == Engine.GAMEMODE_WON {
 			fmt.Println("Won at breakout! Speed increased!")

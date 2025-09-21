@@ -89,15 +89,10 @@ func (magicalRideGameMode *MagicalRideGameMode) HandleEnemiesMovement() {
 			curEnemyPosRef.Y = 16 + float64(randYPosition)
 		} else {
 			curEnemyPosRef.X -= magicalRideGameMode.enemyMoveAmountPerFrame
-
 			if _, _, _, collided := Engine.CollisionShapeOverlapsWithCollisionShape(&playerPos, playerCollisionShapeRef, curEnemyPosRef, curEnemyCollisionShapeRef); collided {
 				curSceneRef.SceneGameStateData.GameState = Engine.GAMEMODE_LOST
 				curSceneRef.SceneGameStateData.SceneChangeMode = Engine.SCENE_CHANGE_TO_PARENT
 			}
 		}
 	}
-}
-
-func (magicalRideGameMode *MagicalRideGameMode) DoesEnemyCollideWithPlayer() {
-
 }
