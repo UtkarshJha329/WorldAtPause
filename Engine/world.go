@@ -1,6 +1,8 @@
 package Engine
 
 import (
+	"time"
+
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
@@ -26,6 +28,8 @@ func (w *World) InitCurrentSceneGameMode() {
 	entityComponentsRef.CameraData.ScreenSize = Vector2{X: 320, Y: 240}
 
 	w.Scenes[w.CurrentSceneIndex].GameMode.Init()
+
+	w.Scenes[w.CurrentSceneIndex].SceneGameStateData.GameStatsData.TimeSinceLaunch = 0.0
 }
 
 func (w *World) UpdateCurrentSceneGameMode() {
@@ -36,12 +40,13 @@ func (w *World) UpdateCurrentSceneGameMode() {
 
 	if currentSceneGameState.GameState != GAMEMODE_IN_PROGRESS {
 
-		switch currentSceneGameState.SceneChangeMode {
+		switch currentSceneGameState.SceneChangeData.SceneChangeMode {
 
 		case SCENE_CHANGE_TO_CHILD:
 			w.SceneStack.Push(w.CurrentSceneIndex)
-			w.SceneStack.Push(currentSceneGameState.SceneChangeToIndex)
-			w.CurrentSceneIndex = currentSceneGameState.SceneChangeToIndex
+			w.SceneStack.Push(currentSceneGameState.SceneChangeData.SceneChangeToIndex)
+			w.CurrentSceneIndex = currentSceneGameState.SceneChangeData.SceneChangeToIndex
+			w.Scenes[w.CurrentSceneIndex].lastUpdatedTime = time.Now()
 			w.InitCurrentSceneGameMode()
 			w.Scenes[w.CurrentSceneIndex].GameMode.SceneTransitionHandler(currentSceneGameState)
 			w.changedScenes = true
@@ -58,6 +63,13 @@ func (w *World) UpdateCurrentSceneGameMode() {
 		}
 	}
 
+	now := time.Now()
+	dt := now.Sub(w.Scenes[w.CurrentSceneIndex].lastUpdatedTime)
+	w.Scenes[w.CurrentSceneIndex].elapsed += dt
+	w.Scenes[w.CurrentSceneIndex].SceneGameStateData.GameStatsData.TimeSinceLaunch += dt
+	w.Scenes[w.CurrentSceneIndex].SceneGameStateData.GameStatsData.TimeLastFrame = dt
+
+	w.Scenes[w.CurrentSceneIndex].lastUpdatedTime = time.Now()
 }
 
 func (w *World) DrawCurrentSceneGameMode(screenRef *ebiten.Image) {

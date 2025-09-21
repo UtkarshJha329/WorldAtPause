@@ -141,10 +141,10 @@ func (breakoutGameMode *BreakoutGameMode) Update() {
 		curSceneRef.SceneGameStateData.GameState = Engine.GAMEMODE_IN_PROGRESS
 	} else if breakoutGameMode.numBricks <= 0 {
 		curSceneRef.SceneGameStateData.GameState = Engine.GAMEMODE_WON
-		curSceneRef.SceneGameStateData.SceneChangeMode = Engine.SCENE_CHANGE_TO_PARENT
+		curSceneRef.SceneGameStateData.SceneChangeData.SceneChangeMode = Engine.SCENE_CHANGE_TO_PARENT
 	} else if breakoutGameMode.failureTriggerTriggered {
 		curSceneRef.SceneGameStateData.GameState = Engine.GAMEMODE_LOST
-		curSceneRef.SceneGameStateData.SceneChangeMode = Engine.SCENE_CHANGE_TO_PARENT
+		curSceneRef.SceneGameStateData.SceneChangeData.SceneChangeMode = Engine.SCENE_CHANGE_TO_PARENT
 	}
 }
 

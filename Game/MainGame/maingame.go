@@ -126,8 +126,8 @@ func (mainGameMode *MainGameMode) Update() {
 			if _, _, _, collided := Engine.CollisionShapeOverlapsWithCollisionShape(playerPosRef, playerCollisionShapeRef, &breakoutTriggerEntityPos, breakoutTriggerCollisionShapeRef); collided {
 
 				curSceneRef.SceneGameStateData.GameState = Engine.GAMEMODE_WAITING_FOR_CHILD
-				curSceneRef.SceneGameStateData.SceneChangeMode = Engine.SCENE_CHANGE_TO_CHILD
-				curSceneRef.SceneGameStateData.SceneChangeToIndex = 1
+				curSceneRef.SceneGameStateData.SceneChangeData.SceneChangeMode = Engine.SCENE_CHANGE_TO_CHILD
+				curSceneRef.SceneGameStateData.SceneChangeData.SceneChangeToIndex = 1
 				mainGameMode.waitingForGameSceneFromTriggerIndex = breakoutTriggerEntityID
 			}
 		}
@@ -140,8 +140,14 @@ func (mainGameMode *MainGameMode) Update() {
 			if _, _, _, collided := Engine.CollisionShapeOverlapsWithCollisionShape(playerPosRef, playerCollisionShapeRef, &magicalRideTriggerEntityPos, magicalRideTriggerCollisionShapeRef); collided {
 
 				curSceneRef.SceneGameStateData.GameState = Engine.GAMEMODE_WAITING_FOR_CHILD
-				curSceneRef.SceneGameStateData.SceneChangeMode = Engine.SCENE_CHANGE_TO_CHILD
-				curSceneRef.SceneGameStateData.SceneChangeToIndex = 2
+				curSceneRef.SceneGameStateData.SceneChangeData.SceneChangeMode = Engine.SCENE_CHANGE_TO_CHILD
+				curSceneRef.SceneGameStateData.SceneChangeData.SceneChangeToIndex = 2
+
+				curSceneRef.SceneGameStateData.SceneChangeData.QuestIssuedDuringSceneChange = Engine.QuestData{
+					QuestType:  Engine.QUEST_TYPE_TIME_TRIAL,
+					QuestValue: 50.0,
+				}
+
 				mainGameMode.waitingForGameSceneFromTriggerIndex = magicalRideTriggerEntityID
 			}
 		}
@@ -191,16 +197,17 @@ func (mainGameMode *MainGameMode) SceneTransitionHandler(previousGameStateData E
 			mainGameMode.playerSpeed -= 1.0
 		}
 	}
+
 	magicalRideTriggerEntityID := mainGameMode.SceneRef.EntityIDsByName["Main Game Magical Ride Trigger"]
 	if mainGameMode.waitingForGameSceneFromTriggerIndex == magicalRideTriggerEntityID {
 		fmt.Println("Finished Magical Ride.")
 		mainGameMode.deactivateMagicalRideTrigger = true
 
 		if previousGameStateData.GameState == Engine.GAMEMODE_WON {
-			fmt.Println("Won at breakout! Speed increased!")
+			fmt.Println("Won at Magical Ride! Speed increased!")
 			mainGameMode.playerSpeed += 1.0
 		} else if previousGameStateData.GameState == Engine.GAMEMODE_LOST {
-			fmt.Println("Lost at breakout! Speed decreased.")
+			fmt.Println("Lost at Magical Ride! Speed decreased.")
 			mainGameMode.playerSpeed -= 1.0
 		}
 	}

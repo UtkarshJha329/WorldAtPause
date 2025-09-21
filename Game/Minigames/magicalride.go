@@ -2,6 +2,7 @@ package Minigames
 
 import (
 	"WorldAtPause/Engine"
+	"fmt"
 	"math/rand/v2"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -14,6 +15,8 @@ type MagicalRideGameMode struct {
 	playerCollideAndMoveParameters Engine.CollideAndMoveCollisionParameters
 
 	enemyMoveAmountPerFrame float64
+
+	surviveForTimeBeforeLevelWin float64
 }
 
 func (magicalRideGameMode *MagicalRideGameMode) Init() {
@@ -54,6 +57,11 @@ func (magicalRideGameMode *MagicalRideGameMode) Update() {
 
 	magicalRideGameMode.HandleEnemiesMovement()
 
+	if curSceneRef.SceneGameStateData.GameStatsData.TimeSinceLaunch.Seconds() >= magicalRideGameMode.surviveForTimeBeforeLevelWin {
+		fmt.Println(curSceneRef.SceneGameStateData.GameStatsData.TimeSinceLaunch.Seconds())
+		curSceneRef.SceneGameStateData.GameState = Engine.GAMEMODE_WON
+		curSceneRef.SceneGameStateData.SceneChangeData.SceneChangeMode = Engine.SCENE_CHANGE_TO_PARENT
+	}
 }
 
 func (magicalRideGameMode *MagicalRideGameMode) Draw(screenRef *ebiten.Image) {
@@ -65,6 +73,9 @@ func (magicalRideGameMode *MagicalRideGameMode) Draw(screenRef *ebiten.Image) {
 
 func (magicalRideGameMode *MagicalRideGameMode) SceneTransitionHandler(previousGameStateData Engine.GameStateData) {
 
+	if previousGameStateData.SceneChangeData.QuestIssuedDuringSceneChange.QuestType == Engine.QUEST_TYPE_TIME_TRIAL {
+		magicalRideGameMode.surviveForTimeBeforeLevelWin = previousGameStateData.SceneChangeData.QuestIssuedDuringSceneChange.QuestValue
+	}
 }
 
 func (magicalRideGameMode *MagicalRideGameMode) HandleEnemiesMovement() {
@@ -91,7 +102,7 @@ func (magicalRideGameMode *MagicalRideGameMode) HandleEnemiesMovement() {
 			curEnemyPosRef.X -= magicalRideGameMode.enemyMoveAmountPerFrame
 			if _, _, _, collided := Engine.CollisionShapeOverlapsWithCollisionShape(&playerPos, playerCollisionShapeRef, curEnemyPosRef, curEnemyCollisionShapeRef); collided {
 				curSceneRef.SceneGameStateData.GameState = Engine.GAMEMODE_LOST
-				curSceneRef.SceneGameStateData.SceneChangeMode = Engine.SCENE_CHANGE_TO_PARENT
+				curSceneRef.SceneGameStateData.SceneChangeData.SceneChangeMode = Engine.SCENE_CHANGE_TO_PARENT
 			}
 		}
 	}

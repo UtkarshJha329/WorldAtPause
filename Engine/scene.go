@@ -1,5 +1,7 @@
 package Engine
 
+import "time"
+
 type Room struct {
 	EntitiesInThisRoom []int
 	EnemyEntityIDs     []int
@@ -17,6 +19,9 @@ type Scene struct {
 	Fonts                    map[string]*Font
 	Texts                    map[string]string
 	EntityIDsByName          map[string]int
+
+	lastUpdatedTime time.Time
+	elapsed         time.Duration
 }
 
 func CreateSceneWithNumEntities(numEntitiesToCreateInScene int) *Scene {
@@ -26,5 +31,6 @@ func CreateSceneWithNumEntities(numEntitiesToCreateInScene int) *Scene {
 		Fonts:                    make(map[string]*Font),
 		Texts:                    make(map[string]string),
 		EntityIDsByName:          make(map[string]int),
+		lastUpdatedTime:          time.Now(),
 	}
 }

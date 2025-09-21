@@ -16,10 +16,16 @@ const (
 	SCENE_CHANGE_TO_CHILD
 )
 
+type SceneChangeData struct {
+	SceneChangeMode              int
+	SceneChangeToIndex           int
+	QuestIssuedDuringSceneChange QuestData
+}
+
 type GameStateData struct {
-	GameState          int
-	SceneChangeMode    int
-	SceneChangeToIndex int
+	GameState       int
+	SceneChangeData SceneChangeData
+	GameStatsData   GameStatsData
 }
 
 type GameMode interface {
