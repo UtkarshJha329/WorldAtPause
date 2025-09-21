@@ -144,8 +144,10 @@ func (mainGameMode *MainGameMode) Update() {
 				curSceneRef.SceneGameStateData.SceneChangeData.SceneChangeToIndex = 2
 
 				curSceneRef.SceneGameStateData.SceneChangeData.QuestIssuedDuringSceneChange = Engine.QuestData{
-					QuestType:  Engine.QUEST_TYPE_TIME_TRIAL,
-					QuestValue: 50.0,
+					QuestType: Engine.QUEST_TYPE_TIME_TRIAL,
+					QuestValues: map[int]float64{
+						Engine.QUEST_TYPE_TIME_TRIAL: 50.0,
+					},
 				}
 
 				mainGameMode.waitingForGameSceneFromTriggerIndex = magicalRideTriggerEntityID

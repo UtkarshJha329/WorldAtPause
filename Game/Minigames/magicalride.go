@@ -74,7 +74,7 @@ func (magicalRideGameMode *MagicalRideGameMode) Draw(screenRef *ebiten.Image) {
 func (magicalRideGameMode *MagicalRideGameMode) SceneTransitionHandler(previousGameStateData Engine.GameStateData) {
 
 	if previousGameStateData.SceneChangeData.QuestIssuedDuringSceneChange.QuestType == Engine.QUEST_TYPE_TIME_TRIAL {
-		magicalRideGameMode.surviveForTimeBeforeLevelWin = previousGameStateData.SceneChangeData.QuestIssuedDuringSceneChange.QuestValue
+		magicalRideGameMode.surviveForTimeBeforeLevelWin = previousGameStateData.SceneChangeData.QuestIssuedDuringSceneChange.QuestValues[Engine.QUEST_TYPE_TIME_TRIAL]
 	}
 }
 

@@ -7,6 +7,6 @@ const (
 )
 
 type QuestData struct {
-	QuestType  int
-	QuestValue float64
+	QuestType   int
+	QuestValues map[int]float64
 }
