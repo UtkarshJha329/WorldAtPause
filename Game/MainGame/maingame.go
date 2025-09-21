@@ -126,7 +126,7 @@ func (mainGameMode *MainGameMode) Update() {
 
 				curSceneRef.SceneGameStateData.GameState = Engine.GAMEMODE_WAITING_FOR_CHILD
 				curSceneRef.SceneGameStateData.SceneChangeMode = Engine.SCENE_CHANGE_TO_CHILD
-				curSceneRef.SceneGameStateData.SceneChangeToIndex = 1
+				curSceneRef.SceneGameStateData.SceneChangeToIndex = 2
 				mainGameMode.waitingForGameSceneFromTriggerIndex = breakoutTriggerEntityID
 			}
 		}

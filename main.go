@@ -3,7 +3,7 @@ package main
 import (
 	"WorldAtPause/Engine"
 	"WorldAtPause/Game/MainGame"
-	Games "WorldAtPause/Game/Minigames/Breakout"
+	"WorldAtPause/Game/Minigames"
 	"embed"
 	"image/color"
 	"log"
@@ -43,12 +43,16 @@ func SetScenesGameModes(g *Game) {
 			scene.GameMode = &MainGame.MainGameMode{SceneRef: scene}
 		}
 		if scene.SceneType == "Breakout Game" {
-			scene.GameMode = &Games.BreakoutGameMode{SceneRef: scene}
+			scene.GameMode = &Minigames.BreakoutGameMode{SceneRef: scene}
+		}
+		if scene.SceneType == "Magical Ride Game" {
+			scene.GameMode = &Minigames.MagicalRideGameMode{SceneRef: scene}
 		}
 	}
 }
 
 func main() {
+
 	ebiten.SetWindowSize(640, 480)
 	ebiten.SetWindowTitle("Ninja!")
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)

@@ -22,6 +22,16 @@
                                 "gridSize": 16
                         }}
                     ]
+                },{
+                    "Name": "Magical Ride Tilemap",
+                    "Asset Type": "Tilemap",
+                    "Asset Data": [
+                        {"Tilemap":{
+                                "tilemapTilesetsSource": "Assets/Maps/TilesetFloor.png",
+                                "tilemapSourceJSON": "Assets/Maps/MagicalRideTilemap.json",
+                                "gridSize": 16
+                        }}
+                    ]
                 }]
         },
         {
@@ -76,6 +86,22 @@
                             "ColliderOriginOffset": [0, 0]
                         }}
                     ]
+                },{
+                    "Name": "Player Magical Ride",
+                    "Asset Type": "Player",
+                    "Asset Data": [
+                        {"Position": [100, 100]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/LittleBroomRideWitch.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }},
+                        {"Collision Shape Data": {
+                            "CollisionShapeType": "Box",
+                            "Size": [16, 16],
+                            "ColliderOriginOffset": [0, 0]
+                        }}
+                    ]
                 }]
         },
         {
@@ -102,6 +128,22 @@
                         {"Position": [25, 25]},
                         {"Sprite Data": {
                             "SpriteTextureLocation": "Assets/Images/SkeletonSpriteSheet.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }},
+                        {"Collision Shape Data": {
+                            "CollisionShapeType": "Circle",
+                            "Radius": 8,
+                            "ColliderOriginOffset": [8, 8]
+                        }}
+                    ]
+                },{
+                    "Name": "Eyeball",
+                    "Asset Type": "Enemy",
+                    "Asset Data": [
+                        {"Position": [25, 25]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/Eyeball.png",
                             "RenderRectStart": [0, 0],
                             "RenderRectEnd": [16, 16]
                         }},
@@ -395,6 +437,47 @@
                         {
                             "Prefab Name": "Breakout You Lose Text",
                             "Entity Spawn Name": "Breakout You Lose Text"
+                        }
+                    ]
+                }
+            ]
+        },{
+            "Scene Type": "Magical Ride Game",
+            "Player Entity": {
+                "Prefab Name": "Player Magical Ride",
+                "Entity Spawn Name": "Player",
+                "Asset Data": [
+                    {"Position": [64, 120]}
+                ]
+            },
+            "Rooms Data": [
+                {
+                    "Room Index" : [0, 0],
+                    "Room Entities": [
+                        {
+                            "Prefab Name": "Magical Ride Tilemap",
+                            "Entity Spawn Name": "Magical Ride Tilemap"
+                        },
+                        {
+                            "Prefab Name": "Eyeball",
+                            "Entity Spawn Name": "Magical Ride Eyeball A",
+                            "Asset Data": [
+                                {"Position": [240, 64]}
+                            ]
+                        },
+                        {
+                            "Prefab Name": "Eyeball",
+                            "Entity Spawn Name": "Magical Ride Eyeball B",
+                            "Asset Data": [
+                                {"Position": [150, 120]}
+                            ]
+                        },
+                        {
+                            "Prefab Name": "Eyeball",
+                            "Entity Spawn Name": "Magical Ride Eyeball C",
+                            "Asset Data": [
+                                {"Position": [360, 64]}
+                            ]
                         }
                     ]
                 }

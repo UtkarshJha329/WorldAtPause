@@ -1,4 +1,4 @@
-package Games
+package Minigames
 
 import (
 	"WorldAtPause/Engine"
