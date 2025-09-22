@@ -159,18 +159,7 @@ func (mainGameMode *MainGameMode) Draw(screenRef *ebiten.Image) {
 }
 
 func (mainGameMode *MainGameMode) SceneTransitionHandler(previousGameStateData Engine.GameStateData) {
-
-	breakoutTriggerEntityID := mainGameMode.SceneRef.EntityIDsByName["Main Game Breakout Ball Trigger"]
-	if mainGameMode.waitingForGameSceneFromTriggerIndex == breakoutTriggerEntityID {
-		// mainGameMode.deactivateBreakoutTrigger = true
-		mainGameMode.SceneRef.SceneGameStateData.SceneChangeData.QuestIssuedDuringSceneChange.QuestCompleteLambda(previousGameStateData)
-	}
-
-	magicalRideTriggerEntityID := mainGameMode.SceneRef.EntityIDsByName["Main Game Magical Ride Trigger"]
-	if mainGameMode.waitingForGameSceneFromTriggerIndex == magicalRideTriggerEntityID {
-		// mainGameMode.deactivateMagicalRideTrigger = true
-		mainGameMode.SceneRef.SceneGameStateData.SceneChangeData.QuestIssuedDuringSceneChange.QuestCompleteLambda(previousGameStateData)
-	}
+	mainGameMode.SceneRef.SceneGameStateData.SceneChangeData.QuestIssuedDuringSceneChange.QuestCompleteLambda(previousGameStateData)
 }
 
 func (mainGameMode *MainGameMode) IssueSceneTransitionQuests() {

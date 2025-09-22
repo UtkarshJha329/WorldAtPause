@@ -25,6 +25,7 @@ func (breakoutGameMode *BreakoutGameMode) Init() {
 	breakoutGameMode.ballInputDirection = Engine.Vector2{X: -1.0, Y: -1.0}
 	breakoutGameMode.ballMoveAmountPerFrame = 2.0
 	breakoutGameMode.numBricks = 5.0
+	breakoutGameMode.failureTriggerTriggered = false
 
 }
 
