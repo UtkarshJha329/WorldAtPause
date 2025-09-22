@@ -6,7 +6,6 @@ import (
 	"math"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 type MainGameMode struct {
@@ -20,41 +19,15 @@ type MainGameMode struct {
 
 	playerSpeed float64
 
-	showQuestAcceptUITree bool
-	questAcceptUITree     Engine.UITree
+	showCurrentUITree bool
+	currentUITree     *Engine.UITree
 }
 
 func (mainGameMode *MainGameMode) Init() {
 	mainGameMode.deactivateBreakoutTrigger = false
 	mainGameMode.playerSpeed = 2.0
 
-	mainGameMode.showQuestAcceptUITree = false
-
-	testUIRect := Engine.UIRect{
-		Sprite:   mainGameMode.SceneRef.UIRectSprites["UI Test Rect Sprite"],
-		Position: Engine.Vector2{X: 128, Y: 112},
-		Size:     Engine.Vector2{X: 64, Y: 16},
-	}
-
-	mainGameMode.questAcceptUITree.UIRects = append(mainGameMode.questAcceptUITree.UIRects, testUIRect)
-
-	yesUIRect := Engine.UIRect{
-		Sprite:   mainGameMode.SceneRef.UIRectSprites["Yes Button Sprite"],
-		Position: Engine.Vector2{X: 0, Y: 0},
-		Size:     Engine.Vector2{X: 32, Y: 16},
-	}
-
-	mainGameMode.questAcceptUITree.UIRects = append(mainGameMode.questAcceptUITree.UIRects, yesUIRect)
-	mainGameMode.questAcceptUITree.UIRects[0].ChildrenIndexInUITree = append(mainGameMode.questAcceptUITree.UIRects[0].ChildrenIndexInUITree, len(mainGameMode.questAcceptUITree.UIRects)-1)
-
-	noUIRect := Engine.UIRect{
-		Sprite:   mainGameMode.SceneRef.UIRectSprites["No Button Sprite"],
-		Position: Engine.Vector2{X: 32, Y: 0},
-		Size:     Engine.Vector2{X: 32, Y: 16},
-	}
-
-	mainGameMode.questAcceptUITree.UIRects = append(mainGameMode.questAcceptUITree.UIRects, noUIRect)
-	mainGameMode.questAcceptUITree.UIRects[0].ChildrenIndexInUITree = append(mainGameMode.questAcceptUITree.UIRects[0].ChildrenIndexInUITree, len(mainGameMode.questAcceptUITree.UIRects)-1)
+	mainGameMode.showCurrentUITree = false
 }
 
 func (mainGameMode *MainGameMode) Update() {
@@ -180,8 +153,8 @@ func (mainGameMode *MainGameMode) Draw(screenRef *ebiten.Image) {
 
 	magicalRideTriggerSprite.DrawSprite(screenRef, &drawOptions, &magicalRideTriggerEntityPosition)
 
-	if mainGameMode.showQuestAcceptUITree {
-		mainGameMode.questAcceptUITree.RenderUITree(0, Engine.Vector2{X: 0.0, Y: 0.0}, screenRef, &drawOptions)
+	if mainGameMode.showCurrentUITree {
+		mainGameMode.currentUITree.RenderUITree(0, Engine.Vector2{X: 0.0, Y: 0.0}, screenRef, &drawOptions)
 	}
 }
 
@@ -189,30 +162,14 @@ func (mainGameMode *MainGameMode) SceneTransitionHandler(previousGameStateData E
 
 	breakoutTriggerEntityID := mainGameMode.SceneRef.EntityIDsByName["Main Game Breakout Ball Trigger"]
 	if mainGameMode.waitingForGameSceneFromTriggerIndex == breakoutTriggerEntityID {
-		fmt.Println("Finished breakout.")
 		mainGameMode.deactivateBreakoutTrigger = true
-
-		if previousGameStateData.GameState == Engine.GAMEMODE_WON {
-			fmt.Println("Won at breakout! Speed increased!")
-			mainGameMode.playerSpeed += 1.0
-		} else if previousGameStateData.GameState == Engine.GAMEMODE_LOST {
-			fmt.Println("Lost at breakout! Speed decreased.")
-			mainGameMode.playerSpeed -= 1.0
-		}
+		mainGameMode.SceneRef.SceneGameStateData.SceneChangeData.QuestIssuedDuringSceneChange.QuestCompleteLambda(previousGameStateData)
 	}
 
 	magicalRideTriggerEntityID := mainGameMode.SceneRef.EntityIDsByName["Main Game Magical Ride Trigger"]
 	if mainGameMode.waitingForGameSceneFromTriggerIndex == magicalRideTriggerEntityID {
-		fmt.Println("Finished Magical Ride.")
 		mainGameMode.deactivateMagicalRideTrigger = true
-
-		if previousGameStateData.GameState == Engine.GAMEMODE_WON {
-			fmt.Println("Won at Magical Ride! Speed increased!")
-			mainGameMode.playerSpeed += 1.0
-		} else if previousGameStateData.GameState == Engine.GAMEMODE_LOST {
-			fmt.Println("Lost at Magical Ride! Speed decreased.")
-			mainGameMode.playerSpeed -= 1.0
-		}
+		mainGameMode.SceneRef.SceneGameStateData.SceneChangeData.QuestIssuedDuringSceneChange.QuestCompleteLambda(previousGameStateData)
 	}
 }
 
@@ -224,7 +181,7 @@ func (mainGameMode *MainGameMode) IssueSceneTransitionQuests() {
 	playerPosRef := &entityComponentsRef.Positions[entityComponentsRef.PlayerEntityID]
 	playerCollisionShapeRef := entityComponentsRef.CollisionShapes[entityComponentsRef.PlayerEntityID]
 
-	shouldNotShowQuestAcceptUITree := true
+	shouldShowQuestAcceptUITree := false
 
 	if !mainGameMode.deactivateBreakoutTrigger {
 
@@ -234,23 +191,29 @@ func (mainGameMode *MainGameMode) IssueSceneTransitionQuests() {
 
 		if _, _, _, collided := Engine.CollisionShapeOverlapsWithCollisionShape(playerPosRef, playerCollisionShapeRef, &breakoutTriggerEntityPos, breakoutTriggerCollisionShapeRef); collided {
 
-			shouldNotShowQuestAcceptUITree = false
+			shouldShowQuestAcceptUITree = true
 
-			if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+			if Engine.ClickedYesInYesNoUITree() {
 
-				mouseX, mouseY := ebiten.CursorPosition()
-				mousePos := Engine.Vector2{X: float64(mouseX), Y: float64(mouseY)}
-				_, insideARect := mainGameMode.questAcceptUITree.PointInUITree(0, mousePos)
+				fmt.Println("Accepted Breakout Quest.")
 
-				if insideARect {
+				curSceneRef.SpawnChildSceneWithQuest(mainGameMode.World.SceneIndexByName["Breakout Game"],
+					Engine.QuestData{
+						QuestType:   Engine.QUEST_TYPE_LEVEL_COMPLETE,
+						QuestValues: map[int]float64{},
+						QuestCompleteLambda: func(previousGameStateData Engine.GameStateData) {
+							if previousGameStateData.GameState == Engine.GAMEMODE_WON {
+								fmt.Println("Won at Breakout! Speed increased!")
+								mainGameMode.playerSpeed += 1.0
+							} else if previousGameStateData.GameState == Engine.GAMEMODE_LOST {
+								fmt.Println("Lost at Breakout! Speed decreased.")
+								mainGameMode.playerSpeed -= 1.0
+							}
+						},
+					})
 
-					fmt.Println("Accepted Breakout Quest.")
+				mainGameMode.waitingForGameSceneFromTriggerIndex = breakoutTriggerEntityID
 
-					curSceneRef.SceneGameStateData.GameState = Engine.GAMEMODE_WAITING_FOR_CHILD
-					curSceneRef.SceneGameStateData.SceneChangeData.SceneChangeMode = Engine.SCENE_CHANGE_TO_CHILD
-					curSceneRef.SceneGameStateData.SceneChangeData.SceneChangeToIndex = mainGameMode.World.SceneIndexByName["Breakout Game"]
-					mainGameMode.waitingForGameSceneFromTriggerIndex = breakoutTriggerEntityID
-				}
 			}
 		}
 	}
@@ -262,34 +225,37 @@ func (mainGameMode *MainGameMode) IssueSceneTransitionQuests() {
 
 		if _, _, _, collided := Engine.CollisionShapeOverlapsWithCollisionShape(playerPosRef, playerCollisionShapeRef, &magicalRideTriggerEntityPos, magicalRideTriggerCollisionShapeRef); collided {
 
-			shouldNotShowQuestAcceptUITree = false
+			shouldShowQuestAcceptUITree = true
 
-			if inpututil.IsMouseButtonJustPressed(ebiten.MouseButtonLeft) {
+			if Engine.ClickedYesInYesNoUITree() {
 
-				mouseX, mouseY := ebiten.CursorPosition()
-				mousePos := Engine.Vector2{X: float64(mouseX), Y: float64(mouseY)}
-				_, insideARect := mainGameMode.questAcceptUITree.PointInUITree(0, mousePos)
+				fmt.Println("Accepted Magical Ride Quest.")
 
-				if insideARect {
-
-					fmt.Println("Accepted Magical Ride Quest.")
-
-					curSceneRef.SceneGameStateData.GameState = Engine.GAMEMODE_WAITING_FOR_CHILD
-					curSceneRef.SceneGameStateData.SceneChangeData.SceneChangeMode = Engine.SCENE_CHANGE_TO_CHILD
-					curSceneRef.SceneGameStateData.SceneChangeData.SceneChangeToIndex = mainGameMode.World.SceneIndexByName["Magical Ride Game"]
-
-					curSceneRef.SceneGameStateData.SceneChangeData.QuestIssuedDuringSceneChange = Engine.QuestData{
+				curSceneRef.SpawnChildSceneWithQuest(mainGameMode.World.SceneIndexByName["Magical Ride Game"],
+					Engine.QuestData{
 						QuestType: Engine.QUEST_TYPE_TIME_TRIAL,
 						QuestValues: map[int]float64{
 							Engine.QUEST_TYPE_TIME_TRIAL: 50.0,
 						},
-					}
+						QuestCompleteLambda: func(previousGameStateData Engine.GameStateData) {
+							if previousGameStateData.GameState == Engine.GAMEMODE_WON {
+								fmt.Println("Won at Magical Ride! Speed increased!")
+								mainGameMode.playerSpeed += 1.0
+							} else if previousGameStateData.GameState == Engine.GAMEMODE_LOST {
+								fmt.Println("Lost at Magical Ride! Speed decreased.")
+								mainGameMode.playerSpeed -= 1.0
+							}
+						},
+					})
 
-					mainGameMode.waitingForGameSceneFromTriggerIndex = magicalRideTriggerEntityID
-				}
+				mainGameMode.waitingForGameSceneFromTriggerIndex = magicalRideTriggerEntityID
+
 			}
 		}
 	}
 
-	mainGameMode.showQuestAcceptUITree = !shouldNotShowQuestAcceptUITree
+	mainGameMode.showCurrentUITree = shouldShowQuestAcceptUITree
+	if shouldShowQuestAcceptUITree {
+		mainGameMode.currentUITree = Engine.YesNoUITree
+	}
 }

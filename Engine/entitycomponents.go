@@ -127,9 +127,22 @@ func OverridePrefabDataForEntityWithEntityData(entityID int, entityComponents *E
 	}
 }
 
-func CreateAndPopulateEntitiesAndComponents(prefabMap map[string]Prefab, scenesData []SceneData) *World {
+func CreateAndPopulateEntitiesAndComponents(prefabMap map[string]Prefab, UISpritesData []EntitySpawnData, scenesData []SceneData) *World {
 
 	world := CreateWorldWithNumScenes(len(scenesData))
+
+	for _, curUISpriteData := range UISpritesData {
+
+		curSpriteAssetData := prefabMap[curUISpriteData.PrefabName].AssetDatas[0].SpriteAssetData
+		curUISprite := &Sprite{
+			Image:           LoadImageFromFileSystem(curSpriteAssetData.SpriteTextureLocation),
+			RenderRectStart: curSpriteAssetData.RenderRectStart,
+			RenderRectEnd:   curSpriteAssetData.RenderRectEnd,
+		}
+		world.UIRectSprites[curUISpriteData.EntityName] = curUISprite
+	}
+	world.MakeYesNoUITree()
+
 	for index, sceneData := range scenesData {
 
 		totalNumEntitiesInScene := 0
@@ -144,17 +157,6 @@ func CreateAndPopulateEntitiesAndComponents(prefabMap map[string]Prefab, scenesD
 		world.Scenes[index].SceneName = sceneData.SceneName
 
 		curScene := world.Scenes[index]
-
-		for _, curUISpriteData := range sceneData.UISpriteData {
-
-			curSpriteAssetData := prefabMap[curUISpriteData.PrefabName].AssetDatas[0].SpriteAssetData
-			curUISprite := &Sprite{
-				Image:           LoadImageFromFileSystem(curSpriteAssetData.SpriteTextureLocation),
-				RenderRectStart: curSpriteAssetData.RenderRectStart,
-				RenderRectEnd:   curSpriteAssetData.RenderRectEnd,
-			}
-			curScene.UIRectSprites[curUISpriteData.EntityName] = curUISprite
-		}
 
 		runningEntityID := 0
 		curSceneEntityComponents := curScene.EntityComponentsForScene
@@ -204,11 +206,11 @@ func CreateAndPopulateEntitiesAndComponents(prefabMap map[string]Prefab, scenesD
 }
 
 func CreateAndPopulateWorldScenesAndEntitiesAndComponentsFromGameData(path string) *World {
-	prefabMap, scenesData, err := LoadGameAssetData(path)
+	prefabMap, UISpritesData, scenesData, err := LoadGameAssetData(path)
 	if err != nil {
 		log.Fatal("Failed to load game data from file.")
 	}
 
-	entityComponentData := CreateAndPopulateEntitiesAndComponents(prefabMap, scenesData)
+	entityComponentData := CreateAndPopulateEntitiesAndComponents(prefabMap, UISpritesData, scenesData)
 	return entityComponentData
 }

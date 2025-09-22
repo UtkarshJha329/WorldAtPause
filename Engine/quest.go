@@ -7,6 +7,7 @@ const (
 )
 
 type QuestData struct {
-	QuestType   int
-	QuestValues map[int]float64
+	QuestType           int
+	QuestValues         map[int]float64
+	QuestCompleteLambda func(GameStateData)
 }

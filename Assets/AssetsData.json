@@ -370,6 +370,20 @@
             ]
         }
     ],
+    "UI Sprite Data": [
+        {
+            "Prefab Name": "UI Test Rect Sprite",
+            "Entity Spawn Name": "UI Test Rect Sprite"
+        },
+        {
+            "Prefab Name": "Yes Button Sprite",
+            "Entity Spawn Name": "Yes Button Sprite"
+        },
+        {
+            "Prefab Name": "No Button Sprite",
+            "Entity Spawn Name": "No Button Sprite"
+        }
+    ],
     "Scenes Data": [
         {
             "Scene Name": "Main Game",
@@ -380,20 +394,6 @@
                     {"Position": [100, 100]}
                 ]
             },
-            "UI Sprite Data": [
-                {
-                    "Prefab Name": "UI Test Rect Sprite",
-                    "Entity Spawn Name": "UI Test Rect Sprite"
-                },
-                {
-                    "Prefab Name": "Yes Button Sprite",
-                    "Entity Spawn Name": "Yes Button Sprite"
-                },
-                {
-                    "Prefab Name": "No Button Sprite",
-                    "Entity Spawn Name": "No Button Sprite"
-                }
-            ],
             "Rooms Data": [
                 {
                     "Room Index" : [0, 0],

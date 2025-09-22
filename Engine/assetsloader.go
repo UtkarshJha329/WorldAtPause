@@ -30,16 +30,16 @@ type RoomEntitySpawnData struct {
 type SceneData struct {
 	SceneName                string                `json:"Scene Name"`
 	PlayerEntityDataForScene EntitySpawnData       `json:"Player Entity"`
-	UISpriteData             []EntitySpawnData     `json:"UI Sprite Data"`
 	RoomsData                []RoomEntitySpawnData `json:"Rooms Data"`
 }
 
 type Root struct {
-	Prefabs    []map[string][]Prefab `json:"Prefabs"`
-	ScenesData []SceneData           `json:"Scenes Data"`
+	Prefabs      []map[string][]Prefab `json:"Prefabs"`
+	UISpriteData []EntitySpawnData     `json:"UI Sprite Data"`
+	ScenesData   []SceneData           `json:"Scenes Data"`
 }
 
-func LoadGameAssetData(path string) (map[string]Prefab, []SceneData, error) {
+func LoadGameAssetData(path string) (map[string]Prefab, []EntitySpawnData, []SceneData, error) {
 	data := LoadFileFromFileSystem(path)
 	var root Root
 	UnmarshalRoot(&data, &root)
@@ -53,5 +53,5 @@ func LoadGameAssetData(path string) (map[string]Prefab, []SceneData, error) {
 		}
 	}
 
-	return prefabMap, root.ScenesData, nil
+	return prefabMap, root.UISpriteData, root.ScenesData, nil
 }

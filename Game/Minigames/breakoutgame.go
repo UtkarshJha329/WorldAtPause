@@ -2,7 +2,6 @@ package Minigames
 
 import (
 	"WorldAtPause/Engine"
-	"fmt"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
@@ -19,10 +18,11 @@ type BreakoutGameMode struct {
 }
 
 func (breakoutGameMode *BreakoutGameMode) Init() {
+
 	breakoutGameMode.ballInputDirection = Engine.Vector2{X: -1.0, Y: -1.0}
 	breakoutGameMode.ballMoveAmountPerFrame = 2.0
 	breakoutGameMode.numBricks = 5.0
-	fmt.Println("Init breakout scene.")
+
 }
 
 func (breakoutGameMode *BreakoutGameMode) Update() {

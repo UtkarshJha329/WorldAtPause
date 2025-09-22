@@ -1,6 +1,8 @@
 package Engine
 
-import "time"
+import (
+	"time"
+)
 
 type Room struct {
 	EntitiesInThisRoom []int
@@ -19,7 +21,6 @@ type Scene struct {
 	Fonts                    map[string]*Font
 	Texts                    map[string]string
 	EntityIDsByName          map[string]int
-	UIRectSprites            map[string]*Sprite
 
 	lastUpdatedTime time.Time
 	elapsed         time.Duration
@@ -32,7 +33,16 @@ func CreateSceneWithNumEntities(numEntitiesToCreateInScene int) *Scene {
 		Fonts:                    make(map[string]*Font),
 		Texts:                    make(map[string]string),
 		EntityIDsByName:          make(map[string]int),
-		UIRectSprites:            make(map[string]*Sprite),
 		lastUpdatedTime:          time.Now(),
 	}
+}
+
+func (curSceneRef *Scene) SpawnChildSceneWithQuest(childSceneIndex int, questToIssue QuestData) {
+
+	curSceneRef.SceneGameStateData.GameState = GAMEMODE_WAITING_FOR_CHILD
+	curSceneRef.SceneGameStateData.SceneChangeData.SceneChangeMode = SCENE_CHANGE_TO_CHILD
+	curSceneRef.SceneGameStateData.SceneChangeData.SceneChangeToIndex = childSceneIndex
+
+	curSceneRef.SceneGameStateData.SceneChangeData.QuestIssuedDuringSceneChange = questToIssue
+
 }

@@ -10,6 +10,7 @@ type World struct {
 	CurrentSceneIndex int
 	Scenes            []*Scene
 	SceneIndexByName  map[string]int
+	UIRectSprites     map[string]*Sprite
 	SceneStack        SceneStack
 	changedScenes     bool
 }
@@ -20,6 +21,7 @@ func CreateWorldWithNumScenes(totalNumScenesToCreate int) *World {
 		Scenes:            make([]*Scene, totalNumScenesToCreate),
 		SceneIndexByName:  make(map[string]int),
 		SceneStack:        SceneStack{SceneIndexStack: make([]int, 0)},
+		UIRectSprites:     make(map[string]*Sprite),
 		changedScenes:     false,
 	}
 }

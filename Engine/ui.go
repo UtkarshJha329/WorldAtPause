@@ -58,3 +58,8 @@ func (uiTree *UITree) PointInUITree(fromUIRectIndex int, point Vector2) (int, bo
 
 	return -1, false
 }
+
+func (uiTree *UITree) PointOnThisRectInUITree(fromUIRectIndex int, uiRectIndexToCheck int, point Vector2) bool {
+	rectIndex, inARect := uiTree.PointInUITree(fromUIRectIndex, point)
+	return inARect && rectIndex == uiRectIndexToCheck
+}
