@@ -9,6 +9,7 @@ import (
 type World struct {
 	CurrentSceneIndex int
 	Scenes            []*Scene
+	SceneIndexByName  map[string]int
 	SceneStack        SceneStack
 	changedScenes     bool
 }
@@ -17,6 +18,7 @@ func CreateWorldWithNumScenes(totalNumScenesToCreate int) *World {
 	return &World{
 		CurrentSceneIndex: 0,
 		Scenes:            make([]*Scene, totalNumScenesToCreate),
+		SceneIndexByName:  make(map[string]int),
 		SceneStack:        SceneStack{SceneIndexStack: make([]int, 0)},
 		changedScenes:     false,
 	}

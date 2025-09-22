@@ -121,7 +121,8 @@ func OverridePrefabDataForEntityWithEntityData(entityID int, entityComponents *E
 
 		case "Position":
 			entityComponents.Positions[entityID] = *assetData.Position
-
+		default:
+			log.Fatal("Unrecognised asset type to override : ", assetData.AssetType)
 		}
 	}
 }
@@ -137,10 +138,23 @@ func CreateAndPopulateEntitiesAndComponents(prefabMap map[string]Prefab, scenesD
 			totalNumEntitiesInScene += len(curRoomData.RoomEntities)
 		}
 
+		world.SceneIndexByName[sceneData.SceneName] = index
+
 		world.Scenes[index] = CreateSceneWithNumEntities(totalNumEntitiesInScene)
-		world.Scenes[index].SceneType = sceneData.SceneType
+		world.Scenes[index].SceneName = sceneData.SceneName
 
 		curScene := world.Scenes[index]
+
+		for _, curUISpriteData := range sceneData.UISpriteData {
+
+			curSpriteAssetData := prefabMap[curUISpriteData.PrefabName].AssetDatas[0].SpriteAssetData
+			curUISprite := &Sprite{
+				Image:           LoadImageFromFileSystem(curSpriteAssetData.SpriteTextureLocation),
+				RenderRectStart: curSpriteAssetData.RenderRectStart,
+				RenderRectEnd:   curSpriteAssetData.RenderRectEnd,
+			}
+			curScene.UIRectSprites[curUISpriteData.EntityName] = curUISprite
+		}
 
 		runningEntityID := 0
 		curSceneEntityComponents := curScene.EntityComponentsForScene
@@ -159,23 +173,28 @@ func CreateAndPopulateEntitiesAndComponents(prefabMap map[string]Prefab, scenesD
 
 			for _, curEntityData := range curRoomParsedData.RoomEntities {
 
-				PopulateEntityDataFromPrefab(prefabMap, curScene, curEntityData.PrefabName, runningEntityID)
-				OverridePrefabDataForEntityWithEntityData(runningEntityID, curSceneEntityComponents, &curEntityData)
+				if prefabMap[curEntityData.PrefabName].AssetType == "UI Sprite Data" {
 
-				switch prefabMap[curEntityData.PrefabName].AssetType {
-				case "Enemy":
-					curRoom.EnemyEntityIDs = append(curRoom.EnemyEntityIDs, runningEntityID)
-				case "Obstacle":
-					curRoom.ObstacleEntityIDs = append(curRoom.ObstacleEntityIDs, runningEntityID)
-				case "Trigger":
-					curRoom.TriggerEntityIDs = append(curRoom.TriggerEntityIDs, runningEntityID)
-				case "Item":
-					curRoom.ItemEntityIDs = append(curRoom.ItemEntityIDs, runningEntityID)
+				} else {
+
+					PopulateEntityDataFromPrefab(prefabMap, curScene, curEntityData.PrefabName, runningEntityID)
+					OverridePrefabDataForEntityWithEntityData(runningEntityID, curSceneEntityComponents, &curEntityData)
+
+					switch prefabMap[curEntityData.PrefabName].AssetType {
+					case "Enemy":
+						curRoom.EnemyEntityIDs = append(curRoom.EnemyEntityIDs, runningEntityID)
+					case "Obstacle":
+						curRoom.ObstacleEntityIDs = append(curRoom.ObstacleEntityIDs, runningEntityID)
+					case "Trigger":
+						curRoom.TriggerEntityIDs = append(curRoom.TriggerEntityIDs, runningEntityID)
+					case "Item":
+						curRoom.ItemEntityIDs = append(curRoom.ItemEntityIDs, runningEntityID)
+					}
+
+					curRoom.EntitiesInThisRoom = append(curRoom.EntitiesInThisRoom, runningEntityID)
+					curScene.EntityIDsByName[curEntityData.EntityName] = runningEntityID
+					runningEntityID += 1
 				}
-
-				curRoom.EntitiesInThisRoom = append(curRoom.EntitiesInThisRoom, runningEntityID)
-				curScene.EntityIDsByName[curEntityData.EntityName] = runningEntityID
-				runningEntityID += 1
 			}
 		}
 

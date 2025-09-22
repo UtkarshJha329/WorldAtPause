@@ -9,6 +9,7 @@ import (
 )
 
 type BreakoutGameMode struct {
+	World    *Engine.World
 	SceneRef *Engine.Scene
 
 	ballInputDirection      Engine.Vector2

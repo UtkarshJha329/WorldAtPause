@@ -39,14 +39,23 @@ func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeigh
 
 func SetScenesGameModes(g *Game) {
 	for _, scene := range g.world.Scenes {
-		if scene.SceneType == "Main Game" {
-			scene.GameMode = &MainGame.MainGameMode{SceneRef: scene}
+		if scene.SceneName == "Main Game" {
+			scene.GameMode = &MainGame.MainGameMode{
+				World:    g.world,
+				SceneRef: scene,
+			}
 		}
-		if scene.SceneType == "Breakout Game" {
-			scene.GameMode = &Minigames.BreakoutGameMode{SceneRef: scene}
+		if scene.SceneName == "Breakout Game" {
+			scene.GameMode = &Minigames.BreakoutGameMode{
+				World:    g.world,
+				SceneRef: scene,
+			}
 		}
-		if scene.SceneType == "Magical Ride Game" {
-			scene.GameMode = &Minigames.MagicalRideGameMode{SceneRef: scene}
+		if scene.SceneName == "Magical Ride Game" {
+			scene.GameMode = &Minigames.MagicalRideGameMode{
+				World:    g.world,
+				SceneRef: scene,
+			}
 		}
 	}
 }

@@ -9,6 +9,7 @@ import (
 )
 
 type MagicalRideGameMode struct {
+	World    *Engine.World
 	SceneRef *Engine.Scene
 
 	playerMoveAmountPerFrame       float64

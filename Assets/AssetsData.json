@@ -307,14 +307,15 @@
                 }]
         },
         {
-            "Text Data": [{
+            "Text Data": [
+                {
                     "Name": "Breakout You Win Text",
                     "Asset Type": "Text",
                     "Asset Data": [
                         {"Text": {
-                                "Text Name": "You Win Text",
-                                "Font Name": "FONT - Courier Bold",
-                                "Text String": "You Win!"
+                            "Text Name": "You Win Text",
+                            "Font Name": "FONT - Courier Bold",
+                            "Text String": "You Win!"
                         }}
                     ]
                 },
@@ -323,17 +324,55 @@
                     "Asset Type": "Text",
                     "Asset Data": [
                         {"Text": {
-                                "Text Name": "You Lose Text",
-                                "Font Name": "FONT - Courier Bold",
-                                "Text String": "You Lose, rather excitedly."
+                            "Text Name": "You Lose Text",
+                            "Font Name": "FONT - Courier Bold",
+                            "Text String": "You Lose, rather excitedly."
                         }}
                     ]
-                }]
+                }
+            ]
+        },
+        {
+            "UI Data": [
+                {
+                    "Name": "UI Test Rect Sprite",
+                    "Asset Type": "UI Sprite Data",
+                    "Asset Data": [
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/RandomUI.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [64, 16]
+                        }}
+                    ]
+                },
+                {
+                    "Name": "Yes Button Sprite",
+                    "Asset Type": "UI Sprite Data",
+                    "Asset Data": [
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/YesButton.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [32, 16]
+                        }}
+                    ]
+                },
+                {
+                    "Name": "No Button Sprite",
+                    "Asset Type": "UI Sprite Data",
+                    "Asset Data": [
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/NoButton.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [32, 16]
+                        }}
+                    ]
+                }
+            ]
         }
     ],
     "Scenes Data": [
         {
-            "Scene Type": "Main Game",
+            "Scene Name": "Main Game",
             "Player Entity": {
                 "Prefab Name": "Player Basic Circle",
                 "Entity Spawn Name": "Player",
@@ -341,6 +380,20 @@
                     {"Position": [100, 100]}
                 ]
             },
+            "UI Sprite Data": [
+                {
+                    "Prefab Name": "UI Test Rect Sprite",
+                    "Entity Spawn Name": "UI Test Rect Sprite"
+                },
+                {
+                    "Prefab Name": "Yes Button Sprite",
+                    "Entity Spawn Name": "Yes Button Sprite"
+                },
+                {
+                    "Prefab Name": "No Button Sprite",
+                    "Entity Spawn Name": "No Button Sprite"
+                }
+            ],
             "Rooms Data": [
                 {
                     "Room Index" : [0, 0],
@@ -392,7 +445,7 @@
                 }
             ]
         },{
-            "Scene Type": "Breakout Game",
+            "Scene Name": "Breakout Game",
             "Player Entity": {
                 "Prefab Name": "Player Breakout",
                 "Entity Spawn Name": "Player",
@@ -462,7 +515,7 @@
                 }
             ]
         },{
-            "Scene Type": "Magical Ride Game",
+            "Scene Name": "Magical Ride Game",
             "Player Entity": {
                 "Prefab Name": "Player Magical Ride",
                 "Entity Spawn Name": "Player",

@@ -11,7 +11,7 @@ type Room struct {
 }
 
 type Scene struct {
-	SceneType                string
+	SceneName                string
 	GameMode                 GameMode
 	SceneGameStateData       GameStateData
 	EntityComponentsForScene *EntityComponents
@@ -19,6 +19,7 @@ type Scene struct {
 	Fonts                    map[string]*Font
 	Texts                    map[string]string
 	EntityIDsByName          map[string]int
+	UIRectSprites            map[string]*Sprite
 
 	lastUpdatedTime time.Time
 	elapsed         time.Duration
@@ -31,6 +32,7 @@ func CreateSceneWithNumEntities(numEntitiesToCreateInScene int) *Scene {
 		Fonts:                    make(map[string]*Font),
 		Texts:                    make(map[string]string),
 		EntityIDsByName:          make(map[string]int),
+		UIRectSprites:            make(map[string]*Sprite),
 		lastUpdatedTime:          time.Now(),
 	}
 }
