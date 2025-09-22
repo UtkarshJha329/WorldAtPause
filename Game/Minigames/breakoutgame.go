@@ -19,6 +19,9 @@ type BreakoutGameMode struct {
 
 func (breakoutGameMode *BreakoutGameMode) Init() {
 
+	sceneIndex := breakoutGameMode.World.SceneIndexByName[breakoutGameMode.SceneRef.SceneName]
+	Engine.ReloadSceneWithSceneData(breakoutGameMode.SceneRef, &Engine.ScenesData[sceneIndex])
+
 	breakoutGameMode.ballInputDirection = Engine.Vector2{X: -1.0, Y: -1.0}
 	breakoutGameMode.ballMoveAmountPerFrame = 2.0
 	breakoutGameMode.numBricks = 5.0
@@ -94,8 +97,8 @@ func (breakoutGameMode *BreakoutGameMode) Update() {
 
 		ballCollidedWithTilemap := ballCollisions.TilemapXMoveCollisionResult.Collided || ballCollisions.TilemapYMoveCollisionResult.Collided
 
-		ballXCollidedWithObstacle := ballCollisions.ObstacleXMoveCollisionResult.CollidedWithObstacle
-		ballYCollidedWithObstacle := ballCollisions.ObstacleYMoveCollisionResult.CollidedWithObstacle
+		ballXCollidedWithObstacle := ballCollisions.ObstacleXMoveCollisionResult.CollidedWithObstacle && ballCollisions.ObstacleXMoveCollisionResult.CollisionPenetrationAmount != 0.0
+		ballYCollidedWithObstacle := ballCollisions.ObstacleYMoveCollisionResult.CollidedWithObstacle && ballCollisions.ObstacleYMoveCollisionResult.CollisionPenetrationAmount != 0.0
 		ballCollidedWithObstacles := ballXCollidedWithObstacle || ballYCollidedWithObstacle
 
 		// if breakoutGameMode.numBricks > 0 && (ballCollidedWithTilemap || ballCollidedWithObstacles) {

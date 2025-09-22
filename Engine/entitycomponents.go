@@ -9,6 +9,10 @@ import (
 	"golang.org/x/text/language"
 )
 
+var PrefabMap map[string]Prefab
+var UISpritesData []EntitySpawnData
+var ScenesData []SceneData
+
 type EntityComponents struct {
 	TotalNumEntities int
 	PlayerEntityID   int
@@ -43,11 +47,11 @@ func (entityComponents *EntityComponents) IsEntityDead(entityID int) bool {
 	return entityComponents.EntityDead[entityID]
 }
 
-func PopulateEntityDataFromPrefab(prefabMap map[string]Prefab, curSceneRef *Scene, prefabName string, entityID int) {
+func PopulateEntityDataFromPrefab(PrefabMap map[string]Prefab, curSceneRef *Scene, prefabName string, entityID int) {
 
 	entityComponentsRef := curSceneRef.EntityComponentsForScene
 
-	for _, assetData := range prefabMap[prefabName].AssetDatas {
+	for _, assetData := range PrefabMap[prefabName].AssetDatas {
 		switch assetData.AssetType {
 		case "Position":
 			entityComponentsRef.Positions[entityID] = *assetData.Position
@@ -79,7 +83,7 @@ func PopulateEntityDataFromPrefab(prefabMap map[string]Prefab, curSceneRef *Scen
 		case "Text":
 			font, ok := curSceneRef.Fonts[assetData.textAssetData.FontName]
 			if !ok {
-				fontPath := prefabMap[assetData.textAssetData.FontName].AssetDatas[0].fontAssetData.FontLocation
+				fontPath := PrefabMap[assetData.textAssetData.FontName].AssetDatas[0].fontAssetData.FontLocation
 				font = &Font{}
 				font.LoadFontWithFontFromPath(fontPath)
 				font.Face = &text.GoTextFace{
@@ -114,6 +118,63 @@ func PopulateEntityDataFromPrefab(prefabMap map[string]Prefab, curSceneRef *Scen
 
 }
 
+func ReloadEntityDataFromPrefab(PrefabMap map[string]Prefab, curSceneRef *Scene, prefabName string, entityID int) {
+
+	entityComponentsRef := curSceneRef.EntityComponentsForScene
+
+	for _, assetData := range PrefabMap[prefabName].AssetDatas {
+		switch assetData.AssetType {
+		case "Position":
+			entityComponentsRef.Positions[entityID] = *assetData.Position
+		case "Sprite Data":
+			entityComponentsRef.Sprites[entityID].Image = LoadImageFromFileSystem(assetData.SpriteAssetData.SpriteTextureLocation)
+			entityComponentsRef.Sprites[entityID].RenderRectStart = assetData.SpriteAssetData.RenderRectStart
+			entityComponentsRef.Sprites[entityID].RenderRectEnd = assetData.SpriteAssetData.RenderRectEnd
+		case "Collision Shape Data":
+			switch assetData.CollisionShapeData.CollisionShapeType {
+			case "Box":
+				entityComponentsRef.CollisionShapes[entityID].SetCollisionShapeSize(*assetData.CollisionShapeData.Size)
+				entityComponentsRef.CollisionShapes[entityID].SetCollisionShapeColliderOriginOffset(*assetData.CollisionShapeData.ColliderOriginOffset)
+				entityComponentsRef.CollisionShapes[entityID].CreateCollisionPoints()
+			case "Circle":
+				entityComponentsRef.CollisionShapes[entityID].SetCollisionShapeSize(Vector2{*assetData.CollisionShapeData.Radius, *assetData.CollisionShapeData.Radius})
+				entityComponentsRef.CollisionShapes[entityID].SetCollisionShapeColliderOriginOffset(*assetData.CollisionShapeData.ColliderOriginOffset)
+				entityComponentsRef.CollisionShapes[entityID].CreateCollisionPoints()
+			}
+		case "Text":
+			font, ok := curSceneRef.Fonts[assetData.textAssetData.FontName]
+			if !ok {
+				fontPath := PrefabMap[assetData.textAssetData.FontName].AssetDatas[0].fontAssetData.FontLocation
+				font = &Font{}
+				font.LoadFontWithFontFromPath(fontPath)
+				font.Face = &text.GoTextFace{
+					Source:   font.Font,
+					Size:     16,
+					Language: language.English,
+				}
+				curSceneRef.Fonts[assetData.textAssetData.FontName] = font
+			}
+
+			curSceneRef.Texts[assetData.textAssetData.TextName] = assetData.textAssetData.TextString
+			entityComponentsRef.Texts[entityID].Font = font
+			entityComponentsRef.Texts[entityID].TextName = assetData.textAssetData.TextName
+
+		case "Tilemap":
+
+			var tilemapDataJSON TilemapDataJSON
+			tilemapJSONFileContents := LoadFileFromFileSystem(assetData.tilemapAssetData.TilemapWorldJSONFilePath)
+			if err := json.Unmarshal(tilemapJSONFileContents, &tilemapDataJSON); err != nil {
+				fmt.Println(err, "Failed to loaad tilemapJSON contents.")
+			}
+
+			err := NewTilemap(assetData.tilemapAssetData.TilemapTilesetFilePath, assetData.tilemapAssetData.TilemapWorldJSONFilePath, assetData.tilemapAssetData.TilemapGridSize, &entityComponentsRef.Tilemap, &tilemapDataJSON)
+			if err != nil {
+				log.Fatal(err, "\nFailed to create tilemap.")
+			}
+		}
+	}
+}
+
 func OverridePrefabDataForEntityWithEntityData(entityID int, entityComponents *EntityComponents, const_entitySpawnData *EntitySpawnData) {
 
 	for _, assetData := range const_entitySpawnData.AssetData {
@@ -127,13 +188,78 @@ func OverridePrefabDataForEntityWithEntityData(entityID int, entityComponents *E
 	}
 }
 
-func CreateAndPopulateEntitiesAndComponents(prefabMap map[string]Prefab, UISpritesData []EntitySpawnData, scenesData []SceneData) *World {
+func ReloadSceneWithSceneData(curScene *Scene, sceneData *SceneData) {
 
-	world := CreateWorldWithNumScenes(len(scenesData))
+	runningEntityID := 0
+	curSceneEntityComponents := curScene.EntityComponentsForScene
+
+	ReloadEntityDataFromPrefab(PrefabMap, curScene, sceneData.PlayerEntityDataForScene.PrefabName, runningEntityID)
+	OverridePrefabDataForEntityWithEntityData(runningEntityID, curSceneEntityComponents, &sceneData.PlayerEntityDataForScene)
+
+	curSceneEntityComponents.PlayerEntityID = runningEntityID
+	runningEntityID++
+
+	for _, curRoomParsedData := range sceneData.RoomsData {
+
+		for _, curEntityData := range curRoomParsedData.RoomEntities {
+
+			ReloadEntityDataFromPrefab(PrefabMap, curScene, curEntityData.PrefabName, runningEntityID)
+			OverridePrefabDataForEntityWithEntityData(runningEntityID, curSceneEntityComponents, &curEntityData)
+
+			curSceneEntityComponents.EntityDead[runningEntityID] = false
+
+			runningEntityID += 1
+		}
+	}
+}
+
+func FillSceneWithSceneDataFirstTime(curScene *Scene, sceneData *SceneData) {
+
+	runningEntityID := 0
+	curSceneEntityComponents := curScene.EntityComponentsForScene
+
+	PopulateEntityDataFromPrefab(PrefabMap, curScene, sceneData.PlayerEntityDataForScene.PrefabName, runningEntityID)
+	OverridePrefabDataForEntityWithEntityData(runningEntityID, curSceneEntityComponents, &sceneData.PlayerEntityDataForScene)
+	curSceneEntityComponents.PlayerEntityID = runningEntityID
+	curScene.EntityIDsByName[sceneData.PlayerEntityDataForScene.EntityName] = runningEntityID
+	runningEntityID++
+
+	for _, curRoomParsedData := range sceneData.RoomsData {
+
+		roomIndex := curRoomParsedData.RoomIndex
+		curScene.RoomsData[roomIndex] = &Room{}
+		curRoom := curScene.RoomsData[roomIndex]
+
+		for _, curEntityData := range curRoomParsedData.RoomEntities {
+
+			PopulateEntityDataFromPrefab(PrefabMap, curScene, curEntityData.PrefabName, runningEntityID)
+			OverridePrefabDataForEntityWithEntityData(runningEntityID, curSceneEntityComponents, &curEntityData)
+
+			switch PrefabMap[curEntityData.PrefabName].AssetType {
+			case "Enemy":
+				curRoom.EnemyEntityIDs = append(curRoom.EnemyEntityIDs, runningEntityID)
+			case "Obstacle":
+				curRoom.ObstacleEntityIDs = append(curRoom.ObstacleEntityIDs, runningEntityID)
+			case "Trigger":
+				curRoom.TriggerEntityIDs = append(curRoom.TriggerEntityIDs, runningEntityID)
+			case "Item":
+				curRoom.ItemEntityIDs = append(curRoom.ItemEntityIDs, runningEntityID)
+			}
+
+			curRoom.EntitiesInThisRoom = append(curRoom.EntitiesInThisRoom, runningEntityID)
+			curScene.EntityIDsByName[curEntityData.EntityName] = runningEntityID
+			runningEntityID += 1
+		}
+	}
+}
+
+func CreateAndPopulateEntitiesAndComponents() *World {
+
+	world := CreateWorldWithNumScenes(len(ScenesData))
 
 	for _, curUISpriteData := range UISpritesData {
 
-		curSpriteAssetData := prefabMap[curUISpriteData.PrefabName].AssetDatas[0].SpriteAssetData
+		curSpriteAssetData := PrefabMap[curUISpriteData.PrefabName].AssetDatas[0].SpriteAssetData
 		curUISprite := &Sprite{
 			Image:           LoadImageFromFileSystem(curSpriteAssetData.SpriteTextureLocation),
 			RenderRectStart: curSpriteAssetData.RenderRectStart,
@@ -143,7 +269,7 @@ func CreateAndPopulateEntitiesAndComponents(prefabMap map[string]Prefab, UISprit
 	}
 	world.MakeYesNoUITree()
 
-	for index, sceneData := range scenesData {
+	for index, sceneData := range ScenesData {
 
 		totalNumEntitiesInScene := 0
 		for _, curRoomData := range sceneData.RoomsData {
@@ -157,60 +283,19 @@ func CreateAndPopulateEntitiesAndComponents(prefabMap map[string]Prefab, UISprit
 		world.Scenes[index].SceneName = sceneData.SceneName
 
 		curScene := world.Scenes[index]
-
-		runningEntityID := 0
-		curSceneEntityComponents := curScene.EntityComponentsForScene
-
-		PopulateEntityDataFromPrefab(prefabMap, curScene, sceneData.PlayerEntityDataForScene.PrefabName, runningEntityID)
-		OverridePrefabDataForEntityWithEntityData(runningEntityID, curSceneEntityComponents, &sceneData.PlayerEntityDataForScene)
-		curSceneEntityComponents.PlayerEntityID = runningEntityID
-		curScene.EntityIDsByName[sceneData.PlayerEntityDataForScene.EntityName] = runningEntityID
-		runningEntityID++
-
-		for _, curRoomParsedData := range sceneData.RoomsData {
-
-			roomIndex := curRoomParsedData.RoomIndex
-			curScene.RoomsData[roomIndex] = &Room{}
-			curRoom := curScene.RoomsData[roomIndex]
-
-			for _, curEntityData := range curRoomParsedData.RoomEntities {
-
-				if prefabMap[curEntityData.PrefabName].AssetType == "UI Sprite Data" {
-
-				} else {
-
-					PopulateEntityDataFromPrefab(prefabMap, curScene, curEntityData.PrefabName, runningEntityID)
-					OverridePrefabDataForEntityWithEntityData(runningEntityID, curSceneEntityComponents, &curEntityData)
-
-					switch prefabMap[curEntityData.PrefabName].AssetType {
-					case "Enemy":
-						curRoom.EnemyEntityIDs = append(curRoom.EnemyEntityIDs, runningEntityID)
-					case "Obstacle":
-						curRoom.ObstacleEntityIDs = append(curRoom.ObstacleEntityIDs, runningEntityID)
-					case "Trigger":
-						curRoom.TriggerEntityIDs = append(curRoom.TriggerEntityIDs, runningEntityID)
-					case "Item":
-						curRoom.ItemEntityIDs = append(curRoom.ItemEntityIDs, runningEntityID)
-					}
-
-					curRoom.EntitiesInThisRoom = append(curRoom.EntitiesInThisRoom, runningEntityID)
-					curScene.EntityIDsByName[curEntityData.EntityName] = runningEntityID
-					runningEntityID += 1
-				}
-			}
-		}
-
+		FillSceneWithSceneDataFirstTime(curScene, &sceneData)
 	}
 
 	return world
 }
 
 func CreateAndPopulateWorldScenesAndEntitiesAndComponentsFromGameData(path string) *World {
-	prefabMap, UISpritesData, scenesData, err := LoadGameAssetData(path)
+	var err error
+	PrefabMap, UISpritesData, ScenesData, err = LoadGameAssetData(path)
 	if err != nil {
 		log.Fatal("Failed to load game data from file.")
 	}
 
-	entityComponentData := CreateAndPopulateEntitiesAndComponents(prefabMap, UISpritesData, scenesData)
+	entityComponentData := CreateAndPopulateEntitiesAndComponents()
 	return entityComponentData
 }

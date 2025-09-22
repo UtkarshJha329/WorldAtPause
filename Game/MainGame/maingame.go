@@ -162,13 +162,13 @@ func (mainGameMode *MainGameMode) SceneTransitionHandler(previousGameStateData E
 
 	breakoutTriggerEntityID := mainGameMode.SceneRef.EntityIDsByName["Main Game Breakout Ball Trigger"]
 	if mainGameMode.waitingForGameSceneFromTriggerIndex == breakoutTriggerEntityID {
-		mainGameMode.deactivateBreakoutTrigger = true
+		// mainGameMode.deactivateBreakoutTrigger = true
 		mainGameMode.SceneRef.SceneGameStateData.SceneChangeData.QuestIssuedDuringSceneChange.QuestCompleteLambda(previousGameStateData)
 	}
 
 	magicalRideTriggerEntityID := mainGameMode.SceneRef.EntityIDsByName["Main Game Magical Ride Trigger"]
 	if mainGameMode.waitingForGameSceneFromTriggerIndex == magicalRideTriggerEntityID {
-		mainGameMode.deactivateMagicalRideTrigger = true
+		// mainGameMode.deactivateMagicalRideTrigger = true
 		mainGameMode.SceneRef.SceneGameStateData.SceneChangeData.QuestIssuedDuringSceneChange.QuestCompleteLambda(previousGameStateData)
 	}
 }

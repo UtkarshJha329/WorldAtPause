@@ -22,6 +22,9 @@ type MagicalRideGameMode struct {
 
 func (magicalRideGameMode *MagicalRideGameMode) Init() {
 
+	sceneIndex := magicalRideGameMode.World.SceneIndexByName[magicalRideGameMode.SceneRef.SceneName]
+	Engine.ReloadSceneWithSceneData(magicalRideGameMode.SceneRef, &Engine.ScenesData[sceneIndex])
+
 	magicalRideGameMode.playerMoveAmountPerFrame = 3.0
 	magicalRideGameMode.playerCollideAndMoveParameters = Engine.CollideAndMoveCollisionParameters{
 		CollideWithTiles:     true,
@@ -56,7 +59,9 @@ func (magicalRideGameMode *MagicalRideGameMode) Update() {
 	totalMoveAmount := Engine.Multiply_Float_Vector2(magicalRideGameMode.playerMoveAmountPerFrame, &inputDirection)
 	curSceneRef.CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex, entityComponentsRef.PlayerEntityID, inputDirection, totalMoveAmount, magicalRideGameMode.playerMoveAmountPerFrame, magicalRideGameMode.playerCollideAndMoveParameters)
 
-	magicalRideGameMode.HandleEnemiesMovement()
+	curSceneRef.SceneGameStateData.GameState = Engine.GAMEMODE_IN_PROGRESS
+
+	magicalRideGameMode.HandleEnemies()
 
 	if curSceneRef.SceneGameStateData.GameStatsData.TimeSinceLaunch.Seconds() >= magicalRideGameMode.surviveForTimeBeforeLevelWin {
 		fmt.Println(curSceneRef.SceneGameStateData.GameStatsData.TimeSinceLaunch.Seconds())
@@ -79,7 +84,7 @@ func (magicalRideGameMode *MagicalRideGameMode) SceneTransitionHandler(previousG
 	}
 }
 
-func (magicalRideGameMode *MagicalRideGameMode) HandleEnemiesMovement() {
+func (magicalRideGameMode *MagicalRideGameMode) HandleEnemies() {
 
 	curSceneRef := magicalRideGameMode.SceneRef
 	entityComponentsRef := magicalRideGameMode.SceneRef.EntityComponentsForScene

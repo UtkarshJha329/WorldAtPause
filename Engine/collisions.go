@@ -66,6 +66,14 @@ func (bc *BoxCollider) GetOffsetOrigin(const_object_origin *Vector2) *Vector2 {
 	return &boxColliderOrigin
 }
 
+func (bc *BoxCollider) SetCollisionShapeColliderOriginOffset(offset Vector2) {
+	bc.ColliderOriginOffset = offset
+}
+
+func (bc *BoxCollider) SetCollisionShapeSize(size Vector2) {
+	bc.size = size
+}
+
 func (bc *BoxCollider) GetNormalFromPoint(const_object_origin, const_point *Vector2) *Vector2 {
 	boxColliderOrigin := bc.GetOffsetOrigin(const_object_origin)
 
@@ -135,13 +143,25 @@ func (cc *CircleCollider) GetNormalFromPoint(const_object_origin *Vector2, const
 	return &normal
 }
 
+func (cc *CircleCollider) SetCollisionShapeColliderOriginOffset(offset Vector2) {
+	cc.ColliderOriginOffset = offset
+}
+
+func (cc *CircleCollider) SetCollisionShapeSize(size Vector2) {
+	cc.radius = size.X
+}
+
 type CollisionShape interface {
 	GetOffsetOrigin(const_object_origin *Vector2) *Vector2
 	CollisionShapeType() int
 	GetBoundingBoxDims() *Vector2
 	GetCollisionPoints() *[]Vector2
-	CreateCollisionPoints()
 	GetNormalFromPoint(const_object_origin *Vector2, const_point *Vector2) *Vector2
+
+	SetCollisionShapeSize(size Vector2)
+	SetCollisionShapeColliderOriginOffset(offset Vector2)
+
+	CreateCollisionPoints()
 	CollisionShapeIncludesPoint(const_origin *Vector2, const_point *Vector2) bool
 }
 
