@@ -297,9 +297,15 @@ func (curScene *Scene) CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex 
 
 				if obstacleCollisionResult.CollidedWithObstacleCollisionShapeRef.CollisionShapeType() == Box {
 					if inputDirection.X > 0 {
-						maxMoveAmountX = obstacleCollisionResult.PositionOfCollidedWithObstacle.X - (entityPos.X + entityCollisionShapeRef.GetBoundingBoxDims().X)
+						entityCollisionPoints := entityCollisionShapeRef.GetCollisionPoints()
+						topRight := (*entityCollisionPoints)[1]
+
+						maxMoveAmountX = obstacleCollisionResult.PositionOfCollidedWithObstacle.X - (entityPos.X + topRight.X)
 					} else if inputDirection.X < 0 {
-						maxMoveAmountX = entityPos.X - (obstacleCollisionResult.PositionOfCollidedWithObstacle.X + obstacleCollisionResult.CollidedWithObstacleCollisionShapeRef.GetBoundingBoxDims().X)
+						entityCollisionPoints := entityCollisionShapeRef.GetCollisionPoints()
+						topLeft := (*entityCollisionPoints)[0]
+
+						maxMoveAmountX = (entityPos.X + topLeft.X) - (obstacleCollisionResult.PositionOfCollidedWithObstacle.X + obstacleCollisionResult.CollidedWithObstacleCollisionShapeRef.GetBoundingBoxDims().X)
 					}
 					finalMoveAmount = Vector2{inputDirection.X * maxMoveAmountX, inputDirection.Y * entityMoveAmountPerFrame}
 				} else if obstacleCollisionResult.CollidedWithObstacleCollisionShapeRef.CollisionShapeType() == Circle {
@@ -348,9 +354,13 @@ func (curScene *Scene) CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex 
 
 				if obstacleCollisionResult.CollidedWithObstacleCollisionShapeRef.CollisionShapeType() == Box {
 					if inputDirection.Y > 0 {
-						maxMoveAmountY = obstacleCollisionResult.PositionOfCollidedWithObstacle.Y - (entityPos.Y + entityCollisionShapeRef.GetBoundingBoxDims().Y)
+						entityCollisionPoints := entityCollisionShapeRef.GetCollisionPoints()
+						bottomRight := (*entityCollisionPoints)[2]
+						maxMoveAmountY = obstacleCollisionResult.PositionOfCollidedWithObstacle.Y - (entityPos.Y + bottomRight.Y)
 					} else if inputDirection.Y < 0 {
-						maxMoveAmountY = entityPos.Y - (obstacleCollisionResult.PositionOfCollidedWithObstacle.Y + obstacleCollisionResult.CollidedWithObstacleCollisionShapeRef.GetBoundingBoxDims().Y)
+						entityCollisionPoints := entityCollisionShapeRef.GetCollisionPoints()
+						topRight := (*entityCollisionPoints)[1]
+						maxMoveAmountY = (entityPos.Y + topRight.Y) - (obstacleCollisionResult.PositionOfCollidedWithObstacle.Y + obstacleCollisionResult.CollidedWithObstacleCollisionShapeRef.GetBoundingBoxDims().Y)
 					}
 					finalMoveAmount = Vector2{inputDirection.X * entityMoveAmountPerFrame, inputDirection.Y * maxMoveAmountY}
 

@@ -102,16 +102,22 @@ func (breakoutGameMode *BreakoutGameMode) Update() {
 		ballYCollidedWithObstacle := ballCollisions.ObstacleYMoveCollisionResult.CollidedWithObstacle && ballCollisions.ObstacleYMoveCollisionResult.CollisionPenetrationAmount != 0.0
 		ballCollidedWithObstacles := ballXCollidedWithObstacle || ballYCollidedWithObstacle
 
-		// if breakoutGameMode.numBricks > 0 && (ballCollidedWithTilemap || ballCollidedWithObstacles) {
-		if ballCollidedWithTilemap || ballCollidedWithObstacles {
+		if ballCollidedWithTilemap {
 
 			ballCollidedTileNormal := Engine.Add_Vector2(&ballCollisions.TilemapXMoveCollisionResult.CollisionTileNormal, &ballCollisions.TilemapYMoveCollisionResult.CollisionTileNormal)
-			ballCollidedObstacleNormal := Engine.Add_Vector2(&ballCollisions.ObstacleXMoveCollisionResult.CollisionNormal, &ballCollisions.ObstacleYMoveCollisionResult.CollisionNormal)
-
 			useNormal := ballCollidedTileNormal
-			if !ballCollidedWithTilemap {
-				useNormal = ballCollidedObstacleNormal
+			useNormal = Engine.Normalise_Vector2(&useNormal)
+
+			breakoutGameMode.ballInputDirection = Engine.Reflect_Vector2(&breakoutGameMode.ballInputDirection, &useNormal)
+
+		} else if ballCollidedWithObstacles {
+
+			ballCollidedObstacleNormal := ballCollisions.ObstacleYMoveCollisionResult.CollisionNormal
+			if !ballCollisions.ObstacleYMoveCollisionResult.CollidedWithObstacle {
+				ballCollidedObstacleNormal = ballCollisions.ObstacleXMoveCollisionResult.CollisionNormal
 			}
+
+			useNormal := ballCollidedObstacleNormal
 			useNormal = Engine.Normalise_Vector2(&useNormal)
 
 			breakoutGameMode.ballInputDirection = Engine.Reflect_Vector2(&breakoutGameMode.ballInputDirection, &useNormal)

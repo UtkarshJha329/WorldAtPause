@@ -71,10 +71,13 @@ func DrawColliderForEntityIfAlive(entityComponentsRef *EntityComponents, screenR
 		entityCollisionShapeRef := entityComponentsRef.CollisionShapes[entityID]
 
 		if entityCollisionShapeRef.CollisionShapeType() == Box {
-			vector.StrokeRect(screenRef, float32(entityPos.X), float32(entityPos.Y), float32(entityCollisionShapeRef.(*BoxCollider).size.X), float32(entityCollisionShapeRef.(*BoxCollider).size.Y), 1.0, color.Black, false)
+			entityCollisionPoints := entityCollisionShapeRef.GetCollisionPoints()
+			topLeftCollider := (*entityCollisionPoints)[0]
+			topLeftCollider = Add_Vector2(&entityPos, &topLeftCollider)
+			vector.StrokeRect(screenRef, float32(topLeftCollider.X), float32(topLeftCollider.Y), float32(entityCollisionShapeRef.(*BoxCollider).size.X), float32(entityCollisionShapeRef.(*BoxCollider).size.Y), 1.0, color.White, false)
 		} else if entityCollisionShapeRef.CollisionShapeType() == Circle {
 			offsetCentre := entityCollisionShapeRef.GetOffsetOrigin(&entityPos)
-			vector.StrokeCircle(screenRef, float32(offsetCentre.X), float32(offsetCentre.Y), float32(entityCollisionShapeRef.GetBoundingBoxDims().X*0.5), 1.0, color.Black, false)
+			vector.StrokeCircle(screenRef, float32(offsetCentre.X), float32(offsetCentre.Y), float32(entityCollisionShapeRef.GetBoundingBoxDims().X*0.5), 1.0, color.White, false)
 		}
 	}
 }

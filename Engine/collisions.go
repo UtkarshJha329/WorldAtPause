@@ -75,10 +75,10 @@ func (bc *BoxCollider) SetCollisionShapeSize(size Vector2) {
 }
 
 func (bc *BoxCollider) GetNormalFromPoint(const_object_origin, const_point *Vector2) *Vector2 {
-	boxColliderOrigin := bc.GetOffsetOrigin(const_object_origin)
+	// boxColliderOrigin := bc.GetOffsetOrigin(const_object_origin)
 
-	topLeft := Add_Vector2(&bc.CollisionPoints[0], boxColliderOrigin)
-	bottomRight := Add_Vector2(&bc.CollisionPoints[2], boxColliderOrigin)
+	topLeft := Add_Vector2(&bc.CollisionPoints[0], const_object_origin)
+	bottomRight := Add_Vector2(&bc.CollisionPoints[2], const_object_origin)
 
 	// Distances to each side
 	leftDist := const_point.X - topLeft.X
@@ -211,16 +211,19 @@ func GetBoxCircleOverlapPenetrationData(const_origin_box *Vector2, bx *BoxCollid
 	const_offset_origin := cc.GetOffsetOrigin(const_origin)
 	closestPointOnBox := *const_offset_origin
 
-	if const_offset_origin.X < const_origin_box.X {
-		closestPointOnBox.X = const_origin_box.X
-	} else if const_offset_origin.X > const_origin_box.X+bx.size.X {
-		closestPointOnBox.X = const_origin_box.X + bx.size.X
+	boxCollisionPoints := bx.GetCollisionPoints()
+	topLeftBox := Add_Vector2(const_origin_box, &(*boxCollisionPoints)[0])
+
+	if const_offset_origin.X < topLeftBox.X {
+		closestPointOnBox.X = topLeftBox.X
+	} else if const_offset_origin.X > topLeftBox.X+bx.size.X {
+		closestPointOnBox.X = topLeftBox.X + bx.size.X
 	}
 
-	if const_offset_origin.Y < const_origin_box.Y {
-		closestPointOnBox.Y = const_origin_box.Y
-	} else if const_offset_origin.Y > const_origin_box.Y+bx.size.Y {
-		closestPointOnBox.Y = const_origin_box.Y + bx.size.Y
+	if const_offset_origin.Y < topLeftBox.Y {
+		closestPointOnBox.Y = topLeftBox.Y
+	} else if const_offset_origin.Y > topLeftBox.Y+bx.size.Y {
+		closestPointOnBox.Y = topLeftBox.Y + bx.size.Y
 	}
 
 	distVector := Vector2{closestPointOnBox.X - const_offset_origin.X, closestPointOnBox.Y - const_offset_origin.Y}

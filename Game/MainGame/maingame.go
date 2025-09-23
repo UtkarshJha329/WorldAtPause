@@ -12,8 +12,6 @@ type MainGameMode struct {
 	World    *Engine.World
 	SceneRef *Engine.Scene
 
-	waitingForGameSceneFromTriggerIndex int
-
 	deactivateBreakoutTrigger    bool
 	deactivateMagicalRideTrigger bool
 
@@ -153,6 +151,12 @@ func (mainGameMode *MainGameMode) Draw(screenRef *ebiten.Image) {
 
 	magicalRideTriggerSprite.DrawSprite(screenRef, &drawOptions, &magicalRideTriggerEntityPosition)
 
+	spaceInvadersTriggerEntityID := mainGameMode.SceneRef.EntityIDsByName["Main Game Space Invaders Trigger"]
+	spaceInvadersTriggerEntityPosition := mainGameMode.SceneRef.EntityComponentsForScene.Positions[spaceInvadersTriggerEntityID]
+	spaceInvadersTriggerSprite := mainGameMode.SceneRef.EntityComponentsForScene.Sprites[spaceInvadersTriggerEntityID]
+
+	spaceInvadersTriggerSprite.DrawSprite(screenRef, &drawOptions, &spaceInvadersTriggerEntityPosition)
+
 	if mainGameMode.showCurrentUITree {
 		mainGameMode.currentUITree.RenderUITree(0, Engine.Vector2{X: 0.0, Y: 0.0}, screenRef, &drawOptions)
 	}
@@ -200,9 +204,6 @@ func (mainGameMode *MainGameMode) IssueSceneTransitionQuests() {
 							}
 						},
 					})
-
-				mainGameMode.waitingForGameSceneFromTriggerIndex = breakoutTriggerEntityID
-
 			}
 		}
 	}
@@ -224,7 +225,7 @@ func (mainGameMode *MainGameMode) IssueSceneTransitionQuests() {
 					Engine.QuestData{
 						QuestType: Engine.QUEST_TYPE_TIME_TRIAL,
 						QuestValues: map[int]float64{
-							Engine.QUEST_TYPE_TIME_TRIAL: 50.0,
+							Engine.QUEST_TYPE_TIME_TRIAL: 20.0,
 						},
 						QuestCompleteLambda: func(previousGameStateData Engine.GameStateData) {
 							if previousGameStateData.GameState == Engine.GAMEMODE_WON {
@@ -236,10 +237,36 @@ func (mainGameMode *MainGameMode) IssueSceneTransitionQuests() {
 							}
 						},
 					})
-
-				mainGameMode.waitingForGameSceneFromTriggerIndex = magicalRideTriggerEntityID
-
 			}
+		}
+	}
+
+	spaceInvadersTriggerEntityID := curSceneRef.EntityIDsByName["Main Game Space Invaders Trigger"]
+	spaceInvadersTriggerEntityPos := entityComponentsRef.Positions[spaceInvadersTriggerEntityID]
+	spaceInvadersTriggerCollisionShapeRef := entityComponentsRef.CollisionShapes[spaceInvadersTriggerEntityID]
+
+	if _, _, _, collided := Engine.CollisionShapeOverlapsWithCollisionShape(playerPosRef, playerCollisionShapeRef, &spaceInvadersTriggerEntityPos, spaceInvadersTriggerCollisionShapeRef); collided {
+
+		shouldShowQuestAcceptUITree = true
+
+		if Engine.ClickedYesInYesNoUITree() {
+
+			fmt.Println("Accepted Space Invaders Quest.")
+
+			curSceneRef.SpawnChildSceneWithQuest(mainGameMode.World.SceneIndexByName["Space Invaders Game"],
+				Engine.QuestData{
+					QuestType:   Engine.QUEST_TYPE_LEVEL_COMPLETE,
+					QuestValues: map[int]float64{},
+					QuestCompleteLambda: func(previousGameStateData Engine.GameStateData) {
+						if previousGameStateData.GameState == Engine.GAMEMODE_WON {
+							fmt.Println("Won at Space Invaders! Speed increased!")
+							mainGameMode.playerSpeed += 1.0
+						} else if previousGameStateData.GameState == Engine.GAMEMODE_LOST {
+							fmt.Println("Lost at Space Invaders! Speed decreased.")
+							mainGameMode.playerSpeed -= 1.0
+						}
+					},
+				})
 		}
 	}
 

@@ -57,6 +57,12 @@ func SetScenesGameModes(g *Game) {
 				SceneRef: scene,
 			}
 		}
+		if scene.SceneName == "Space Invaders Game" {
+			scene.GameMode = &Minigames.SpaceInvadersGameMode{
+				World:    g.world,
+				SceneRef: scene,
+			}
+		}
 	}
 }
 

@@ -32,12 +32,22 @@
                                 "gridSize": 16
                         }}
                     ]
+                },{
+                    "Name": "Space Invaders Tilemap",
+                    "Asset Type": "Tilemap",
+                    "Asset Data": [
+                        {"Tilemap":{
+                                "tilemapTilesetsSource": "Assets/Maps/TilesetFloor.png",
+                                "tilemapSourceJSON": "Assets/Maps/SpaceInvadersTilemap.json",
+                                "gridSize": 16
+                        }}
+                    ]
                 }]
         },
         {
             "Player": [
                 {
-                    "Name": "Player Basic",
+                    "Name": "Player Basic Box",
                     "Asset Type": "Player",
                     "Asset Data": [
                         {"Position": [100, 100]},
@@ -102,6 +112,22 @@
                             "ColliderOriginOffset": [0, 0]
                         }}
                     ]
+                },{
+                    "Name": "Player Space Invader",
+                    "Asset Type": "Player",
+                    "Asset Data": [
+                        {"Position": [100, 100]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/PlayerShip.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }},
+                        {"Collision Shape Data": {
+                            "CollisionShapeType": "Box",
+                            "Size": [16, 16],
+                            "ColliderOriginOffset": [0, 0]
+                        }}
+                    ]
                 }]
         },
         {
@@ -153,7 +179,8 @@
                             "ColliderOriginOffset": [8, 8]
                         }}
                     ]
-                }]
+                }
+            ]
         },
         {
             "Triggers":[
@@ -271,6 +298,40 @@
                             "ColliderOriginOffset": [0, 0]
                         }}
                     ]    
+                },
+                {
+                    "Name": "Space Invaders Bullet",
+                    "Asset Type": "Obstacle",
+                    "Asset Data":[
+                        {"Position": [0, 0]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/Bullet.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16] 
+                        }},
+                        {"Collision Shape Data": {
+                            "CollisionShapeType": "Box",
+                            "Size": [2, 11],
+                            "ColliderOriginOffset": [8, 3]
+                        }}
+                    ]
+                },
+                {
+                    "Name": "Enemy Space Ship",
+                    "Asset Type": "Obstacle",
+                    "Asset Data": [
+                        {"Position": [25, 25]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/EnemyShip.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }},
+                        {"Collision Shape Data": {
+                            "CollisionShapeType": "Box",
+                            "Size": [16, 16],
+                            "ColliderOriginOffset": [0, 0]
+                        }}
+                    ]
                 }
             ]
         },
@@ -418,6 +479,13 @@
                             "Entity Spawn Name": "Main Game Magical Ride Trigger"
                         },
                         {
+                            "Prefab Name": "Main Game Magical Ride Trigger",
+                            "Entity Spawn Name": "Main Game Space Invaders Trigger",
+                            "Asset Data": [
+                                {"Position": [192, 48]}
+                            ]
+                        },
+                        {
                             "Prefab Name": "Stone Pyramid",
                             "Entity Spawn Name": "Random Circle Obstacle"
                         },
@@ -550,6 +618,61 @@
                             "Entity Spawn Name": "Magical Ride Eyeball C",
                             "Asset Data": [
                                 {"Position": [360, 64]}
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },{
+            "Scene Name": "Space Invaders Game",
+            "Player Entity": {
+                "Prefab Name": "Player Space Invader",
+                "Entity Spawn Name": "Player",
+                "Asset Data": [
+                    {"Position": [152, 208]}
+                ]
+            },
+            "Rooms Data": [
+                {
+                    "Room Index" : [0, 0],
+                    "Room Entities": [
+                        {
+                            "Prefab Name": "Space Invaders Tilemap",
+                            "Entity Spawn Name": "Space Invaders Tilemap"
+                        },
+                        {
+                            "Prefab Name": "Enemy Space Ship",
+                            "Entity Spawn Name": "Enemy Space Ship A",
+                            "Asset Data": [
+                                {"Position": [64, 16]}
+                            ]
+                        },
+                        {
+                            "Prefab Name": "Enemy Space Ship",
+                            "Entity Spawn Name": "Enemy Space Ship B",
+                            "Asset Data": [
+                                {"Position": [128, 16]}
+                            ]
+                        },
+                        {
+                            "Prefab Name": "Enemy Space Ship",
+                            "Entity Spawn Name": "Enemy Space Ship C",
+                            "Asset Data": [
+                                {"Position": [192, 16]}
+                            ]
+                        },
+                        {
+                            "Prefab Name": "Enemy Space Ship",
+                            "Entity Spawn Name": "Enemy Space Ship D",
+                            "Asset Data": [
+                                {"Position": [256, 16]}
+                            ]
+                        },
+                        {
+                            "Prefab Name": "Space Invaders Bullet",
+                            "Entity Spawn Name": "Space Invaders Bullet",
+                            "Asset Data": [
+                                {"Position": [152, 64]}
                             ]
                         }
                     ]
