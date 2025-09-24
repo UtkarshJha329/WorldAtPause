@@ -128,6 +128,22 @@
                             "ColliderOriginOffset": [0, 0]
                         }}
                     ]
+                },{
+                    "Name": "Player Match Three",
+                    "Asset Type": "Player",
+                    "Asset Data": [
+                        {"Position": [0, 0]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/PlayerShip.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }},
+                        {"Collision Shape Data": {
+                            "CollisionShapeType": "Box",
+                            "Size": [16, 16],
+                            "ColliderOriginOffset": [0, 0]
+                        }}
+                    ]
                 }]
         },
         {
@@ -332,6 +348,91 @@
                             "ColliderOriginOffset": [0, 0]
                         }}
                     ]
+                },
+                {
+                    "Name": "Match Three Red Tile",
+                    "Asset Type": "Obstacle",
+                    "Asset Data": [
+                        {"Position": [0, 0]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/RedTile.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }},
+                        {"Collision Shape Data": {
+                            "CollisionShapeType": "Box",
+                            "Size": [16, 16],
+                            "ColliderOriginOffset": [0, 0]
+                        }}
+                    ]
+                },
+                {
+                    "Name": "Match Three Blue Tile",
+                    "Asset Type": "Obstacle",
+                    "Asset Data": [
+                        {"Position": [0, 0]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/BlueTile.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }},
+                        {"Collision Shape Data": {
+                            "CollisionShapeType": "Box",
+                            "Size": [16, 16],
+                            "ColliderOriginOffset": [0, 0]
+                        }}
+                    ]
+                },
+                {
+                    "Name": "Match Three Green Tile",
+                    "Asset Type": "Obstacle",
+                    "Asset Data": [
+                        {"Position": [0, 0]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/GreenTile.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }},
+                        {"Collision Shape Data": {
+                            "CollisionShapeType": "Box",
+                            "Size": [16, 16],
+                            "ColliderOriginOffset": [0, 0]
+                        }}
+                    ]
+                },
+                {
+                    "Name": "Match Three Yellow Tile",
+                    "Asset Type": "Obstacle",
+                    "Asset Data": [
+                        {"Position": [0, 0]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/YellowTile.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }},
+                        {"Collision Shape Data": {
+                            "CollisionShapeType": "Box",
+                            "Size": [16, 16],
+                            "ColliderOriginOffset": [0, 0]
+                        }}
+                    ]
+                },
+                {
+                    "Name": "Match Three Selected Tile",
+                    "Asset Type": "Obstacle",
+                    "Asset Data": [
+                        {"Position": [0, 0]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/SelectedTile.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }},
+                        {"Collision Shape Data": {
+                            "CollisionShapeType": "Box",
+                            "Size": [16, 16],
+                            "ColliderOriginOffset": [0, 0]
+                        }}
+                    ]
                 }
             ]
         },
@@ -351,7 +452,6 @@
                             "Radius": 4,
                             "ColliderOriginOffset": [5, 5]
                         }}
-
                     ]
                 }]
         },
@@ -483,6 +583,13 @@
                             "Entity Spawn Name": "Main Game Space Invaders Trigger",
                             "Asset Data": [
                                 {"Position": [192, 48]}
+                            ]
+                        },
+                        {
+                            "Prefab Name": "Main Game Magical Ride Trigger",
+                            "Entity Spawn Name": "Main Game Match Three Trigger",
+                            "Asset Data": [
+                                {"Position": [258, 48]}
                             ]
                         },
                         {
@@ -674,6 +781,46 @@
                             "Asset Data": [
                                 {"Position": [152, 64]}
                             ]
+                        }
+                    ]
+                }
+            ]
+        },{
+            "Scene Name": "Match Three Game",
+            "Player Entity": {
+                "Prefab Name": "Player Match Three",
+                "Entity Spawn Name": "Player",
+                "Asset Data": [
+                    {"Position": [0, 0]}
+                ]
+            },
+            "Rooms Data": [
+                {
+                    "Room Index" : [0, 0],
+                    "Room Entities": [
+                        {
+                            "Prefab Name": "Space Invaders Tilemap",
+                            "Entity Spawn Name": "Space Invaders Tilemap"
+                        },
+                        {
+                            "Prefab Name": "Match Three Red Tile",
+                            "Entity Spawn Name": "Match Three Red Tile"
+                        },
+                        {
+                            "Prefab Name": "Match Three Blue Tile",
+                            "Entity Spawn Name": "Match Three Blue Tile"
+                        },
+                        {
+                            "Prefab Name": "Match Three Green Tile",
+                            "Entity Spawn Name": "Match Three Green Tile"
+                        },
+                        {
+                            "Prefab Name": "Match Three Yellow Tile",
+                            "Entity Spawn Name": "Match Three Yellow Tile"
+                        },
+                        {
+                            "Prefab Name": "Match Three Selected Tile",
+                            "Entity Spawn Name": "Match Three Selected Tile"
                         }
                     ]
                 }

@@ -63,6 +63,12 @@ func SetScenesGameModes(g *Game) {
 				SceneRef: scene,
 			}
 		}
+		if scene.SceneName == "Match Three Game" {
+			scene.GameMode = &Minigames.MatchThreeGameMode{
+				World:    g.world,
+				SceneRef: scene,
+			}
+		}
 	}
 }
 
