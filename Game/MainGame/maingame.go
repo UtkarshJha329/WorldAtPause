@@ -299,7 +299,7 @@ func (mainGameMode *MainGameMode) IssueSceneTransitionQuests() {
 					Engine.QuestData{
 						QuestType: Engine.QUEST_TYPE_SCORE_LIMIT,
 						QuestValues: map[int]float64{
-							Engine.QUEST_TYPE_SCORE_LIMIT: 60.0,
+							Engine.QUEST_TYPE_SCORE_LIMIT: 130.0,
 						},
 						QuestCompleteLambda: func(previousGameStateData Engine.GameStateData) {
 							if previousGameStateData.GameState == Engine.GAMEMODE_WON {

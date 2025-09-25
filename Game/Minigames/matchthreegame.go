@@ -21,10 +21,7 @@ type MatchThreeGameMode struct {
 	World    *Engine.World
 	SceneRef *Engine.Scene
 
-	board_num_rows int
-	board_num_cols int
-	board          [][]int
-
+	board        Engine.Board[int]
 	boardMatches [][]bool
 
 	red_tile_entity_id    int
@@ -35,12 +32,6 @@ type MatchThreeGameMode struct {
 	selected_tile_entity_id int
 
 	currentSelectedTileCoords Engine.Vector2
-
-	tileGridTileSize     int
-	tileGridWidth        int
-	tileGridHeight       int
-	tileGridTotalXOffset int
-	tileGridTotalYOffset int
 
 	currentSelectedCellCoord Engine.Vector2Int
 	lastSelectedCellCoord    Engine.Vector2Int
@@ -54,19 +45,16 @@ func (matchThreeGameMode *MatchThreeGameMode) Init() {
 	sceneIndex := matchThreeGameMode.World.SceneIndexByName[matchThreeGameMode.SceneRef.SceneName]
 	Engine.ReloadSceneWithSceneData(matchThreeGameMode.SceneRef, &Engine.ScenesData[sceneIndex])
 
-	matchThreeGameMode.board_num_cols = 8
-	matchThreeGameMode.board_num_rows = 9
+	matchThreeGameMode.board.InitBoard(12, 12, 16, true)
 
-	matchThreeGameMode.board = make([][]int, matchThreeGameMode.board_num_rows)
-	matchThreeGameMode.boardMatches = make([][]bool, matchThreeGameMode.board_num_rows)
-	for i := range matchThreeGameMode.board_num_rows {
-		matchThreeGameMode.board[i] = make([]int, matchThreeGameMode.board_num_cols)
-		matchThreeGameMode.boardMatches[i] = make([]bool, matchThreeGameMode.board_num_cols)
+	matchThreeGameMode.boardMatches = make([][]bool, matchThreeGameMode.board.Board_num_rows)
+	for i := range matchThreeGameMode.board.Board_num_rows {
+		matchThreeGameMode.boardMatches[i] = make([]bool, matchThreeGameMode.board.Board_num_cols)
 	}
 
-	for y := range matchThreeGameMode.board_num_rows {
-		for x := range matchThreeGameMode.board_num_cols {
-			matchThreeGameMode.board[y][x] = rand.IntN(4)
+	for y := range matchThreeGameMode.board.Board_num_rows {
+		for x := range matchThreeGameMode.board.Board_num_cols {
+			matchThreeGameMode.board.BoardData[y][x] = rand.IntN(4)
 			matchThreeGameMode.boardMatches[y][x] = false
 		}
 	}
@@ -78,14 +66,9 @@ func (matchThreeGameMode *MatchThreeGameMode) Init() {
 
 	matchThreeGameMode.selected_tile_entity_id = matchThreeGameMode.SceneRef.EntityIDsByName["Match Three Selected Tile"]
 
-	matchThreeGameMode.tileGridTileSize = 16
-	matchThreeGameMode.tileGridWidth = matchThreeGameMode.board_num_cols * matchThreeGameMode.tileGridTileSize
-	matchThreeGameMode.tileGridHeight = matchThreeGameMode.board_num_rows * matchThreeGameMode.tileGridTileSize
-	matchThreeGameMode.tileGridTotalXOffset = (320 / 2) - (matchThreeGameMode.board_num_cols * 16 / 2)
-	matchThreeGameMode.tileGridTotalYOffset = (240 / 2) - (matchThreeGameMode.board_num_rows * 16 / 2)
-
 	matchThreeGameMode.currentSelectedCellCoord = Engine.Vector2Int{X: -1, Y: -1}
 	matchThreeGameMode.lastSelectedCellCoord = Engine.Vector2Int{X: -1, Y: -1}
+	matchThreeGameMode.score = 0
 
 }
 
@@ -94,17 +77,17 @@ func (matchThreeGameMode *MatchThreeGameMode) Update() {
 	x, y := ebiten.CursorPosition()
 	mousePixelPos := Engine.Vector2{X: float64(x), Y: float64(y)}
 
-	tileGridStartPos := Engine.Vector2{X: float64(matchThreeGameMode.tileGridTotalXOffset), Y: float64(matchThreeGameMode.tileGridTotalYOffset)}
+	tileGridStartPos := Engine.Vector2{X: float64(matchThreeGameMode.board.TileGridTotalXOffsetInPixels), Y: float64(matchThreeGameMode.board.TileGridTotalYOffsetInPixels)}
 	mousePosRelToTileGrid := Engine.Subtract_Vector2(&mousePixelPos, &tileGridStartPos)
 
 	if mousePosRelToTileGrid.X < 0 ||
 		mousePosRelToTileGrid.Y < 0 ||
-		mousePosRelToTileGrid.X >= float64(matchThreeGameMode.tileGridWidth) ||
-		mousePosRelToTileGrid.Y >= float64(matchThreeGameMode.tileGridHeight) {
+		mousePosRelToTileGrid.X >= float64(matchThreeGameMode.board.TileGridWidthInPixels) ||
+		mousePosRelToTileGrid.Y >= float64(matchThreeGameMode.board.TileGridHeightInPixels) {
 		matchThreeGameMode.currentSelectedTileCoords = Engine.Vector2{X: -1, Y: -1}
 	} else {
-		gridCellXExcess := int(mousePosRelToTileGrid.X) % matchThreeGameMode.tileGridTileSize
-		gridCellYExcess := int(mousePosRelToTileGrid.Y) % matchThreeGameMode.tileGridTileSize
+		gridCellXExcess := int(mousePosRelToTileGrid.X) % matchThreeGameMode.board.TileGridTileSizeInPixels
+		gridCellYExcess := int(mousePosRelToTileGrid.Y) % matchThreeGameMode.board.TileGridTileSizeInPixels
 
 		matchThreeGameMode.currentSelectedTileCoords = Engine.Vector2{X: (mousePosRelToTileGrid.X - float64(gridCellXExcess)), Y: (mousePosRelToTileGrid.Y - float64(gridCellYExcess))}
 	}
@@ -114,14 +97,14 @@ func (matchThreeGameMode *MatchThreeGameMode) Update() {
 		if matchThreeGameMode.currentSelectedTileCoords.X < 0 || matchThreeGameMode.currentSelectedTileCoords.Y < 0 {
 			matchThreeGameMode.currentSelectedCellCoord = Engine.Vector2Int{X: -1, Y: -1}
 		} else {
-			matchThreeGameMode.currentSelectedCellCoord = Engine.Vector2Int{X: int(matchThreeGameMode.currentSelectedTileCoords.X) / matchThreeGameMode.tileGridTileSize, Y: int(matchThreeGameMode.currentSelectedTileCoords.Y) / matchThreeGameMode.tileGridTileSize}
+			matchThreeGameMode.currentSelectedCellCoord = Engine.Vector2Int{X: int(matchThreeGameMode.currentSelectedTileCoords.X) / matchThreeGameMode.board.TileGridTileSizeInPixels, Y: int(matchThreeGameMode.currentSelectedTileCoords.Y) / matchThreeGameMode.board.TileGridTileSizeInPixels}
 		}
 	}
 
 	if matchThreeGameMode.lastSelectedCellCoord.X >= 0 && matchThreeGameMode.lastSelectedCellCoord.Y >= 0 &&
 		matchThreeGameMode.currentSelectedCellCoord.X >= 0 && matchThreeGameMode.currentSelectedCellCoord.Y >= 0 &&
-		matchThreeGameMode.lastSelectedCellCoord.X < matchThreeGameMode.board_num_cols && matchThreeGameMode.lastSelectedCellCoord.Y < matchThreeGameMode.board_num_rows &&
-		matchThreeGameMode.currentSelectedCellCoord.X < matchThreeGameMode.board_num_cols && matchThreeGameMode.currentSelectedCellCoord.Y < matchThreeGameMode.board_num_rows &&
+		matchThreeGameMode.lastSelectedCellCoord.X < matchThreeGameMode.board.Board_num_cols && matchThreeGameMode.lastSelectedCellCoord.Y < matchThreeGameMode.board.Board_num_rows &&
+		matchThreeGameMode.currentSelectedCellCoord.X < matchThreeGameMode.board.Board_num_cols && matchThreeGameMode.currentSelectedCellCoord.Y < matchThreeGameMode.board.Board_num_rows &&
 		!(matchThreeGameMode.lastSelectedCellCoord.X == matchThreeGameMode.currentSelectedCellCoord.X &&
 			matchThreeGameMode.lastSelectedCellCoord.Y == matchThreeGameMode.currentSelectedCellCoord.Y) {
 
@@ -129,14 +112,14 @@ func (matchThreeGameMode *MatchThreeGameMode) Update() {
 		distY := math.Abs(float64(matchThreeGameMode.lastSelectedCellCoord.Y - matchThreeGameMode.currentSelectedCellCoord.Y))
 
 		if distX <= 1 && distY <= 1 && !(distX == 1 && distY == 1) {
-			SwapValuesInBoard(&matchThreeGameMode.board, matchThreeGameMode.lastSelectedCellCoord, matchThreeGameMode.currentSelectedCellCoord, false)
+			SwapValuesInBoard(&matchThreeGameMode.board.BoardData, matchThreeGameMode.lastSelectedCellCoord, matchThreeGameMode.currentSelectedCellCoord, false)
 
 			matchThreeGameMode.currentSelectedCellCoord = Engine.Vector2Int{X: -1, Y: -1}
 			matchThreeGameMode.lastSelectedCellCoord = Engine.Vector2Int{X: -1, Y: -1}
 
-			for CheckBoardForMatches(&matchThreeGameMode.board, matchThreeGameMode.board_num_cols, matchThreeGameMode.board_num_rows, 3, &matchThreeGameMode.boardMatches) {
-				matchThreeGameMode.score += DeleteMatchesOnBoard(&matchThreeGameMode.board, matchThreeGameMode.board_num_cols, matchThreeGameMode.board_num_rows, &matchThreeGameMode.boardMatches)
-				FallTilesIntoEmptyCells(&matchThreeGameMode.board, matchThreeGameMode.board_num_cols, matchThreeGameMode.board_num_rows)
+			for CheckBoardForMatches(&matchThreeGameMode.board.BoardData, matchThreeGameMode.board.Board_num_cols, matchThreeGameMode.board.Board_num_rows, 3, &matchThreeGameMode.boardMatches) {
+				matchThreeGameMode.score += DeleteMatchesOnBoard(&matchThreeGameMode.board.BoardData, matchThreeGameMode.board.Board_num_cols, matchThreeGameMode.board.Board_num_rows, &matchThreeGameMode.boardMatches)
+				FallTilesIntoEmptyCells(&matchThreeGameMode.board.BoardData, matchThreeGameMode.board.Board_num_cols, matchThreeGameMode.board.Board_num_rows)
 			}
 
 		} else {
@@ -145,6 +128,8 @@ func (matchThreeGameMode *MatchThreeGameMode) Update() {
 			matchThreeGameMode.lastSelectedCellCoord = Engine.Vector2Int{X: -1, Y: -1}
 		}
 	}
+
+	matchThreeGameMode.SceneRef.SceneGameStateData.GameState = Engine.GAMEMODE_IN_PROGRESS
 
 	if matchThreeGameMode.score >= matchThreeGameMode.scoreNeededForWin {
 		fmt.Println("Won with score : ", matchThreeGameMode.score)
@@ -162,10 +147,10 @@ func (matchThreeGameMode *MatchThreeGameMode) Draw(screenRef *ebiten.Image) {
 	yellowSprite := &matchThreeGameMode.SceneRef.EntityComponentsForScene.Sprites[matchThreeGameMode.yellow_tile_entity_id]
 
 	drawImgOptions := ebiten.DrawImageOptions{}
-	for y := range matchThreeGameMode.board_num_rows {
-		for x := range matchThreeGameMode.board_num_cols {
-			drawPos := Engine.Vector2{X: float64(matchThreeGameMode.tileGridTotalXOffset + (x * matchThreeGameMode.tileGridTileSize)), Y: float64(matchThreeGameMode.tileGridTotalYOffset + (y * matchThreeGameMode.tileGridTileSize))}
-			switch matchThreeGameMode.board[y][x] {
+	for y := range matchThreeGameMode.board.Board_num_rows {
+		for x := range matchThreeGameMode.board.Board_num_cols {
+			drawPos := Engine.Vector2{X: float64(matchThreeGameMode.board.TileGridTotalXOffsetInPixels + (x * matchThreeGameMode.board.TileGridTileSizeInPixels)), Y: float64(matchThreeGameMode.board.TileGridTotalYOffsetInPixels + (y * matchThreeGameMode.board.TileGridTileSizeInPixels))}
+			switch matchThreeGameMode.board.BoardData[y][x] {
 			case 0:
 				redSprite.DrawSprite(screenRef, &drawImgOptions, &drawPos)
 			case 1:
@@ -182,7 +167,7 @@ func (matchThreeGameMode *MatchThreeGameMode) Draw(screenRef *ebiten.Image) {
 
 	if matchThreeGameMode.currentSelectedTileCoords.X >= 0 && matchThreeGameMode.currentSelectedTileCoords.Y >= 0 {
 		selectionSprite := &matchThreeGameMode.SceneRef.EntityComponentsForScene.Sprites[matchThreeGameMode.selected_tile_entity_id]
-		drawPos := Engine.Vector2{X: float64(matchThreeGameMode.tileGridTotalXOffset) + matchThreeGameMode.currentSelectedTileCoords.X, Y: float64(matchThreeGameMode.tileGridTotalYOffset) + matchThreeGameMode.currentSelectedTileCoords.Y}
+		drawPos := Engine.Vector2{X: float64(matchThreeGameMode.board.TileGridTotalXOffsetInPixels) + matchThreeGameMode.currentSelectedTileCoords.X, Y: float64(matchThreeGameMode.board.TileGridTotalYOffsetInPixels) + matchThreeGameMode.currentSelectedTileCoords.Y}
 		selectionSprite.DrawSprite(screenRef, &drawImgOptions, &drawPos)
 	}
 
