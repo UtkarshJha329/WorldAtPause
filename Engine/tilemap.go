@@ -4,7 +4,6 @@ import (
 	"image"
 
 	"github.com/hajimehoshi/ebiten/v2"
-	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 type TilemapAssetData struct {
@@ -136,11 +135,7 @@ func (t *Tilemap) PointCollidesWithTilemapCollisionLayer(const_pointPosition *Ve
 func NewTilemap(tileSetTexturePath string, tilemapPath string, GridSize int, tilemapToFill *Tilemap, tilemapDataJSON *TilemapDataJSON) error {
 
 	// Will not work with android directly because of lack of filesystem, use go:embed!
-	var err error
-	tilemapToFill.TileSet.tileSetTexture, _, err = ebitenutil.NewImageFromFile(tileSetTexturePath)
-	if err != nil {
-		return err
-	}
+	tilemapToFill.TileSet.tileSetTexture = LoadImageFromFileSystem(tileSetTexturePath)
 
 	tilemapToFill.GridSize = GridSize
 	tilemapToFill.TilemapRooms = make(map[Vector2Int]*TilemapRoom)
