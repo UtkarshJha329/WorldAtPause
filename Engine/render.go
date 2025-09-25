@@ -49,16 +49,20 @@ func DrawActiveRoomInScene(curSceneRef *Scene, screenRef *ebiten.Image) {
 
 	if curRoomHasSomeData {
 
+		for _, triggerEntityID := range curRoom.VisibleTriggerEntityIDs {
+			DrawEntityIDIfAlive(entityComponentsRef, screenRef, &drawImgOptions, triggerEntityID)
+		}
+
 		for _, itemEntityID := range curRoom.ItemEntityIDs {
 			DrawEntityIDIfAlive(entityComponentsRef, screenRef, &drawImgOptions, itemEntityID)
 		}
 
-		for _, enemyEntityID := range curRoom.EnemyEntityIDs {
-			DrawEntityIDIfAlive(entityComponentsRef, screenRef, &drawImgOptions, enemyEntityID)
-		}
-
 		for _, obstacleEntityID := range curRoom.ObstacleEntityIDs {
 			DrawEntityIDIfAlive(entityComponentsRef, screenRef, &drawImgOptions, obstacleEntityID)
+		}
+
+		for _, enemyEntityID := range curRoom.EnemyEntityIDs {
+			DrawEntityIDIfAlive(entityComponentsRef, screenRef, &drawImgOptions, enemyEntityID)
 		}
 	}
 

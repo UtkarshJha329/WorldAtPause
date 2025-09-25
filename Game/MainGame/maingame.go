@@ -139,34 +139,6 @@ func (mainGameMode *MainGameMode) Draw(screenRef *ebiten.Image) {
 	Engine.DrawActiveRoomInSceneColliders(mainGameMode.SceneRef, screenRef)
 
 	drawOptions := ebiten.DrawImageOptions{}
-	{
-		breakoutTriggerEntityID := mainGameMode.SceneRef.EntityIDsByName["Main Game Breakout Ball Trigger"]
-		breakoutTriggerEntityPosition := mainGameMode.SceneRef.EntityComponentsForScene.Positions[breakoutTriggerEntityID]
-		breakoutTriggerSprite := mainGameMode.SceneRef.EntityComponentsForScene.Sprites[breakoutTriggerEntityID]
-
-		breakoutTriggerSprite.DrawSprite(screenRef, &drawOptions, &breakoutTriggerEntityPosition)
-	}
-	{
-		magicalRideTriggerEntityID := mainGameMode.SceneRef.EntityIDsByName["Main Game Magical Ride Trigger"]
-		magicalRideTriggerEntityPosition := mainGameMode.SceneRef.EntityComponentsForScene.Positions[magicalRideTriggerEntityID]
-		magicalRideTriggerSprite := mainGameMode.SceneRef.EntityComponentsForScene.Sprites[magicalRideTriggerEntityID]
-
-		magicalRideTriggerSprite.DrawSprite(screenRef, &drawOptions, &magicalRideTriggerEntityPosition)
-	}
-	{
-		spaceInvadersTriggerEntityID := mainGameMode.SceneRef.EntityIDsByName["Main Game Space Invaders Trigger"]
-		spaceInvadersTriggerEntityPosition := mainGameMode.SceneRef.EntityComponentsForScene.Positions[spaceInvadersTriggerEntityID]
-		spaceInvadersTriggerSprite := mainGameMode.SceneRef.EntityComponentsForScene.Sprites[spaceInvadersTriggerEntityID]
-
-		spaceInvadersTriggerSprite.DrawSprite(screenRef, &drawOptions, &spaceInvadersTriggerEntityPosition)
-	}
-	{
-		matchThreeTriggerEntityID := mainGameMode.SceneRef.EntityIDsByName["Main Game Match Three Trigger"]
-		matchThreeTriggerEntityPosition := mainGameMode.SceneRef.EntityComponentsForScene.Positions[matchThreeTriggerEntityID]
-		matchThreeTriggerSprite := mainGameMode.SceneRef.EntityComponentsForScene.Sprites[matchThreeTriggerEntityID]
-
-		matchThreeTriggerSprite.DrawSprite(screenRef, &drawOptions, &matchThreeTriggerEntityPosition)
-	}
 	if mainGameMode.showCurrentUITree {
 		mainGameMode.currentUITree.RenderUITree(0, Engine.Vector2{X: 0.0, Y: 0.0}, screenRef, &drawOptions)
 	}
@@ -307,6 +279,39 @@ func (mainGameMode *MainGameMode) IssueSceneTransitionQuests() {
 								mainGameMode.playerSpeed += 1.0
 							} else if previousGameStateData.GameState == Engine.GAMEMODE_LOST {
 								fmt.Println("Lost at Match Three! Speed decreased.")
+								mainGameMode.playerSpeed -= 1.0
+							}
+						},
+					})
+			}
+		}
+	}
+
+	{
+		sokobanTriggerEntityID := curSceneRef.EntityIDsByName["Main Game Sokoban Trigger"]
+		sokobanTriggerEntityPos := entityComponentsRef.Positions[sokobanTriggerEntityID]
+		sokobanTriggerCollisionShapeRef := entityComponentsRef.CollisionShapes[sokobanTriggerEntityID]
+
+		if _, _, _, collided := Engine.CollisionShapeOverlapsWithCollisionShape(playerPosRef, playerCollisionShapeRef, &sokobanTriggerEntityPos, sokobanTriggerCollisionShapeRef); collided {
+
+			shouldShowQuestAcceptUITree = true
+
+			if Engine.ClickedYesInYesNoUITree() {
+
+				fmt.Println("Accepted Sokoban Quest.")
+
+				curSceneRef.SpawnChildSceneWithQuest(mainGameMode.World.SceneIndexByName["Sokoban Game"],
+					Engine.QuestData{
+						QuestType: Engine.QUEST_TYPE_SCORE_LIMIT,
+						QuestValues: map[int]float64{
+							Engine.QUEST_TYPE_SCORE_LIMIT: 130.0,
+						},
+						QuestCompleteLambda: func(previousGameStateData Engine.GameStateData) {
+							if previousGameStateData.GameState == Engine.GAMEMODE_WON {
+								fmt.Println("Won at Sokoban! Speed increased!")
+								mainGameMode.playerSpeed += 1.0
+							} else if previousGameStateData.GameState == Engine.GAMEMODE_LOST {
+								fmt.Println("Lost at Sokoban! Speed decreased.")
 								mainGameMode.playerSpeed -= 1.0
 							}
 						},

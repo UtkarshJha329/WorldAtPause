@@ -5,11 +5,12 @@ import (
 )
 
 type Room struct {
-	EntitiesInThisRoom []int
-	EnemyEntityIDs     []int
-	TriggerEntityIDs   []int
-	ObstacleEntityIDs  []int
-	ItemEntityIDs      []int
+	EntitiesInThisRoom        []int
+	EnemyEntityIDs            []int
+	InvisibleTriggerEntityIDs []int
+	VisibleTriggerEntityIDs   []int
+	ObstacleEntityIDs         []int
+	ItemEntityIDs             []int
 }
 
 type Scene struct {

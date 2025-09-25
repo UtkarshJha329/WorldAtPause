@@ -240,8 +240,10 @@ func FillSceneWithSceneDataFirstTime(curScene *Scene, sceneData *SceneData) {
 				curRoom.EnemyEntityIDs = append(curRoom.EnemyEntityIDs, runningEntityID)
 			case "Obstacle":
 				curRoom.ObstacleEntityIDs = append(curRoom.ObstacleEntityIDs, runningEntityID)
-			case "Trigger":
-				curRoom.TriggerEntityIDs = append(curRoom.TriggerEntityIDs, runningEntityID)
+			case "Invisible Trigger":
+				curRoom.InvisibleTriggerEntityIDs = append(curRoom.InvisibleTriggerEntityIDs, runningEntityID)
+			case "Visible Trigger":
+				curRoom.VisibleTriggerEntityIDs = append(curRoom.VisibleTriggerEntityIDs, runningEntityID)
 			case "Item":
 				curRoom.ItemEntityIDs = append(curRoom.ItemEntityIDs, runningEntityID)
 			}

@@ -144,6 +144,22 @@
                             "ColliderOriginOffset": [0, 0]
                         }}
                     ]
+                },{
+                    "Name": "Player Sokoban",
+                    "Asset Type": "Player",
+                    "Asset Data": [
+                        {"Position": [0, 0]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/Man.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }},
+                        {"Collision Shape Data": {
+                            "CollisionShapeType": "Box",
+                            "Size": [5, 11],
+                            "ColliderOriginOffset": [6, 4]
+                        }}
+                    ]
                 }]
         },
         {
@@ -199,10 +215,10 @@
             ]
         },
         {
-            "Triggers":[
+            "Invisible Triggers":[
                 {
                     "Name": "Breakout Ball Failure Trigger",
-                    "Asset Type": "Trigger",
+                    "Asset Type": "Invisible Trigger",
                     "Asset Data":[
                         {"Position": [-64, 304]},
                         {"Collision Shape Data": {
@@ -211,27 +227,16 @@
                             "ColliderOriginOffset": [0, 0]
                         }}
                     ]
-                },{
-                    "Name": "Main Game Breakout Ball Trigger",
-                    "Asset Type": "Trigger",
+                }
+            ]
+        },
+        {
+            "Visible Triggers":[
+                {
+                    "Name": "Tile Grid Size Trigger",
+                    "Asset Type": "Visible Trigger",
                     "Asset Data":[
                         {"Position": [64, 48]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/TilesetDungeon.png",
-                            "RenderRectStart":[32, 16],
-                            "RenderRectEnd":[48, 32]
-                        }},
-                        {"Collision Shape Data": {
-                            "CollisionShapeType": "Box",
-                            "Size": [16, 16],
-                            "ColliderOriginOffset": [0, 0]
-                        }}
-                    ]
-                },{
-                    "Name": "Main Game Magical Ride Trigger",
-                    "Asset Type": "Trigger",
-                    "Asset Data":[
-                        {"Position": [128, 48]},
                         {"Sprite Data": {
                             "SpriteTextureLocation": "Assets/Images/TilesetDungeon.png",
                             "RenderRectStart":[32, 16],
@@ -433,6 +438,23 @@
                             "ColliderOriginOffset": [0, 0]
                         }}
                     ]
+                },
+                {
+                    "Name": "Sokoban Box",
+                    "Asset Type": "Obstacle",
+                    "Asset Data": [
+                        {"Position": [0, 0]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/Box.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }},
+                        {"Collision Shape Data": {
+                            "CollisionShapeType": "Box",
+                            "Size": [16, 16],
+                            "ColliderOriginOffset": [0, 0]
+                        }}
+                    ]
                 }
             ]
         },
@@ -571,25 +593,35 @@
                             ]
                         },
                         {
-                            "Prefab Name": "Main Game Breakout Ball Trigger",
+                            "Prefab Name": "Tile Grid Size Trigger",
                             "Entity Spawn Name": "Main Game Breakout Ball Trigger"
                         },
                         {
-                            "Prefab Name": "Main Game Magical Ride Trigger",
-                            "Entity Spawn Name": "Main Game Magical Ride Trigger"
+                            "Prefab Name": "Tile Grid Size Trigger",
+                            "Entity Spawn Name": "Main Game Magical Ride Trigger",
+                            "Asset Data": [
+                                {"Position": [128, 48]}
+                            ]
                         },
                         {
-                            "Prefab Name": "Main Game Magical Ride Trigger",
+                            "Prefab Name": "Tile Grid Size Trigger",
                             "Entity Spawn Name": "Main Game Space Invaders Trigger",
                             "Asset Data": [
                                 {"Position": [192, 48]}
                             ]
                         },
                         {
-                            "Prefab Name": "Main Game Magical Ride Trigger",
+                            "Prefab Name": "Tile Grid Size Trigger",
                             "Entity Spawn Name": "Main Game Match Three Trigger",
                             "Asset Data": [
                                 {"Position": [258, 48]}
+                            ]
+                        },
+                        {
+                            "Prefab Name": "Tile Grid Size Trigger",
+                            "Entity Spawn Name": "Main Game Sokoban Trigger",
+                            "Asset Data": [
+                                {"Position": [258, 80]}
                             ]
                         },
                         {
@@ -821,6 +853,68 @@
                         {
                             "Prefab Name": "Match Three Selected Tile",
                             "Entity Spawn Name": "Match Three Selected Tile"
+                        }
+                    ]
+                }
+            ]
+        },{
+            "Scene Name": "Sokoban Game",
+            "Player Entity": {
+                "Prefab Name": "Player Sokoban",
+                "Entity Spawn Name": "Player",
+                "Asset Data": [
+                    {"Position": [160, 120]}
+                ]
+            },
+            "Rooms Data": [
+                {
+                    "Room Index" : [0, 0],
+                    "Room Entities": [
+                        {
+                            "Prefab Name": "Space Invaders Tilemap",
+                            "Entity Spawn Name": "Sokoban Tilemap"
+                        },
+                        {
+                            "Prefab Name": "Sokoban Box",
+                            "Entity Spawn Name": "Sokoban Box 1",
+                            "Asset Data": [
+                                {"Position": [64, 16]}
+                            ]
+                        },
+                        {
+                            "Prefab Name": "Sokoban Box",
+                            "Entity Spawn Name": "Sokoban Box 2",
+                            "Asset Data": [
+                                {"Position": [128, 16]}
+                            ]
+                        },
+                        {
+                            "Prefab Name": "Sokoban Box",
+                            "Entity Spawn Name": "Sokoban Box 3",
+                            "Asset Data": [
+                                {"Position": [192, 16]}
+                            ]
+                        },
+                        {
+                            "Prefab Name": "Sokoban Box",
+                            "Entity Spawn Name": "Sokoban Box 4",
+                            "Asset Data": [
+                                {"Position": [256, 16]}
+                            ]
+                        },
+                        {
+                            "Prefab Name": "Sokoban Box",
+                            "Entity Spawn Name": "Sokoban Box 5",
+                            "Asset Data": [
+                                {"Position": [160, 80]}
+                            ]
+                        },
+                        {
+                            "Prefab Name": "Tile Grid Size Trigger",
+                            "Entity Spawn Name": "Sokoban Box Collection Trigger",
+                            "Asset Data": [
+                                {"Position": [192, 48]}
+                            ]
                         }
                     ]
                 }

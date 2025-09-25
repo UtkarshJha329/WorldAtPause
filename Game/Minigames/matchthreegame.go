@@ -141,6 +141,8 @@ func (matchThreeGameMode *MatchThreeGameMode) Update() {
 
 func (matchThreeGameMode *MatchThreeGameMode) Draw(screenRef *ebiten.Image) {
 
+	Engine.DrawActiveRoomInScene(matchThreeGameMode.SceneRef, screenRef)
+
 	redSprite := &matchThreeGameMode.SceneRef.EntityComponentsForScene.Sprites[matchThreeGameMode.red_tile_entity_id]
 	blueSprite := &matchThreeGameMode.SceneRef.EntityComponentsForScene.Sprites[matchThreeGameMode.blue_tile_entity_id]
 	greenSprite := &matchThreeGameMode.SceneRef.EntityComponentsForScene.Sprites[matchThreeGameMode.green_tile_entity_id]

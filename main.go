@@ -69,6 +69,12 @@ func SetScenesGameModes(g *Game) {
 				SceneRef: scene,
 			}
 		}
+		if scene.SceneName == "Sokoban Game" {
+			scene.GameMode = &Minigames.SokobanGameMode{
+				World:    g.world,
+				SceneRef: scene,
+			}
+		}
 	}
 }
 

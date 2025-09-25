@@ -34,3 +34,8 @@ type GameMode interface {
 	Draw(screenRef *ebiten.Image)
 	SceneTransitionHandler(previousGameStateData GameStateData)
 }
+
+//func (GameMode *GameMode)	Init() {}
+//func (GameMode *GameMode)	Update() {}
+//func (GameMode *GameMode)	Draw(screenRef *ebiten.Image) {}
+//func (GameMode *GameMode)	SceneTransitionHandler(previousGameStateData GameStateData) {}
