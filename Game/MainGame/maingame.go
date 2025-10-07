@@ -320,6 +320,39 @@ func (mainGameMode *MainGameMode) IssueSceneTransitionQuests() {
 		}
 	}
 
+	{
+		snekTriggerEntityID := curSceneRef.EntityIDsByName["Main Game Snek Game Trigger"]
+		snekTriggerEntityPos := entityComponentsRef.Positions[snekTriggerEntityID]
+		snekTriggerCollisionShapeRef := entityComponentsRef.CollisionShapes[snekTriggerEntityID]
+
+		if _, _, _, collided := Engine.CollisionShapeOverlapsWithCollisionShape(playerPosRef, playerCollisionShapeRef, &snekTriggerEntityPos, snekTriggerCollisionShapeRef); collided {
+
+			shouldShowQuestAcceptUITree = true
+
+			if Engine.ClickedYesInYesNoUITree() {
+
+				fmt.Println("Accepted Snek Game Quest.")
+
+				curSceneRef.SpawnChildSceneWithQuest(mainGameMode.World.SceneIndexByName["Snek Game"],
+					Engine.QuestData{
+						QuestType: Engine.QUEST_TYPE_SCORE_LIMIT,
+						QuestValues: map[int]float64{
+							Engine.QUEST_TYPE_SCORE_LIMIT: 9.0,
+						},
+						QuestCompleteLambda: func(previousGameStateData Engine.GameStateData) {
+							if previousGameStateData.GameState == Engine.GAMEMODE_WON {
+								fmt.Println("Won at Snek! Speed increased!")
+								mainGameMode.playerSpeed += 1.0
+							} else if previousGameStateData.GameState == Engine.GAMEMODE_LOST {
+								fmt.Println("Lost at Snek! Speed decreased.")
+								mainGameMode.playerSpeed -= 1.0
+							}
+						},
+					})
+			}
+		}
+	}
+
 	mainGameMode.showCurrentUITree = shouldShowQuestAcceptUITree
 	if shouldShowQuestAcceptUITree {
 		mainGameMode.currentUITree = Engine.YesNoUITree

@@ -35,6 +35,7 @@ func (sokobanGameMode *SokobanGameMode) Update() {
 	playerMoveAmountPerFrame := sokobanGameMode.playerMoveAmountPerFrame
 
 	playerPosRef := &entityComponentsRef.Positions[entityComponentsRef.PlayerEntityID]
+	playerCollisionShapeRef := entityComponentsRef.CollisionShapes[entityComponentsRef.PlayerEntityID]
 	curRoomIndex := entityComponentsRef.Tilemap.GetRoomIndexOfPosition(playerPosRef)
 
 	inputDirection := Engine.Vector2{X: 0.0, Y: 0.0}
@@ -73,18 +74,13 @@ func (sokobanGameMode *SokobanGameMode) Update() {
 		playerMoveCollisionResult := curSceneRef.CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex, curSceneRef.EntityComponentsForScene.PlayerEntityID, inputDirection, totalMoveAmount, playerMoveAmountPerFrame, playerCollideAndMoveParameters)
 
 		collidedWithObstacleEntityID := -1
-		penetrationNormal := Engine.Vector2{X: 0.0, Y: 0.0}
 
-		if playerMoveCollisionResult.ObstacleXMoveCollisionResult.CollidedWithObstacle {
+		if playerMoveCollisionResult.ObstacleXMoveCollisionResult.CollidedWithObstacle && inputDirection.X != 0 {
 
 			collidedWithObstacleEntityID = playerMoveCollisionResult.ObstacleXMoveCollisionResult.CollidedWithObstacleEntityID
-			penetrationNormal = playerMoveCollisionResult.ObstacleXMoveCollisionResult.CollisionNormal
 
 		} else if playerMoveCollisionResult.ObstacleYMoveCollisionResult.CollidedWithObstacle {
-
 			collidedWithObstacleEntityID = playerMoveCollisionResult.ObstacleYMoveCollisionResult.CollidedWithObstacleEntityID
-			penetrationNormal = playerMoveCollisionResult.ObstacleYMoveCollisionResult.CollisionNormal
-
 		}
 
 		if collidedWithObstacleEntityID != -1 {
@@ -103,14 +99,19 @@ func (sokobanGameMode *SokobanGameMode) Update() {
 				MovementLock:         Engine.Vector2{X: math.Abs(inputDirection.X), Y: math.Abs(inputDirection.Y)},
 			}
 
+			biasInput := Engine.Multiply_Float_Vector2(0.1, &inputDirection)
+			playerPredectedPos := Engine.Add_Vector2(playerPosRef, &biasInput)
+			collisionNormal, _, _, _ := Engine.CollisionShapeOverlapsWithCollisionShape(&playerPredectedPos, playerCollisionShapeRef, &obstaclePos, obstacleCollisionShapeRef)
+
 			inputX := 0.0
-			if penetrationNormal.X != 0.0 {
-				inputX = math.Copysign(1.0, penetrationNormal.X)
+			if collisionNormal.X != 0.0 {
+				inputX = math.Copysign(1.0, collisionNormal.X)
 			}
 			inputY := 0.0
-			if penetrationNormal.Y != 0.0 {
-				inputY = math.Copysign(1.0, penetrationNormal.Y)
+			if collisionNormal.Y != 0.0 {
+				inputY = math.Copysign(1.0, collisionNormal.Y)
 			}
+
 			obstacleInputdirection := Engine.Vector2{X: inputX, Y: inputY}
 			obstacleInputdirection = Engine.Multiply_Float_Vector2(-1.0, &obstacleInputdirection)
 			obstacleMoveAmountPerFrame := 1.0

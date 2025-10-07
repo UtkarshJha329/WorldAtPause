@@ -1,6 +1,8 @@
 package Engine
 
-import "math"
+import (
+	"math"
+)
 
 type EntityObstacleCollisionData struct {
 	CollidedWithObstacle                  bool

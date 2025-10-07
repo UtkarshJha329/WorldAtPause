@@ -160,6 +160,23 @@
                             "ColliderOriginOffset": [6, 4]
                         }}
                     ]
+                },{
+                    "Name": "Player Snek",
+                    "Asset Type": "Player",
+                    "Asset Data": [
+                        {"Position": [100, 100]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/Snek.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }},
+                        {"Collision Shape Data": {
+                            "CollisionShapeType": "Box",
+                            "Size": [16, 16],
+                            "ColliderOriginOffset": [0, 0]
+                            }
+                        }
+                    ]
                 }]
         },
         {
@@ -246,6 +263,78 @@
                             "CollisionShapeType": "Box",
                             "Size": [16, 16],
                             "ColliderOriginOffset": [0, 0]
+                        }}
+                    ]
+                },
+                {
+                    "Name": "Snek Red Grid Tile",
+                    "Asset Type": "Visible Trigger",
+                    "Asset Data": [
+                        {"Position": [0, 0]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/RedTile.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }}
+                    ]
+                },
+                {
+                    "Name": "Snek Blue Grid Tile",
+                    "Asset Type": "Visible Trigger",
+                    "Asset Data": [
+                        {"Position": [0, 0]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/BlueTile.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }}
+                    ]
+                },
+                {
+                    "Name": "Snek Green Grid Tile",
+                    "Asset Type": "Visible Trigger",
+                    "Asset Data": [
+                        {"Position": [0, 0]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/GreenTile.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }}
+                    ]
+                },
+                {
+                    "Name": "Snek Yellow Grid Tile",
+                    "Asset Type": "Visible Trigger",
+                    "Asset Data": [
+                        {"Position": [0, 0]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/YellowTile.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }}
+                    ]
+                },
+                {
+                    "Name": "Snek Head Tile",
+                    "Asset Type": "Visible Trigger",
+                    "Asset Data": [
+                        {"Position": [0, 0]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/SnekHead.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }}
+                    ]
+                },
+                {
+                    "Name": "Snek Tail Tile",
+                    "Asset Type": "Visible Trigger",
+                    "Asset Data": [
+                        {"Position": [0, 0]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/SnekTail.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
                         }}
                     ]
                 }
@@ -625,6 +714,13 @@
                             ]
                         },
                         {
+                            "Prefab Name": "Tile Grid Size Trigger",
+                            "Entity Spawn Name": "Main Game Snek Game Trigger",
+                            "Asset Data": [
+                                {"Position": [192, 80]}
+                            ]
+                        },
+                        {
                             "Prefab Name": "Stone Pyramid",
                             "Entity Spawn Name": "Random Circle Obstacle"
                         },
@@ -915,6 +1011,50 @@
                             "Asset Data": [
                                 {"Position": [192, 48]}
                             ]
+                        }
+                    ]
+                }
+            ]
+        },{
+            "Scene Name": "Snek Game",
+            "Player Entity": {
+                "Prefab Name": "Player Snek",
+                "Entity Spawn Name": "Player",
+                "Asset Data": [
+                    {"Position": [100, 100]}
+                ]
+            },
+            "Rooms Data": [
+                {
+                    "Room Index" : [0, 0],
+                    "Room Entities": [
+                        {
+                            "Prefab Name": "Ground Tilemap",
+                            "Entity Spawn Name": "Ground Tilemap"
+                        },
+                        {
+                            "Prefab Name": "Snek Red Grid Tile",
+                            "Entity Spawn Name": "Snek Red Grid Tile"
+                        },
+                        {
+                            "Prefab Name": "Snek Blue Grid Tile",
+                            "Entity Spawn Name": "Snek Blue Grid Tile"
+                        },
+                        {
+                            "Prefab Name": "Snek Green Grid Tile",
+                            "Entity Spawn Name": "Snek Green Grid Tile"
+                        },
+                        {
+                            "Prefab Name": "Snek Yellow Grid Tile",
+                            "Entity Spawn Name": "Snek Yellow Grid Tile"
+                        },
+                        {
+                            "Prefab Name": "Snek Head Tile",
+                            "Entity Spawn Name": "Snek Head Tile"
+                        },
+                        {
+                            "Prefab Name": "Snek Tail Tile",
+                            "Entity Spawn Name": "Snek Tail Tile"
                         }
                     ]
                 }
