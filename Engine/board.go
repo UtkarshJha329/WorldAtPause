@@ -33,3 +33,7 @@ func (board *Board[T]) InitBoard(boardNumCols, boardNumRows, boardGridTileSizeIn
 		board.TileGridTotalYOffsetInPixels = 0
 	}
 }
+
+func (board *Board[T]) GetPositionOfTileOnScreen(boardTile Vector2Int) Vector2Int {
+	return Vector2Int{X: (boardTile.X * board.TileGridTileSizeInPixels) + board.TileGridTotalXOffsetInPixels, Y: (boardTile.Y * board.TileGridTileSizeInPixels) + board.TileGridTotalYOffsetInPixels}
+}

@@ -267,7 +267,7 @@
                     ]
                 },
                 {
-                    "Name": "Snek Red Grid Tile",
+                    "Name": "Red Grid Tile",
                     "Asset Type": "Visible Trigger",
                     "Asset Data": [
                         {"Position": [0, 0]},
@@ -279,7 +279,7 @@
                     ]
                 },
                 {
-                    "Name": "Snek Blue Grid Tile",
+                    "Name": "Blue Grid Tile",
                     "Asset Type": "Visible Trigger",
                     "Asset Data": [
                         {"Position": [0, 0]},
@@ -291,7 +291,7 @@
                     ]
                 },
                 {
-                    "Name": "Snek Green Grid Tile",
+                    "Name": "Green Grid Tile",
                     "Asset Type": "Visible Trigger",
                     "Asset Data": [
                         {"Position": [0, 0]},
@@ -303,7 +303,7 @@
                     ]
                 },
                 {
-                    "Name": "Snek Yellow Grid Tile",
+                    "Name": "Yellow Grid Tile",
                     "Asset Type": "Visible Trigger",
                     "Asset Data": [
                         {"Position": [0, 0]},
@@ -333,6 +333,30 @@
                         {"Position": [0, 0]},
                         {"Sprite Data": {
                             "SpriteTextureLocation": "Assets/Images/SnekTail.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }}
+                    ]
+                },
+                {
+                    "Name": "Fire Ball",
+                    "Asset Type": "Visible Trigger",
+                    "Asset Data": [
+                        {"Position": [0, 0]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/FireBall.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }}
+                    ]
+                },
+                {
+                    "Name": "Tower Defence Enemy",
+                    "Asset Type": "Visible Trigger",
+                    "Asset Data": [
+                        {"Position": [0, 0]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/TowerDefenceEnemy.png",
                             "RenderRectStart": [0, 0],
                             "RenderRectEnd": [16, 16]
                         }}
@@ -512,7 +536,7 @@
                     ]
                 },
                 {
-                    "Name": "Match Three Selected Tile",
+                    "Name": "Selected Tile",
                     "Asset Type": "Obstacle",
                     "Asset Data": [
                         {"Position": [0, 0]},
@@ -683,7 +707,10 @@
                         },
                         {
                             "Prefab Name": "Tile Grid Size Trigger",
-                            "Entity Spawn Name": "Main Game Breakout Ball Trigger"
+                            "Entity Spawn Name": "Main Game Breakout Ball Trigger",
+                            "Asset Data": [
+                                {"Position": [64, 48]}
+                            ]
                         },
                         {
                             "Prefab Name": "Tile Grid Size Trigger",
@@ -718,6 +745,13 @@
                             "Entity Spawn Name": "Main Game Snek Game Trigger",
                             "Asset Data": [
                                 {"Position": [192, 80]}
+                            ]
+                        },
+                        {
+                            "Prefab Name": "Tile Grid Size Trigger",
+                            "Entity Spawn Name": "Main Game Tower Defence Game Trigger",
+                            "Asset Data": [
+                                {"Position": [128, 80]}
                             ]
                         },
                         {
@@ -947,7 +981,7 @@
                             "Entity Spawn Name": "Match Three Yellow Tile"
                         },
                         {
-                            "Prefab Name": "Match Three Selected Tile",
+                            "Prefab Name": "Selected Tile",
                             "Entity Spawn Name": "Match Three Selected Tile"
                         }
                     ]
@@ -1033,19 +1067,19 @@
                             "Entity Spawn Name": "Ground Tilemap"
                         },
                         {
-                            "Prefab Name": "Snek Red Grid Tile",
+                            "Prefab Name": "Red Grid Tile",
                             "Entity Spawn Name": "Snek Red Grid Tile"
                         },
                         {
-                            "Prefab Name": "Snek Blue Grid Tile",
+                            "Prefab Name": "Blue Grid Tile",
                             "Entity Spawn Name": "Snek Blue Grid Tile"
                         },
                         {
-                            "Prefab Name": "Snek Green Grid Tile",
+                            "Prefab Name": "Green Grid Tile",
                             "Entity Spawn Name": "Snek Green Grid Tile"
                         },
                         {
-                            "Prefab Name": "Snek Yellow Grid Tile",
+                            "Prefab Name": "Yellow Grid Tile",
                             "Entity Spawn Name": "Snek Yellow Grid Tile"
                         },
                         {
@@ -1055,6 +1089,54 @@
                         {
                             "Prefab Name": "Snek Tail Tile",
                             "Entity Spawn Name": "Snek Tail Tile"
+                        }
+                    ]
+                }
+            ]
+        },{
+            "Scene Name": "Tower Defence Game",
+            "Player Entity": {
+                "Prefab Name": "Player Basic Circle",
+                "Entity Spawn Name": "Player",
+                "Asset Data": [
+                    {"Position": [0, 0]}
+                ]
+            },
+            "Rooms Data": [
+                {
+                    "Room Index" : [0, 0],
+                    "Room Entities": [
+                        {
+                            "Prefab Name": "Space Invaders Tilemap",
+                            "Entity Spawn Name": "Space Invaders Tilemap"
+                        },
+                        {
+                            "Prefab Name": "Red Grid Tile",
+                            "Entity Spawn Name": "Tower Defence Red Grid Tile"
+                        },
+                        {
+                            "Prefab Name": "Blue Grid Tile",
+                            "Entity Spawn Name": "Tower Defence Blue Grid Tile"
+                        },
+                        {
+                            "Prefab Name": "Green Grid Tile",
+                            "Entity Spawn Name": "Tower Defence Green Grid Tile"
+                        },
+                        {
+                            "Prefab Name": "Yellow Grid Tile",
+                            "Entity Spawn Name": "Tower Defence Yellow Grid Tile"
+                        },
+                        {
+                            "Prefab Name": "Selected Tile",
+                            "Entity Spawn Name": "Tower Defence Selected Tile"
+                        },
+                        {
+                            "Prefab Name": "Fire Ball",
+                            "Entity Spawn Name": "Tower Defence Fire Ball"
+                        },
+                        {
+                            "Prefab Name": "Tower Defence Enemy",
+                            "Entity Spawn Name": "Tower Defence Enemy"
                         }
                     ]
                 }

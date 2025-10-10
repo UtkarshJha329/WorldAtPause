@@ -69,6 +69,60 @@ func DrawActiveRoomInScene(curSceneRef *Scene, screenRef *ebiten.Image) {
 	DrawEntityIDIfAlive(entityComponentsRef, screenRef, &drawImgOptions, entityComponentsRef.PlayerEntityID)
 }
 
+func DrawActiveTilemapInRoomInScene(curSceneRef *Scene, screenRef *ebiten.Image) {
+
+	drawImgOptions := ebiten.DrawImageOptions{}
+
+	entityComponentsRef := curSceneRef.EntityComponentsForScene
+
+	playerPosRef := &entityComponentsRef.Positions[entityComponentsRef.PlayerEntityID]
+	curRoomIndex := entityComponentsRef.Tilemap.GetRoomIndexOfPosition(playerPosRef)
+
+	curTilemapRoomRef, ok := entityComponentsRef.Tilemap.TilemapRooms[curRoomIndex]
+	if ok {
+		DrawTileMapLevel(curTilemapRoomRef, entityComponentsRef, screenRef, &drawImgOptions)
+	}
+}
+
+func DrawActiveRoomObjectsInScene(curSceneRef *Scene, screenRef *ebiten.Image) {
+
+	drawImgOptions := ebiten.DrawImageOptions{}
+
+	entityComponentsRef := curSceneRef.EntityComponentsForScene
+
+	playerPosRef := &entityComponentsRef.Positions[entityComponentsRef.PlayerEntityID]
+	curRoomIndex := entityComponentsRef.Tilemap.GetRoomIndexOfPosition(playerPosRef)
+	curRoom, curRoomHasSomeData := curSceneRef.RoomsData[curRoomIndex]
+
+	if curRoomHasSomeData {
+
+		for _, triggerEntityID := range curRoom.VisibleTriggerEntityIDs {
+			DrawEntityIDIfAlive(entityComponentsRef, screenRef, &drawImgOptions, triggerEntityID)
+		}
+
+		for _, itemEntityID := range curRoom.ItemEntityIDs {
+			DrawEntityIDIfAlive(entityComponentsRef, screenRef, &drawImgOptions, itemEntityID)
+		}
+
+		for _, obstacleEntityID := range curRoom.ObstacleEntityIDs {
+			DrawEntityIDIfAlive(entityComponentsRef, screenRef, &drawImgOptions, obstacleEntityID)
+		}
+
+		for _, enemyEntityID := range curRoom.EnemyEntityIDs {
+			DrawEntityIDIfAlive(entityComponentsRef, screenRef, &drawImgOptions, enemyEntityID)
+		}
+	}
+}
+
+func DrawPlayerInScene(curSceneRef *Scene, screenRef *ebiten.Image) {
+
+	drawImgOptions := ebiten.DrawImageOptions{}
+
+	entityComponentsRef := curSceneRef.EntityComponentsForScene
+
+	DrawEntityIDIfAlive(entityComponentsRef, screenRef, &drawImgOptions, entityComponentsRef.PlayerEntityID)
+}
+
 func DrawColliderForEntityIfAlive(entityComponentsRef *EntityComponents, screenRef *ebiten.Image, entityID int) {
 	if entityComponentsRef.IsEntityAlive(entityID) {
 		entityPos := entityComponentsRef.Positions[entityID]

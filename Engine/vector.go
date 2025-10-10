@@ -8,6 +8,10 @@ type Vector2 struct {
 	X, Y float64
 }
 
+func Distance_Vector2(const_a, const_b *Vector2) float64 {
+	return math.Sqrt(math.Pow(const_a.X-const_b.X, 2) + math.Pow(const_a.Y-const_b.Y, 2))
+}
+
 func DistanceSquare_Vector2(const_a, const_b *Vector2) float64 {
 	return math.Pow(const_a.X-const_b.X, 2) + math.Pow(const_a.Y-const_b.Y, 2)
 }
@@ -62,8 +66,12 @@ type Vector2Int struct {
 	X, Y int
 }
 
-func DistanceSquare_Vector2Int(const_a, const_b *Vector2) float64 {
-	return math.Pow(const_a.X-const_b.X, 2) + math.Pow(const_a.Y-const_b.Y, 2)
+func Distance_Vector2Int(const_a, const_b *Vector2Int) float64 {
+	return math.Sqrt(math.Pow(float64(const_a.X-const_b.X), 2) + math.Pow(float64(const_a.Y-const_b.Y), 2))
+}
+
+func DistanceSquare_Vector2Int(const_a, const_b *Vector2Int) float64 {
+	return math.Pow(float64(const_a.X-const_b.X), 2) + math.Pow(float64(const_a.Y-const_b.Y), 2)
 }
 
 func Magnitude_Vector2Int(const_a *Vector2Int) float64 {

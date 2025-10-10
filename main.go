@@ -81,6 +81,12 @@ func SetScenesGameModes(g *Game) {
 				SceneRef: scene,
 			}
 		}
+		if scene.SceneName == "Tower Defence Game" {
+			scene.GameMode = &Minigames.TowerDefenceGameMode{
+				World:    g.world,
+				SceneRef: scene,
+			}
+		}
 	}
 }
 

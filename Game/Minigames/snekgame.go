@@ -71,6 +71,8 @@ func (snekGameMode *SnekGameMode) Init() {
 
 	snekGameMode.totalFruitsConsumed = 0
 	snekGameMode.invalidMoveMade = false
+
+	snekGameMode.lastInputDirection = Engine.Vector2Int{X: 0, Y: 0}
 }
 
 func (snekGameMode *SnekGameMode) Update() {
