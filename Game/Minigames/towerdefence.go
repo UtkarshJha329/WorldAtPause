@@ -2,6 +2,7 @@ package Minigames
 
 import (
 	"WorldAtPause/Engine"
+	"WorldAtPause/Game/Minigames/TowerDefence"
 	"time"
 
 	"github.com/hajimehoshi/ebiten/v2"
@@ -35,15 +36,15 @@ type TowerDefenceGameMode struct {
 	enemyPathPoints []Engine.Vector2Int
 
 	totalNumBulletsInBulletPool int
-	bulletPool                  Engine.Pool[Bullet]
+	bulletPool                  Engine.Pool[TowerDefence.Bullet]
 
 	totalNumEnemiesInEnemyPool int
-	enemyPool                  Engine.Pool[TowerDefenceEnemy]
+	enemyPool                  Engine.Pool[TowerDefence.Enemy]
 	enemySpawner               *Engine.PoolItem[Engine.Timer]
 
 	totalNumTowersInTowerPool int
-	towerPool                 Engine.Pool[PlacedTower]
-	towerTiles                map[Engine.Vector2Int]*Engine.PoolItem[PlacedTower]
+	towerPool                 Engine.Pool[TowerDefence.PlacedTower]
+	towerTiles                map[Engine.Vector2Int]*Engine.PoolItem[TowerDefence.PlacedTower]
 
 	numEnemiesKilled       int
 	numEnemiesToKillForWin int
@@ -112,7 +113,7 @@ func (towerDefenceGameMode *TowerDefenceGameMode) Init() {
 	towerDefenceGameMode.totalNumBulletsInBulletPool = 100
 	towerDefenceGameMode.bulletPool.InitPool("Bullet Pool", towerDefenceGameMode.totalNumBulletsInBulletPool)
 
-	towerDefenceGameMode.towerTiles = make(map[Engine.Vector2Int]*Engine.PoolItem[PlacedTower])
+	towerDefenceGameMode.towerTiles = make(map[Engine.Vector2Int]*Engine.PoolItem[TowerDefence.PlacedTower])
 
 	towerDefenceGameMode.totalNumEnemiesInEnemyPool = 100
 	towerDefenceGameMode.enemyPool.InitPool("Enemy Pool", towerDefenceGameMode.totalNumEnemiesInEnemyPool)
@@ -122,10 +123,10 @@ func (towerDefenceGameMode *TowerDefenceGameMode) Init() {
 
 	towerDefenceGameMode.enemySpawner = towerDefenceGameMode.TimerSystem.SetTimerFromPoolWithDurationLoopAndFunc(time.Duration(float64(2.5)*float64(time.Second)), true, func() {
 		curEnemyPoolItem := towerDefenceGameMode.enemyPool.GetAnUnusedItemFromPool()
-		curEnemyPoolItem.Item.health = 5
-		curEnemyPoolItem.Item.position = Engine.Vector2{X: 0.0, Y: 0.0}
-		curEnemyPoolItem.Item.followingCurrentPathPoint = 0
-		curEnemyPoolItem.Item.moveSpeedPerFrame = 0.5
+		curEnemyPoolItem.Item.Health = 5
+		curEnemyPoolItem.Item.Position = Engine.Vector2{X: 0.0, Y: 0.0}
+		curEnemyPoolItem.Item.FollowingCurrentPathPoint = 0
+		curEnemyPoolItem.Item.MoveSpeedPerFrame = 0.5
 	})
 
 	towerDefenceGameMode.numEnemiesKilled = 0
@@ -169,31 +170,31 @@ func (towerDefenceGameMode *TowerDefenceGameMode) Update() {
 			curTower := towerDefenceGameMode.towerPool.GetAnUnusedItemFromPool()
 			towerDefenceGameMode.towerTiles[towerDefenceGameMode.currentSelectedCellCoord] = curTower
 
-			curTower.Item.towerCellCoords = towerDefenceGameMode.currentSelectedCellCoord
-			curTowerPositionOnScreen := towerDefenceGameMode.occupationBoard.GetPositionOfTileOnScreen(curTower.Item.towerCellCoords)
-			curTower.Item.towerCellPosition = Engine.Vector2{X: float64(curTowerPositionOnScreen.X), Y: float64(curTowerPositionOnScreen.Y)}
+			curTower.Item.TowerCellCoords = towerDefenceGameMode.currentSelectedCellCoord
+			curTowerPositionOnScreen := towerDefenceGameMode.occupationBoard.GetPositionOfTileOnScreen(curTower.Item.TowerCellCoords)
+			curTower.Item.TowerCellPosition = Engine.Vector2{X: float64(curTowerPositionOnScreen.X), Y: float64(curTowerPositionOnScreen.Y)}
 
 			// Set Bullet Spawner For Tower
-			curTower.Item.towerShootRatePerSecond = 0.25
-			curTower.Item.bulletSpeed = 1.0
-			curTower.Item.bulletHealthDamageAmount = 1
+			curTower.Item.TowerShootRatePerSecond = 0.25
+			curTower.Item.BulletSpeed = 1.0
+			curTower.Item.BulletHealthDamageAmount = 1
 
-			curTower.Item.TowerBulletSpawnTimer = towerDefenceGameMode.TimerSystem.SetTimerFromPoolWithDurationLoopAndFunc(time.Duration((1.0/curTower.Item.towerShootRatePerSecond)*float64(time.Second)), true, func() {
-				curTower.Item.SpawnBullet(towerDefenceGameMode)
+			curTower.Item.TowerBulletSpawnTimer = towerDefenceGameMode.TimerSystem.SetTimerFromPoolWithDurationLoopAndFunc(time.Duration((1.0/curTower.Item.TowerShootRatePerSecond)*float64(time.Second)), true, func() {
+				curTower.Item.SpawnBullet(&towerDefenceGameMode.bulletPool, towerDefenceGameMode.TimerSystem)
 			})
 			curTower.Item.TowerBulletSpawnTimer.Item.PauseTimer()
 		}
 	}
 
 	// HELP TOWER FIND TARGET ENEMY
-	towerDefenceGameMode.towerPool.PerformOperationOnAlivePoolItems(func(curPlacedTower *Engine.PoolItem[PlacedTower]) {
+	towerDefenceGameMode.towerPool.PerformOperationOnAlivePoolItems(func(curPlacedTower *Engine.PoolItem[TowerDefence.PlacedTower]) {
 		notFoundTarget := true
 		closestDistToEnemyYet := 500.0
 		for i := 0; i < towerDefenceGameMode.enemyPool.CurNumAliveItemsInPool; i++ {
-			distToCurEnemy := Engine.Distance_Vector2(&towerDefenceGameMode.enemyPool.Items[i].Item.position, &curPlacedTower.Item.towerCellPosition)
+			distToCurEnemy := Engine.Distance_Vector2(&towerDefenceGameMode.enemyPool.Items[i].Item.Position, &curPlacedTower.Item.TowerCellPosition)
 			if distToCurEnemy < 5.0*float64(towerDefenceGameMode.occupationBoardTileSizeInPixels) && distToCurEnemy < closestDistToEnemyYet {
 				curPlacedTower.Item.TowerBulletSpawnTimer.Item.UnPauseTimer()
-				curPlacedTower.Item.curTargetEnemy = towerDefenceGameMode.enemyPool.Items[i]
+				curPlacedTower.Item.CurTargetEnemy = towerDefenceGameMode.enemyPool.Items[i]
 				closestDistToEnemyYet = distToCurEnemy
 				notFoundTarget = false
 			}
@@ -204,44 +205,44 @@ func (towerDefenceGameMode *TowerDefenceGameMode) Update() {
 	})
 
 	// MOVE BULLET TOWARDS TARGET
-	towerDefenceGameMode.bulletPool.PerformOperationOnAlivePoolItems(func(curBullet *Engine.PoolItem[Bullet]) {
+	towerDefenceGameMode.bulletPool.PerformOperationOnAlivePoolItems(func(curBullet *Engine.PoolItem[TowerDefence.Bullet]) {
 
-		dirToTarget := Engine.Subtract_Vector2(&curBullet.Item.enemyTargetPoolItem.Item.position, &curBullet.Item.position)
+		dirToTarget := Engine.Subtract_Vector2(&curBullet.Item.EnemyTargetPoolItem.Item.Position, &curBullet.Item.Position)
 		dirToTarget = Engine.Normalise_Vector2(&dirToTarget)
 
-		curBullet.Item.position.X += dirToTarget.X * curBullet.Item.bulletMoveSpeed
-		curBullet.Item.position.Y += dirToTarget.Y * curBullet.Item.bulletMoveSpeed
+		curBullet.Item.Position.X += dirToTarget.X * curBullet.Item.BulletMoveSpeed
+		curBullet.Item.Position.Y += dirToTarget.Y * curBullet.Item.BulletMoveSpeed
 	})
 
 	// Kill Bullets That have reached the enemy.
-	towerDefenceGameMode.bulletPool.PerformOperationOnAlivePoolItemsBackwards(func(curBullet *Engine.PoolItem[Bullet]) {
-		if Engine.DistanceSquare_Vector2(&curBullet.Item.enemyTargetPoolItem.Item.position, &curBullet.Item.position) <= 1.0 {
+	towerDefenceGameMode.bulletPool.PerformOperationOnAlivePoolItemsBackwards(func(curBullet *Engine.PoolItem[TowerDefence.Bullet]) {
+		if Engine.DistanceSquare_Vector2(&curBullet.Item.EnemyTargetPoolItem.Item.Position, &curBullet.Item.Position) <= 1.0 {
 
-			curBullet.Item.enemyTargetPoolItem.Item.health -= curBullet.Item.bulletHealthDamageAmount
-			towerDefenceGameMode.TimerSystem.KillTimer(curBullet.Item.lifeSpanTimer)
+			curBullet.Item.EnemyTargetPoolItem.Item.Health -= curBullet.Item.BulletHealthDamageAmount
+			towerDefenceGameMode.TimerSystem.KillTimer(curBullet.Item.LifeSpanTimer)
 			towerDefenceGameMode.bulletPool.KillItemInPool(curBullet)
 		}
 	})
 
 	// KILL 0 HEALTH ENEMIES
-	towerDefenceGameMode.enemyPool.PerformOperationOnAlivePoolItemsBackwards(func(curEnemyPoolItem *Engine.PoolItem[TowerDefenceEnemy]) {
-		if curEnemyPoolItem.Item.health <= 0 {
+	towerDefenceGameMode.enemyPool.PerformOperationOnAlivePoolItemsBackwards(func(curEnemyPoolItem *Engine.PoolItem[TowerDefence.Enemy]) {
+		if curEnemyPoolItem.Item.Health <= 0 {
 			towerDefenceGameMode.enemyPool.KillItemInPool(curEnemyPoolItem)
 			towerDefenceGameMode.numEnemiesKilled++
 		}
 	})
 
 	// MOVE ENEMY TOWARDS NEXT PATH POINT
-	towerDefenceGameMode.enemyPool.PerformOperationOnAlivePoolItems(func(curEnemyPoolItem *Engine.PoolItem[TowerDefenceEnemy]) {
-		if curEnemyPoolItem.Item.MoveEnemyToNextPathPoint(towerDefenceGameMode) {
+	towerDefenceGameMode.enemyPool.PerformOperationOnAlivePoolItems(func(curEnemyPoolItem *Engine.PoolItem[TowerDefence.Enemy]) {
+		if curEnemyPoolItem.Item.MoveEnemyToNextPathPoint(&towerDefenceGameMode.enemyPathPoints, &towerDefenceGameMode.occupationBoard) {
 			towerDefenceGameMode.numEnemiesKilled--
-			curEnemyPoolItem.Item.health = 0
+			curEnemyPoolItem.Item.Health = 0
 		}
 	})
 
 	// KILL ENEMIES THAT REACHED THE END PATH POINT
-	towerDefenceGameMode.enemyPool.PerformOperationOnAlivePoolItemsBackwards(func(curEnemyPoolItem *Engine.PoolItem[TowerDefenceEnemy]) {
-		if curEnemyPoolItem.Item.health <= 0 {
+	towerDefenceGameMode.enemyPool.PerformOperationOnAlivePoolItemsBackwards(func(curEnemyPoolItem *Engine.PoolItem[TowerDefence.Enemy]) {
+		if curEnemyPoolItem.Item.Health <= 0 {
 			towerDefenceGameMode.enemyPool.KillItemInPool(curEnemyPoolItem)
 		}
 	})
@@ -294,13 +295,13 @@ func (towerDefenceGameMode *TowerDefenceGameMode) Draw(screenRef *ebiten.Image) 
 	}
 
 	bulletSpriteRef := &towerDefenceGameMode.SceneRef.EntityComponentsForScene.Sprites[towerDefenceGameMode.bulletEntityID]
-	towerDefenceGameMode.bulletPool.PerformOperationOnAlivePoolItems(func(curBullet *Engine.PoolItem[Bullet]) {
-		bulletSpriteRef.DrawSprite(screenRef, &drawOptions, &curBullet.Item.position)
+	towerDefenceGameMode.bulletPool.PerformOperationOnAlivePoolItems(func(curBullet *Engine.PoolItem[TowerDefence.Bullet]) {
+		bulletSpriteRef.DrawSprite(screenRef, &drawOptions, &curBullet.Item.Position)
 	})
 
 	enemySpriteRef := &towerDefenceGameMode.SceneRef.EntityComponentsForScene.Sprites[towerDefenceGameMode.towerDefenceEnemyEntityID]
-	towerDefenceGameMode.enemyPool.PerformOperationOnAlivePoolItems(func(curEnemyPoolItem *Engine.PoolItem[TowerDefenceEnemy]) {
-		enemySpriteRef.DrawSprite(screenRef, &drawOptions, &curEnemyPoolItem.Item.position)
+	towerDefenceGameMode.enemyPool.PerformOperationOnAlivePoolItems(func(curEnemyPoolItem *Engine.PoolItem[TowerDefence.Enemy]) {
+		enemySpriteRef.DrawSprite(screenRef, &drawOptions, &curEnemyPoolItem.Item.Position)
 	})
 
 	Engine.DrawActiveRoomObjectsInScene(towerDefenceGameMode.SceneRef, screenRef)
