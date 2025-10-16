@@ -14,7 +14,7 @@ func (snake *Snake) InitSnakeWithSegments(numSegments int, headPosition Engine.V
 
 	snake.segmentPositions[0] = headPosition
 	for i := 1; i < numSegments; i++ {
-		curSegmentDelta := Engine.Multiply_Float_Vector2Int(i, &segmentsPositionDelta)
+		curSegmentDelta := Engine.Multiply_Int_Vector2Int(i, &segmentsPositionDelta)
 		snake.segmentPositions[i] = Engine.Add_Vector2Int(&headPosition, &curSegmentDelta)
 	}
 }

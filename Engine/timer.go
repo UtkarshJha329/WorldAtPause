@@ -5,6 +5,7 @@ import (
 )
 
 const (
+	// WARNING!!!!!! MUST BE SAME AS INTERPOLATION STATE!!!
 	TimerState_Running = iota
 	TimerState_Paused
 	TimerState_Finished
@@ -18,6 +19,10 @@ type Timer struct {
 	OnFinish               func()
 }
 
+func (timer *Timer) TimePassedSinceStart() time.Duration {
+	return timer.TimerTotalDuration - timer.TimerDurationRemaining
+}
+
 func (timer *Timer) SetDuration(duration time.Duration) {
 	timer.TimerTotalDuration = duration
 	timer.TimerDurationRemaining = duration
@@ -29,6 +34,15 @@ func (timer *Timer) PauseTimer() {
 
 func (timer *Timer) UnPauseTimer() {
 	timer.TimerState = TimerState_Running
+}
+
+func (timer *Timer) RestartTimer() {
+	timer.TimerState = TimerState_Running
+	timer.TimerDurationRemaining = timer.TimerTotalDuration
+}
+
+func (timer *Timer) ForceEndCurrentLoopOfTimerForNextUpdate() {
+	timer.TimerDurationRemaining = 0.0
 }
 
 type TimerSystem struct {
@@ -80,7 +94,7 @@ func (timerSystem *TimerSystem) UpdateAllTimerDeltasAndStates() {
 
 	timerSystem.timerPool.PerformOperationOnAlivePoolItemsBackwards(func(curTimer *PoolItem[Timer]) {
 		if curTimer.Item.TimerState == TimerState_Finished {
-			timerSystem.timerPool.KillItemInPool(curTimer)
+			timerSystem.KillTimer(curTimer)
 		}
 	})
 }

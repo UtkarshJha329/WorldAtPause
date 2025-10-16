@@ -87,6 +87,12 @@ func SetScenesGameModes(g *Game) {
 				SceneRef: scene,
 			}
 		}
+		if scene.SceneName == "Crossy Road Game" {
+			scene.GameMode = &Minigames.CrossyRoadGameMode{
+				World:    g.world,
+				SceneRef: scene,
+			}
+		}
 	}
 }
 

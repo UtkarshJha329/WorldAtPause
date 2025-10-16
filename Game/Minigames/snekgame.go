@@ -41,6 +41,9 @@ type SnekGameMode struct {
 
 func (snekGameMode *SnekGameMode) Init() {
 
+	sceneIndex := snekGameMode.World.SceneIndexByName[snekGameMode.SceneRef.SceneName]
+	Engine.ReloadSceneWithSceneData(snekGameMode.SceneRef, &Engine.ScenesData[sceneIndex])
+
 	snekGameMode.showCurrentUITree = false
 
 	snekGameMode.worldBoard.InitBoard(14, 14, 16, true)

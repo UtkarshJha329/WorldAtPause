@@ -361,6 +361,78 @@
                             "RenderRectEnd": [16, 16]
                         }}
                     ]
+                },
+                {
+                    "Name": "Person",
+                    "Asset Type": "Visible Trigger",
+                    "Asset Data": [
+                        {"Position": [0, 0]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/Person.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }}
+                    ]
+                },
+                {
+                    "Name": "Test Block",
+                    "Asset Type": "Visible Trigger",
+                    "Asset Data": [
+                        {"Position": [0, 0]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/TestBlock.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }}
+                    ]
+                },
+                {
+                    "Name": "Red Grid Tile 16X16",
+                    "Asset Type": "Visible Trigger",
+                    "Asset Data": [
+                        {"Position": [0, 0]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/RedTile16X16.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }}
+                    ]
+                },
+                {
+                    "Name": "Blue Grid Tile 16X16",
+                    "Asset Type": "Visible Trigger",
+                    "Asset Data": [
+                        {"Position": [0, 0]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/BlueTile16X16.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }}
+                    ]
+                },
+                {
+                    "Name": "Green Grid Tile 16X16",
+                    "Asset Type": "Visible Trigger",
+                    "Asset Data": [
+                        {"Position": [0, 0]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/GreenTile16X16.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }}
+                    ]
+                },
+                {
+                    "Name": "Yellow Grid Tile 16X16",
+                    "Asset Type": "Visible Trigger",
+                    "Asset Data": [
+                        {"Position": [0, 0]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/YellowTile16X16.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }}
+                    ]
                 }
             ]
         },
@@ -755,6 +827,13 @@
                             ]
                         },
                         {
+                            "Prefab Name": "Tile Grid Size Trigger",
+                            "Entity Spawn Name": "Main Game Crossy Road Game Trigger",
+                            "Asset Data": [
+                                {"Position": [64, 80]}
+                            ]
+                        },
+                        {
                             "Prefab Name": "Stone Pyramid",
                             "Entity Spawn Name": "Random Circle Obstacle"
                         },
@@ -1137,6 +1216,46 @@
                         {
                             "Prefab Name": "Tower Defence Enemy",
                             "Entity Spawn Name": "Tower Defence Enemy"
+                        }
+                    ]
+                }
+            ]
+        },{
+            "Scene Name": "Crossy Road Game",
+            "Player Entity": {
+                "Prefab Name": "Player Basic Circle",
+                "Entity Spawn Name": "Player",
+                "Asset Data": [
+                    {"Position": [0, 0]}
+                ]
+            },
+            "Rooms Data": [
+                {
+                    "Room Index" : [0, 0],
+                    "Room Entities": [
+                        {
+                            "Prefab Name": "Red Grid Tile 16X16",
+                            "Entity Spawn Name": "Crossy Road Red Grid Tile"
+                        },
+                        {
+                            "Prefab Name": "Blue Grid Tile 16X16",
+                            "Entity Spawn Name": "Crossy Road Blue Grid Tile"
+                        },
+                        {
+                            "Prefab Name": "Green Grid Tile 16X16",
+                            "Entity Spawn Name": "Crossy Road Green Grid Tile"
+                        },
+                        {
+                            "Prefab Name": "Yellow Grid Tile 16X16",
+                            "Entity Spawn Name": "Crossy Road Yellow Grid Tile"
+                        },
+                        {
+                            "Prefab Name": "Person",
+                            "Entity Spawn Name": "Crossy Road Player"
+                        },
+                        {
+                            "Prefab Name": "Test Block",
+                            "Entity Spawn Name": "Crossy Road Test Block"
                         }
                     ]
                 }

@@ -385,6 +385,38 @@ func (mainGameMode *MainGameMode) IssueSceneTransitionQuests() {
 			}
 		}
 	}
+	{
+		crossyRoadTriggerEntityID := curSceneRef.EntityIDsByName["Main Game Crossy Road Game Trigger"]
+		crossyRoadTriggerEntityPos := entityComponentsRef.Positions[crossyRoadTriggerEntityID]
+		crossyRoadTriggerCollisionShapeRef := entityComponentsRef.CollisionShapes[crossyRoadTriggerEntityID]
+
+		if _, _, _, collided := Engine.CollisionShapeOverlapsWithCollisionShape(playerPosRef, playerCollisionShapeRef, &crossyRoadTriggerEntityPos, crossyRoadTriggerCollisionShapeRef); collided {
+
+			shouldShowQuestAcceptUITree = true
+
+			if Engine.ClickedYesInYesNoUITree() {
+
+				fmt.Println("Accepted Crossy Road Game Quest.")
+
+				curSceneRef.SpawnChildSceneWithQuest(mainGameMode.World.SceneIndexByName["Crossy Road Game"],
+					Engine.QuestData{
+						QuestType: Engine.QUEST_TYPE_SCORE_LIMIT,
+						QuestValues: map[int]float64{
+							Engine.QUEST_TYPE_SCORE_LIMIT: 30.0,
+						},
+						QuestCompleteLambda: func(previousGameStateData Engine.GameStateData) {
+							if previousGameStateData.GameState == Engine.GAMEMODE_WON {
+								fmt.Println("Won at Crossy Road! Speed increased!")
+								mainGameMode.playerSpeed += 1.0
+							} else if previousGameStateData.GameState == Engine.GAMEMODE_LOST {
+								fmt.Println("Lost at Crossy Road! Speed decreased.")
+								mainGameMode.playerSpeed -= 1.0
+							}
+						},
+					})
+			}
+		}
+	}
 
 	mainGameMode.showCurrentUITree = shouldShowQuestAcceptUITree
 	if shouldShowQuestAcceptUITree {

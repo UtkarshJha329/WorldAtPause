@@ -99,6 +99,10 @@ func Add_Float_Vector2Int(const_a int, const_b *Vector2Int) Vector2Int {
 	return Vector2Int{const_b.X + const_a, const_b.Y + const_a}
 }
 
-func Multiply_Float_Vector2Int(const_a int, const_b *Vector2Int) Vector2Int {
+func Multiply_Int_Vector2Int(const_a int, const_b *Vector2Int) Vector2Int {
 	return Vector2Int{const_b.X * const_a, const_b.Y * const_a}
+}
+
+func Multiply_Float_Vector2Int(const_a float64, const_b *Vector2Int) Vector2Int {
+	return Vector2Int{int(float64(const_b.X) * const_a), int(float64(const_b.Y) * const_a)}
 }

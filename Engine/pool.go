@@ -20,6 +20,7 @@ func (pool *Pool[T]) InitPool(poolName string, totalNumItemsInPool int) {
 
 	pool.PoolName = poolName
 	pool.TotalNumItemsInPool = totalNumItemsInPool
+	pool.CurNumAliveItemsInPool = 0
 
 	pool.Items = make([]*PoolItem[T], pool.TotalNumItemsInPool)
 
@@ -56,6 +57,10 @@ func (pool *Pool[T]) KillItemInPool(poolItemToKill *PoolItem[T]) {
 	pool.Items[curPoolItemIndex].ItemIndex = curPoolItemIndex
 
 	pool.CurNumAliveItemsInPool--
+}
+
+func (pool *Pool[T]) KillAllItemsInPool() {
+	pool.CurNumAliveItemsInPool = 0
 }
 
 type OperationOnPoolItem[T any] func(curPoolItem *PoolItem[T])
