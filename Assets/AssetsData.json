@@ -177,6 +177,22 @@
                             }
                         }
                     ]
+                },{
+                    "Name": "Player TicTacToe",
+                    "Asset Type": "Player",
+                    "Asset Data": [
+                        {"Position": [0, 0]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/PlayerShip.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }},
+                        {"Collision Shape Data": {
+                            "CollisionShapeType": "Box",
+                            "Size": [16, 16],
+                            "ColliderOriginOffset": [0, 0]
+                        }}
+                    ]
                 }]
         },
         {
@@ -429,6 +445,30 @@
                         {"Position": [0, 0]},
                         {"Sprite Data": {
                             "SpriteTextureLocation": "Assets/Images/YellowTile16X16.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }}
+                    ]
+                },
+                {
+                    "Name": "X Grid Tile 16X16",
+                    "Asset Type": "Visible Trigger",
+                    "Asset Data": [
+                        {"Position": [0, 0]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/XTile16X16.png",
+                            "RenderRectStart": [0, 0],
+                            "RenderRectEnd": [16, 16]
+                        }}
+                    ]
+                },
+                {
+                    "Name": "O Grid Tile 16X16",
+                    "Asset Type": "Visible Trigger",
+                    "Asset Data": [
+                        {"Position": [0, 0]},
+                        {"Sprite Data": {
+                            "SpriteTextureLocation": "Assets/Images/OTile16X16.png",
                             "RenderRectStart": [0, 0],
                             "RenderRectEnd": [16, 16]
                         }}
@@ -831,6 +871,13 @@
                             "Entity Spawn Name": "Main Game Crossy Road Game Trigger",
                             "Asset Data": [
                                 {"Position": [64, 80]}
+                            ]
+                        },
+                        {
+                            "Prefab Name": "Tile Grid Size Trigger",
+                            "Entity Spawn Name": "Main Game Tic Tac Toe Game Trigger",
+                            "Asset Data": [
+                                {"Position": [64, 122]}
                             ]
                         },
                         {
@@ -1256,6 +1303,38 @@
                         {
                             "Prefab Name": "Test Block",
                             "Entity Spawn Name": "Crossy Road Test Block"
+                        }
+                    ]
+                }
+            ]
+        },{
+            "Scene Name": "Tic Tac Toe Game",
+            "Player Entity": {
+                "Prefab Name": "Player TicTacToe",
+                "Entity Spawn Name": "Player",
+                "Asset Data": [
+                    {"Position": [0, 0]}
+                ]
+            },
+            "Rooms Data": [
+                {
+                    "Room Index" : [0, 0],
+                    "Room Entities": [
+                        {
+                            "Prefab Name": "Space Invaders Tilemap",
+                            "Entity Spawn Name": "Space Invaders Tilemap"
+                        },
+                        {
+                            "Prefab Name": "X Grid Tile 16X16",
+                            "Entity Spawn Name": "Tic Tac Toe X Tile"
+                        },
+                        {
+                            "Prefab Name": "O Grid Tile 16X16",
+                            "Entity Spawn Name": "Tic Tac Toe O Tile"
+                        },
+                        {
+                            "Prefab Name": "Selected Tile",
+                            "Entity Spawn Name": "Tic Tac Toe Selected Tile"
                         }
                     ]
                 }

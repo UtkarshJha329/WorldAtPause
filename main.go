@@ -93,6 +93,12 @@ func SetScenesGameModes(g *Game) {
 				SceneRef: scene,
 			}
 		}
+		if scene.SceneName == "Tic Tac Toe Game" {
+			scene.GameMode = &Minigames.TicTacToeGameMode{
+				World:    g.world,
+				SceneRef: scene,
+			}
+		}
 	}
 }
 

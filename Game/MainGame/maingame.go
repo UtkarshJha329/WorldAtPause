@@ -417,6 +417,38 @@ func (mainGameMode *MainGameMode) IssueSceneTransitionQuests() {
 			}
 		}
 	}
+	{
+		ticTacToeTriggerEntityID := curSceneRef.EntityIDsByName["Main Game Tic Tac Toe Game Trigger"]
+		ticTacToeTriggerEntityPos := entityComponentsRef.Positions[ticTacToeTriggerEntityID]
+		ticTacToeTriggerCollisionShapeRef := entityComponentsRef.CollisionShapes[ticTacToeTriggerEntityID]
+
+		if _, _, _, collided := Engine.CollisionShapeOverlapsWithCollisionShape(playerPosRef, playerCollisionShapeRef, &ticTacToeTriggerEntityPos, ticTacToeTriggerCollisionShapeRef); collided {
+
+			shouldShowQuestAcceptUITree = true
+
+			if Engine.ClickedYesInYesNoUITree() {
+
+				fmt.Println("Accepted Tic Tac Toe Game Quest.")
+
+				curSceneRef.SpawnChildSceneWithQuest(mainGameMode.World.SceneIndexByName["Tic Tac Toe Game"],
+					Engine.QuestData{
+						QuestType: Engine.QUEST_TYPE_SCORE_LIMIT,
+						QuestValues: map[int]float64{
+							Engine.QUEST_TYPE_SCORE_LIMIT: 30.0,
+						},
+						QuestCompleteLambda: func(previousGameStateData Engine.GameStateData) {
+							if previousGameStateData.GameState == Engine.GAMEMODE_WON {
+								fmt.Println("Won at Tic Tac Toe! Speed increased!")
+								mainGameMode.playerSpeed += 1.0
+							} else if previousGameStateData.GameState == Engine.GAMEMODE_LOST {
+								fmt.Println("Lost at Tic Tac Toe! Speed decreased.")
+								mainGameMode.playerSpeed -= 1.0
+							}
+						},
+					})
+			}
+		}
+	}
 
 	mainGameMode.showCurrentUITree = shouldShowQuestAcceptUITree
 	if shouldShowQuestAcceptUITree {
