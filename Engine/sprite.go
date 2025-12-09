@@ -43,6 +43,8 @@ func (sprite *Sprite) ChangeSpriteAnimationIndexTo(index uint) {
 		sprite.CurrentAnimationIndex = index
 		sprite.Animations[sprite.CurrentAnimationIndex].currentFrameCounter = 0
 		sprite.Animations[sprite.CurrentAnimationIndex].AnimationTimer.Item.RestartTimer()
+		sprite.RenderRectStart = sprite.Animations[sprite.CurrentAnimationIndex].animationFramesData[0].StartFramePos
+		sprite.RenderRectEnd = sprite.Animations[sprite.CurrentAnimationIndex].animationFramesData[0].EndFramePos
 	} else {
 		sprite.Animations[sprite.CurrentAnimationIndex].AnimationTimer.Item.UnPauseTimer()
 	}

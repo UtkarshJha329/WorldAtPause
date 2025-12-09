@@ -76,6 +76,7 @@ func (timerSystem *TimerSystem) UpdateAllTimerDeltasAndStates() {
 	timerSystem.timerPool.PerformOperationOnAlivePoolItems(func(curTimer *PoolItem[Timer]) {
 
 		if curTimer.Item.TimerState != TimerState_Paused {
+
 			curTimer.Item.TimerDurationRemaining -= timerSystem.delta
 
 			if curTimer.Item.TimerDurationRemaining <= 0.0 {
