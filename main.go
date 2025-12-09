@@ -105,6 +105,7 @@ func SetScenesGameModes(g *Game) {
 func main() {
 
 	ebiten.SetWindowSize(640, 480)
+	// ebiten.SetWindowSize(320, 240)
 	ebiten.SetWindowTitle("Ninja!")
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 

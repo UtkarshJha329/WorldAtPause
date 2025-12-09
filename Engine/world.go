@@ -38,6 +38,7 @@ func (w *World) InitCurrentSceneGameMode() {
 
 func (w *World) UpdateCurrentSceneGameMode() {
 
+	w.Scenes[w.CurrentSceneIndex].AnimationsTimerSystem.UpdateAllTimerDeltasAndStates()
 	w.Scenes[w.CurrentSceneIndex].GameMode.Update()
 
 	currentSceneGameState := w.Scenes[w.CurrentSceneIndex].SceneGameStateData

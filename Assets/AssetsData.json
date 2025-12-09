@@ -1,1344 +1,1691 @@
 {
-    "Prefabs":[
+  "Prefabs": [
+    {
+      "Tilemaps": [
         {
-            "Tilemaps": [
-                {
-                    "Name": "Ground Tilemap",
-                    "Asset Type": "Tilemap",
-                    "Asset Data": [
-                        {"Tilemap":{
-                                "tilemapTilesetsSource": "Assets/Maps/TilesetFloor.png",
-                                "tilemapSourceJSON": "Assets/Maps/WorldMap.json",
-                                "gridSize": 16
-                        }}
-                    ]
-                },{
-                    "Name": "Breakout Tilemap",
-                    "Asset Type": "Tilemap",
-                    "Asset Data": [
-                        {"Tilemap":{
-                                "tilemapTilesetsSource": "Assets/Maps/TilesetFloor.png",
-                                "tilemapSourceJSON": "Assets/Maps/Breakout.json",
-                                "gridSize": 16
-                        }}
-                    ]
-                },{
-                    "Name": "Magical Ride Tilemap",
-                    "Asset Type": "Tilemap",
-                    "Asset Data": [
-                        {"Tilemap":{
-                                "tilemapTilesetsSource": "Assets/Maps/TilesetFloor.png",
-                                "tilemapSourceJSON": "Assets/Maps/MagicalRideTilemap.json",
-                                "gridSize": 16
-                        }}
-                    ]
-                },{
-                    "Name": "Space Invaders Tilemap",
-                    "Asset Type": "Tilemap",
-                    "Asset Data": [
-                        {"Tilemap":{
-                                "tilemapTilesetsSource": "Assets/Maps/TilesetFloor.png",
-                                "tilemapSourceJSON": "Assets/Maps/SpaceInvadersTilemap.json",
-                                "gridSize": 16
-                        }}
-                    ]
-                }]
+          "Name": "Ground Tilemap",
+          "Asset Type": "Tilemap",
+          "Asset Data": [
+            {
+              "Tilemap": {
+                "tilemapTilesetsSource": "Assets/Maps/TilesetFloor.png",
+                "tilemapSourceJSON": "Assets/Maps/WorldMap.json",
+                "gridSize": 16
+              }
+            }
+          ]
         },
         {
-            "Player": [
-                {
-                    "Name": "Player Basic Box",
-                    "Asset Type": "Player",
-                    "Asset Data": [
-                        {"Position": [100, 100]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/NinjaSpriteSheet.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }},
-                        {"Collision Shape Data": {
-                            "CollisionShapeType": "Box",
-                            "Size": [16, 16],
-                            "ColliderOriginOffset": [0, 0]
-                            }
-                        }
-                    ]
-                },                {
-                    "Name": "Player Basic Circle",
-                    "Asset Type": "Player",
-                    "Asset Data": [
-                        {"Position": [100, 100]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/NinjaSpriteSheet.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }},
-                        {"Collision Shape Data": {
-                            "CollisionShapeType": "Circle",
-                            "Radius": 8,
-                            "ColliderOriginOffset": [8, 8]
-                            }
-                        }
-                    ]
-                },{
-                    "Name": "Player Breakout",
-                    "Asset Type": "Player",
-                    "Asset Data": [
-                        {"Position": [100, 100]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/Paddle.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [64, 14]
-                        }},
-                        {"Collision Shape Data": {
-                            "CollisionShapeType": "Box",
-                            "Size": [64, 14],
-                            "ColliderOriginOffset": [0, 0]
-                        }}
-                    ]
-                },{
-                    "Name": "Player Magical Ride",
-                    "Asset Type": "Player",
-                    "Asset Data": [
-                        {"Position": [100, 100]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/LittleBroomRideWitch.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }},
-                        {"Collision Shape Data": {
-                            "CollisionShapeType": "Box",
-                            "Size": [16, 16],
-                            "ColliderOriginOffset": [0, 0]
-                        }}
-                    ]
-                },{
-                    "Name": "Player Space Invader",
-                    "Asset Type": "Player",
-                    "Asset Data": [
-                        {"Position": [100, 100]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/PlayerShip.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }},
-                        {"Collision Shape Data": {
-                            "CollisionShapeType": "Box",
-                            "Size": [16, 16],
-                            "ColliderOriginOffset": [0, 0]
-                        }}
-                    ]
-                },{
-                    "Name": "Player Match Three",
-                    "Asset Type": "Player",
-                    "Asset Data": [
-                        {"Position": [0, 0]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/PlayerShip.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }},
-                        {"Collision Shape Data": {
-                            "CollisionShapeType": "Box",
-                            "Size": [16, 16],
-                            "ColliderOriginOffset": [0, 0]
-                        }}
-                    ]
-                },{
-                    "Name": "Player Sokoban",
-                    "Asset Type": "Player",
-                    "Asset Data": [
-                        {"Position": [0, 0]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/Man.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }},
-                        {"Collision Shape Data": {
-                            "CollisionShapeType": "Box",
-                            "Size": [5, 11],
-                            "ColliderOriginOffset": [6, 4]
-                        }}
-                    ]
-                },{
-                    "Name": "Player Snek",
-                    "Asset Type": "Player",
-                    "Asset Data": [
-                        {"Position": [100, 100]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/Snek.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }},
-                        {"Collision Shape Data": {
-                            "CollisionShapeType": "Box",
-                            "Size": [16, 16],
-                            "ColliderOriginOffset": [0, 0]
-                            }
-                        }
-                    ]
-                },{
-                    "Name": "Player TicTacToe",
-                    "Asset Type": "Player",
-                    "Asset Data": [
-                        {"Position": [0, 0]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/PlayerShip.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }},
-                        {"Collision Shape Data": {
-                            "CollisionShapeType": "Box",
-                            "Size": [16, 16],
-                            "ColliderOriginOffset": [0, 0]
-                        }}
-                    ]
-                }]
+          "Name": "Breakout Tilemap",
+          "Asset Type": "Tilemap",
+          "Asset Data": [
+            {
+              "Tilemap": {
+                "tilemapTilesetsSource": "Assets/Maps/TilesetFloor.png",
+                "tilemapSourceJSON": "Assets/Maps/Breakout.json",
+                "gridSize": 16
+              }
+            }
+          ]
         },
         {
-            "Enemies": [{
-                    "Name": "Skeleton",
-                    "Asset Type": "Enemy",
-                    "Asset Data": [
-                        {"Position": [25, 25]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/SkeletonSpriteSheet.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }},
-                        {"Collision Shape Data": {
-                            "CollisionShapeType": "Box",
-                            "Size": [16, 16],
-                            "ColliderOriginOffset": [0, 0]
-                        }}
-                    ]
-                },{
-                    "Name": "Skeleton Circle",
-                    "Asset Type": "Enemy",
-                    "Asset Data": [
-                        {"Position": [25, 25]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/SkeletonSpriteSheet.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }},
-                        {"Collision Shape Data": {
-                            "CollisionShapeType": "Circle",
-                            "Radius": 8,
-                            "ColliderOriginOffset": [8, 8]
-                        }}
-                    ]
-                },{
-                    "Name": "Eyeball",
-                    "Asset Type": "Enemy",
-                    "Asset Data": [
-                        {"Position": [25, 25]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/Eyeball.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }},
-                        {"Collision Shape Data": {
-                            "CollisionShapeType": "Circle",
-                            "Radius": 8,
-                            "ColliderOriginOffset": [8, 8]
-                        }}
-                    ]
-                }
-            ]
+          "Name": "Magical Ride Tilemap",
+          "Asset Type": "Tilemap",
+          "Asset Data": [
+            {
+              "Tilemap": {
+                "tilemapTilesetsSource": "Assets/Maps/TilesetFloor.png",
+                "tilemapSourceJSON": "Assets/Maps/MagicalRideTilemap.json",
+                "gridSize": 16
+              }
+            }
+          ]
         },
         {
-            "Invisible Triggers":[
-                {
-                    "Name": "Breakout Ball Failure Trigger",
-                    "Asset Type": "Invisible Trigger",
-                    "Asset Data":[
-                        {"Position": [-64, 304]},
-                        {"Collision Shape Data": {
-                            "CollisionShapeType": "Box",
-                            "Size": [400, 200],
-                            "ColliderOriginOffset": [0, 0]
-                        }}
-                    ]
-                }
-            ]
-        },
-        {
-            "Visible Triggers":[
-                {
-                    "Name": "Tile Grid Size Trigger",
-                    "Asset Type": "Visible Trigger",
-                    "Asset Data":[
-                        {"Position": [64, 48]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/TilesetDungeon.png",
-                            "RenderRectStart":[32, 16],
-                            "RenderRectEnd":[48, 32]
-                        }},
-                        {"Collision Shape Data": {
-                            "CollisionShapeType": "Box",
-                            "Size": [16, 16],
-                            "ColliderOriginOffset": [0, 0]
-                        }}
-                    ]
-                },
-                {
-                    "Name": "Red Grid Tile",
-                    "Asset Type": "Visible Trigger",
-                    "Asset Data": [
-                        {"Position": [0, 0]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/RedTile.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }}
-                    ]
-                },
-                {
-                    "Name": "Blue Grid Tile",
-                    "Asset Type": "Visible Trigger",
-                    "Asset Data": [
-                        {"Position": [0, 0]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/BlueTile.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }}
-                    ]
-                },
-                {
-                    "Name": "Green Grid Tile",
-                    "Asset Type": "Visible Trigger",
-                    "Asset Data": [
-                        {"Position": [0, 0]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/GreenTile.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }}
-                    ]
-                },
-                {
-                    "Name": "Yellow Grid Tile",
-                    "Asset Type": "Visible Trigger",
-                    "Asset Data": [
-                        {"Position": [0, 0]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/YellowTile.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }}
-                    ]
-                },
-                {
-                    "Name": "Snek Head Tile",
-                    "Asset Type": "Visible Trigger",
-                    "Asset Data": [
-                        {"Position": [0, 0]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/SnekHead.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }}
-                    ]
-                },
-                {
-                    "Name": "Snek Tail Tile",
-                    "Asset Type": "Visible Trigger",
-                    "Asset Data": [
-                        {"Position": [0, 0]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/SnekTail.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }}
-                    ]
-                },
-                {
-                    "Name": "Fire Ball",
-                    "Asset Type": "Visible Trigger",
-                    "Asset Data": [
-                        {"Position": [0, 0]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/FireBall.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }}
-                    ]
-                },
-                {
-                    "Name": "Tower Defence Enemy",
-                    "Asset Type": "Visible Trigger",
-                    "Asset Data": [
-                        {"Position": [0, 0]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/TowerDefenceEnemy.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }}
-                    ]
-                },
-                {
-                    "Name": "Person",
-                    "Asset Type": "Visible Trigger",
-                    "Asset Data": [
-                        {"Position": [0, 0]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/Person.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }}
-                    ]
-                },
-                {
-                    "Name": "Test Block",
-                    "Asset Type": "Visible Trigger",
-                    "Asset Data": [
-                        {"Position": [0, 0]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/TestBlock.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }}
-                    ]
-                },
-                {
-                    "Name": "Red Grid Tile 16X16",
-                    "Asset Type": "Visible Trigger",
-                    "Asset Data": [
-                        {"Position": [0, 0]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/RedTile16X16.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }}
-                    ]
-                },
-                {
-                    "Name": "Blue Grid Tile 16X16",
-                    "Asset Type": "Visible Trigger",
-                    "Asset Data": [
-                        {"Position": [0, 0]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/BlueTile16X16.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }}
-                    ]
-                },
-                {
-                    "Name": "Green Grid Tile 16X16",
-                    "Asset Type": "Visible Trigger",
-                    "Asset Data": [
-                        {"Position": [0, 0]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/GreenTile16X16.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }}
-                    ]
-                },
-                {
-                    "Name": "Yellow Grid Tile 16X16",
-                    "Asset Type": "Visible Trigger",
-                    "Asset Data": [
-                        {"Position": [0, 0]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/YellowTile16X16.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }}
-                    ]
-                },
-                {
-                    "Name": "X Grid Tile 16X16",
-                    "Asset Type": "Visible Trigger",
-                    "Asset Data": [
-                        {"Position": [0, 0]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/XTile16X16.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }}
-                    ]
-                },
-                {
-                    "Name": "O Grid Tile 16X16",
-                    "Asset Type": "Visible Trigger",
-                    "Asset Data": [
-                        {"Position": [0, 0]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/OTile16X16.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }}
-                    ]
-                }
-            ]
-        },
-        {
-            "Obstacles": [{
-                    "Name": "Stone Block",
-                    "Asset Type": "Obstacle",
-                    "Asset Data": [
-                        {"Position": [150, 150]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/TilesetDungeon.png",
-                            "RenderRectStart": [128, 48],
-                            "RenderRectEnd": [144, 64]
-                        }},
-                        {"Collision Shape Data": {
-                            "CollisionShapeType": "Box",
-                            "Size": [16, 16],
-                            "ColliderOriginOffset": [0, 0]
-                        }}
-                    ]
-                },
-                {
-                    "Name": "Stone Pyramid",
-                    "Asset Type": "Obstacle",
-                    "Asset Data": [
-                        {"Position": [200, 150]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/TilesetDungeon.png",
-                            "RenderRectStart": [112, 48],
-                            "RenderRectEnd": [128, 64]
-                        }},
-                        {"Collision Shape Data": {
-                            "CollisionShapeType": "Circle",
-                            "Radius": 8,
-                            "ColliderOriginOffset": [8, 8]
-                        }}
-                    ]    
-                },
-                {
-                    "Name": "Breakout Ball",
-                    "Asset Type": "Obstacle",
-                    "Asset Data": [
-                        {"Position": [200, 150]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/Ball.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }},
-                        {"Collision Shape Data": {
-                            "CollisionShapeType": "Circle",
-                            "Radius": 4,
-                            "ColliderOriginOffset": [4, 4]
-                        }}
-                    ]    
-                },
-                {
-                    "Name": "Breakout Brick",
-                    "Asset Type": "Obstacle",
-                    "Asset Data": [
-                        {"Position": [200, 150]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/Brick.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [32, 14]
-                        }},
-                        {"Collision Shape Data": {
-                            "CollisionShapeType": "Box",
-                            "Size": [32,14],
-                            "ColliderOriginOffset": [0, 0]
-                        }}
-                    ]    
-                },
-                {
-                    "Name": "Space Invaders Bullet",
-                    "Asset Type": "Obstacle",
-                    "Asset Data":[
-                        {"Position": [0, 0]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/Bullet.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16] 
-                        }},
-                        {"Collision Shape Data": {
-                            "CollisionShapeType": "Box",
-                            "Size": [2, 11],
-                            "ColliderOriginOffset": [8, 3]
-                        }}
-                    ]
-                },
-                {
-                    "Name": "Enemy Space Ship",
-                    "Asset Type": "Obstacle",
-                    "Asset Data": [
-                        {"Position": [25, 25]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/EnemyShip.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }},
-                        {"Collision Shape Data": {
-                            "CollisionShapeType": "Box",
-                            "Size": [16, 16],
-                            "ColliderOriginOffset": [0, 0]
-                        }}
-                    ]
-                },
-                {
-                    "Name": "Match Three Red Tile",
-                    "Asset Type": "Obstacle",
-                    "Asset Data": [
-                        {"Position": [0, 0]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/RedTile.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }},
-                        {"Collision Shape Data": {
-                            "CollisionShapeType": "Box",
-                            "Size": [16, 16],
-                            "ColliderOriginOffset": [0, 0]
-                        }}
-                    ]
-                },
-                {
-                    "Name": "Match Three Blue Tile",
-                    "Asset Type": "Obstacle",
-                    "Asset Data": [
-                        {"Position": [0, 0]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/BlueTile.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }},
-                        {"Collision Shape Data": {
-                            "CollisionShapeType": "Box",
-                            "Size": [16, 16],
-                            "ColliderOriginOffset": [0, 0]
-                        }}
-                    ]
-                },
-                {
-                    "Name": "Match Three Green Tile",
-                    "Asset Type": "Obstacle",
-                    "Asset Data": [
-                        {"Position": [0, 0]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/GreenTile.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }},
-                        {"Collision Shape Data": {
-                            "CollisionShapeType": "Box",
-                            "Size": [16, 16],
-                            "ColliderOriginOffset": [0, 0]
-                        }}
-                    ]
-                },
-                {
-                    "Name": "Match Three Yellow Tile",
-                    "Asset Type": "Obstacle",
-                    "Asset Data": [
-                        {"Position": [0, 0]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/YellowTile.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }},
-                        {"Collision Shape Data": {
-                            "CollisionShapeType": "Box",
-                            "Size": [16, 16],
-                            "ColliderOriginOffset": [0, 0]
-                        }}
-                    ]
-                },
-                {
-                    "Name": "Selected Tile",
-                    "Asset Type": "Obstacle",
-                    "Asset Data": [
-                        {"Position": [0, 0]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/SelectedTile.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }},
-                        {"Collision Shape Data": {
-                            "CollisionShapeType": "Box",
-                            "Size": [16, 16],
-                            "ColliderOriginOffset": [0, 0]
-                        }}
-                    ]
-                },
-                {
-                    "Name": "Sokoban Box",
-                    "Asset Type": "Obstacle",
-                    "Asset Data": [
-                        {"Position": [0, 0]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/Box.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }},
-                        {"Collision Shape Data": {
-                            "CollisionShapeType": "Box",
-                            "Size": [16, 16],
-                            "ColliderOriginOffset": [0, 0]
-                        }}
-                    ]
-                }
-            ]
-        },
-        {
-            "Items": [{
-                    "Name": "Life Pot",
-                    "Asset Type": "Item",
-                    "Asset Data": [
-                        {"Position": [160, 120]},
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/LifePot.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [16, 16]
-                        }},
-                        {"Collision Shape Data": {
-                            "CollisionShapeType": "Circle",
-                            "Radius": 4,
-                            "ColliderOriginOffset": [5, 5]
-                        }}
-                    ]
-                }]
-        },
-        {
-            "Fonts": [{
-                    "Name": "FONT - Courier Bold",
-                    "Asset Type": "Font",
-                    "Asset Data": [
-                        {"Font":{
-                                "Font Name": "FONT - Courier Bold",
-                                "Font Location": "Assets/Fonts/Courier/courbd.ttf"   
-                        }}
-                    ]
-                }]
-        },
-        {
-            "Text Data": [
-                {
-                    "Name": "Breakout You Win Text",
-                    "Asset Type": "Text",
-                    "Asset Data": [
-                        {"Text": {
-                            "Text Name": "You Win Text",
-                            "Font Name": "FONT - Courier Bold",
-                            "Text String": "You Win!"
-                        }}
-                    ]
-                },
-                {
-                    "Name": "Breakout You Lose Text",
-                    "Asset Type": "Text",
-                    "Asset Data": [
-                        {"Text": {
-                            "Text Name": "You Lose Text",
-                            "Font Name": "FONT - Courier Bold",
-                            "Text String": "You Lose, rather excitedly."
-                        }}
-                    ]
-                }
-            ]
-        },
-        {
-            "UI Data": [
-                {
-                    "Name": "UI Test Rect Sprite",
-                    "Asset Type": "UI Sprite Data",
-                    "Asset Data": [
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/RandomUI.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [64, 16]
-                        }}
-                    ]
-                },
-                {
-                    "Name": "Yes Button Sprite",
-                    "Asset Type": "UI Sprite Data",
-                    "Asset Data": [
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/YesButton.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [32, 16]
-                        }}
-                    ]
-                },
-                {
-                    "Name": "No Button Sprite",
-                    "Asset Type": "UI Sprite Data",
-                    "Asset Data": [
-                        {"Sprite Data": {
-                            "SpriteTextureLocation": "Assets/Images/NoButton.png",
-                            "RenderRectStart": [0, 0],
-                            "RenderRectEnd": [32, 16]
-                        }}
-                    ]
-                }
-            ]
+          "Name": "Space Invaders Tilemap",
+          "Asset Type": "Tilemap",
+          "Asset Data": [
+            {
+              "Tilemap": {
+                "tilemapTilesetsSource": "Assets/Maps/TilesetFloor.png",
+                "tilemapSourceJSON": "Assets/Maps/SpaceInvadersTilemap.json",
+                "gridSize": 16
+              }
+            }
+          ]
         }
-    ],
-    "UI Sprite Data": [
+      ]
+    },
+    {
+      "Player": [
         {
-            "Prefab Name": "UI Test Rect Sprite",
-            "Entity Spawn Name": "UI Test Rect Sprite"
+          "Name": "Player Basic Box",
+          "Asset Type": "Player",
+          "Asset Data": [
+            { "Position": [100, 100] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/NinjaSpriteSheet.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
+            },
+            {
+              "Collision Shape Data": {
+                "CollisionShapeType": "Box",
+                "Size": [16, 16],
+                "ColliderOriginOffset": [0, 0]
+              }
+            }
+          ]
         },
         {
-            "Prefab Name": "Yes Button Sprite",
-            "Entity Spawn Name": "Yes Button Sprite"
+          "Name": "Player Basic Circle",
+          "Asset Type": "Player",
+          "Asset Data": [
+            { "Position": [100, 100] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/NinjaSpriteSheet.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16],
+                "AnimationsData": [
+                  {
+                    "PerFrameTime": 0.25,
+                    "AnimationFramesData":[
+                      {
+                        "StartFramePos": [0, 0],
+                        "EndFramePos": [16, 16]
+                      },{
+                        "StartFramePos": [0, 16],
+                        "EndFramePos": [16, 32]
+                      },{
+                        "StartFramePos": [0, 32],
+                        "EndFramePos": [16, 48]
+                      },{
+                        "StartFramePos": [0, 48],
+                        "EndFramePos": [16, 64]
+                      }
+                    ]
+                  },
+                  {
+                    "PerFrameTime": 0.25,
+                    "AnimationFramesData":[
+                      {
+                        "StartFramePos": [16, 0],
+                        "EndFramePos": [32, 16]
+                      },{
+                        "StartFramePos": [16, 16],
+                        "EndFramePos": [32, 32]
+                      },{
+                        "StartFramePos": [16, 32],
+                        "EndFramePos": [32, 48]
+                      },{
+                        "StartFramePos": [16, 48],
+                        "EndFramePos": [32, 64]
+                      }
+                    ]
+                  },
+                  {
+                    "PerFrameTime": 0.25,
+                    "AnimationFramesData":[
+                      {
+                        "StartFramePos": [32, 0],
+                        "EndFramePos": [48, 16]
+                      },{
+                        "StartFramePos": [32, 16],
+                        "EndFramePos": [48, 32]
+                      },{
+                        "StartFramePos": [32, 32],
+                        "EndFramePos": [48, 48]
+                      },{
+                        "StartFramePos": [32, 48],
+                        "EndFramePos": [48, 64]
+                      }
+                    ]
+                  },
+                  {
+                    "PerFrameTime": 0.25,
+                    "AnimationFramesData":[
+                      {
+                        "StartFramePos": [48, 0],
+                        "EndFramePos": [64, 16]
+                      },{
+                        "StartFramePos": [48, 16],
+                        "EndFramePos": [64, 32]
+                      },{
+                        "StartFramePos": [48, 32],
+                        "EndFramePos": [64, 48]
+                      },{
+                        "StartFramePos": [48, 48],
+                        "EndFramePos": [64, 64]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "Collision Shape Data": {
+                "CollisionShapeType": "Circle",
+                "Radius": 8,
+                "ColliderOriginOffset": [8, 8]
+              }
+            }
+          ]
         },
         {
-            "Prefab Name": "No Button Sprite",
-            "Entity Spawn Name": "No Button Sprite"
-        }
-    ],
-    "Scenes Data": [
+          "Name": "Player Basic Animated Circle",
+          "Asset Type": "Player",
+          "Asset Data": [
+            { "Position": [100, 100] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/MainCharacter.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
+            },
+            {
+              "Collision Shape Data": {
+                "CollisionShapeType": "Circle",
+                "Radius": 8,
+                "ColliderOriginOffset": [8, 8]
+              }
+            }
+          ]
+        },
         {
-            "Scene Name": "Main Game",
-            "Player Entity": {
-                "Prefab Name": "Player Basic Circle",
-                "Entity Spawn Name": "Player",
-                "Asset Data": [
-                    {"Position": [100, 100]}
-                ]
+          "Name": "Player Breakout",
+          "Asset Type": "Player",
+          "Asset Data": [
+            { "Position": [100, 100] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/Paddle.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [64, 14]
+              }
             },
-            "Rooms Data": [
-                {
-                    "Room Index" : [0, 0],
-                    "Room Entities": [
-                        {
-                            "Prefab Name": "Ground Tilemap",
-                            "Entity Spawn Name": "Ground Tilemap"
-                        },
-                        {
-                            "Prefab Name": "Skeleton",
-                            "Entity Spawn Name": "Skeleton Box A",
-                            "Asset Data": [
-                                {"Position": [130, 150]}
-                            ]
-                        },
-                        {
-                            "Prefab Name": "Tile Grid Size Trigger",
-                            "Entity Spawn Name": "Main Game Breakout Ball Trigger",
-                            "Asset Data": [
-                                {"Position": [64, 48]}
-                            ]
-                        },
-                        {
-                            "Prefab Name": "Tile Grid Size Trigger",
-                            "Entity Spawn Name": "Main Game Magical Ride Trigger",
-                            "Asset Data": [
-                                {"Position": [128, 48]}
-                            ]
-                        },
-                        {
-                            "Prefab Name": "Tile Grid Size Trigger",
-                            "Entity Spawn Name": "Main Game Space Invaders Trigger",
-                            "Asset Data": [
-                                {"Position": [192, 48]}
-                            ]
-                        },
-                        {
-                            "Prefab Name": "Tile Grid Size Trigger",
-                            "Entity Spawn Name": "Main Game Match Three Trigger",
-                            "Asset Data": [
-                                {"Position": [258, 48]}
-                            ]
-                        },
-                        {
-                            "Prefab Name": "Tile Grid Size Trigger",
-                            "Entity Spawn Name": "Main Game Sokoban Trigger",
-                            "Asset Data": [
-                                {"Position": [258, 80]}
-                            ]
-                        },
-                        {
-                            "Prefab Name": "Tile Grid Size Trigger",
-                            "Entity Spawn Name": "Main Game Snek Game Trigger",
-                            "Asset Data": [
-                                {"Position": [192, 80]}
-                            ]
-                        },
-                        {
-                            "Prefab Name": "Tile Grid Size Trigger",
-                            "Entity Spawn Name": "Main Game Tower Defence Game Trigger",
-                            "Asset Data": [
-                                {"Position": [128, 80]}
-                            ]
-                        },
-                        {
-                            "Prefab Name": "Tile Grid Size Trigger",
-                            "Entity Spawn Name": "Main Game Crossy Road Game Trigger",
-                            "Asset Data": [
-                                {"Position": [64, 80]}
-                            ]
-                        },
-                        {
-                            "Prefab Name": "Tile Grid Size Trigger",
-                            "Entity Spawn Name": "Main Game Tic Tac Toe Game Trigger",
-                            "Asset Data": [
-                                {"Position": [64, 122]}
-                            ]
-                        },
-                        {
-                            "Prefab Name": "Stone Pyramid",
-                            "Entity Spawn Name": "Random Circle Obstacle"
-                        },
-                        {
-                            "Prefab Name": "Skeleton Circle",
-                            "Entity Spawn Name": "Skeleton Circle A",
-                            "Asset Data": [
-                                {"Position": [30, 30]}
-                            ]
-
-                        },
-                        {"Prefab Name": "Stone Block"},
-                        {
-                            "Prefab Name": "Skeleton Circle",
-                            "Entity Spawn Name": "Skeleton Circle B",
-                            "Asset Data": [
-                                {"Position": [250, 130]}
-                            ]
-                        },
-                        {
-                            "Prefab Name": "Life Pot",
-                            "Entity Spawn Name": "Life Pot"
-                        }
-                    ]
-                }
-            ]
-        },{
-            "Scene Name": "Breakout Game",
-            "Player Entity": {
-                "Prefab Name": "Player Breakout",
-                "Entity Spawn Name": "Player",
-                "Asset Data": [
-                    {"Position": [128, 224]}
-                ]
+            {
+              "Collision Shape Data": {
+                "CollisionShapeType": "Box",
+                "Size": [64, 14],
+                "ColliderOriginOffset": [0, 0]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Player Magical Ride",
+          "Asset Type": "Player",
+          "Asset Data": [
+            { "Position": [100, 100] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/LittleBroomRideWitch.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
             },
-            "Rooms Data": [
-                {
-                    "Room Index" : [0, 0],
-                    "Room Entities": [
-                        {
-                            "Prefab Name": "Breakout Tilemap",
-                            "Entity Spawn Name": "Breakout Tilemap"
-
-                        },
-                        {
-                            "Prefab Name": "Breakout Ball Failure Trigger",
-                            "Entity Spawn Name": "Breakout Ball Failure Trigger"
-                        },
-                        {
-                            "Prefab Name": "Breakout Ball",
-                            "Entity Spawn Name": "Breakout Ball",
-                            "Asset Data": [
-                                {"Position": [200, 150]}
-                            ]
-                        },                        {
-                            "Prefab Name": "Breakout Brick",
-                            "Entity Spawn Name": "Breakout Brick 1",
-                            "Asset Data": [
-                                {"Position": [48, 16]}
-                            ]
-                        },                        {
-                            "Prefab Name": "Breakout Brick",
-                            "Entity Spawn Name": "Breakout Brick 2",
-                            "Asset Data": [
-                                {"Position": [96, 16]}
-                            ]
-                        },                        {
-                            "Prefab Name": "Breakout Brick",
-                            "Entity Spawn Name": "Breakout Brick 3",
-                            "Asset Data": [
-                                {"Position": [144, 16]}
-                            ]
-                        },                        {
-                            "Prefab Name": "Breakout Brick",
-                            "Entity Spawn Name": "Breakout Brick 4",
-                            "Asset Data": [
-                                {"Position": [192, 16]}
-                            ]
-                        },                        {
-                            "Prefab Name": "Breakout Brick",
-                            "Entity Spawn Name": "Breakout Brick 5",
-                            "Asset Data": [
-                                {"Position": [240, 16]}
-                            ]
-                        },
-                        {
-                            "Prefab Name": "Breakout You Win Text",
-                            "Entity Spawn Name": "Breakout You Win Text"
-                        },
-                        {
-                            "Prefab Name": "Breakout You Lose Text",
-                            "Entity Spawn Name": "Breakout You Lose Text"
-                        }
-                    ]
-                }
-            ]
-        },{
-            "Scene Name": "Magical Ride Game",
-            "Player Entity": {
-                "Prefab Name": "Player Magical Ride",
-                "Entity Spawn Name": "Player",
-                "Asset Data": [
-                    {"Position": [64, 120]}
-                ]
+            {
+              "Collision Shape Data": {
+                "CollisionShapeType": "Box",
+                "Size": [16, 16],
+                "ColliderOriginOffset": [0, 0]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Player Space Invader",
+          "Asset Type": "Player",
+          "Asset Data": [
+            { "Position": [100, 100] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/PlayerShip.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
             },
-            "Rooms Data": [
-                {
-                    "Room Index" : [0, 0],
-                    "Room Entities": [
-                        {
-                            "Prefab Name": "Magical Ride Tilemap",
-                            "Entity Spawn Name": "Magical Ride Tilemap"
-                        },
-                        {
-                            "Prefab Name": "Eyeball",
-                            "Entity Spawn Name": "Magical Ride Eyeball A",
-                            "Asset Data": [
-                                {"Position": [240, 64]}
-                            ]
-                        },
-                        {
-                            "Prefab Name": "Eyeball",
-                            "Entity Spawn Name": "Magical Ride Eyeball B",
-                            "Asset Data": [
-                                {"Position": [150, 120]}
-                            ]
-                        },
-                        {
-                            "Prefab Name": "Eyeball",
-                            "Entity Spawn Name": "Magical Ride Eyeball C",
-                            "Asset Data": [
-                                {"Position": [360, 64]}
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },{
-            "Scene Name": "Space Invaders Game",
-            "Player Entity": {
-                "Prefab Name": "Player Space Invader",
-                "Entity Spawn Name": "Player",
-                "Asset Data": [
-                    {"Position": [152, 208]}
-                ]
+            {
+              "Collision Shape Data": {
+                "CollisionShapeType": "Box",
+                "Size": [16, 16],
+                "ColliderOriginOffset": [0, 0]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Player Match Three",
+          "Asset Type": "Player",
+          "Asset Data": [
+            { "Position": [0, 0] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/PlayerShip.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
             },
-            "Rooms Data": [
-                {
-                    "Room Index" : [0, 0],
-                    "Room Entities": [
-                        {
-                            "Prefab Name": "Space Invaders Tilemap",
-                            "Entity Spawn Name": "Space Invaders Tilemap"
-                        },
-                        {
-                            "Prefab Name": "Enemy Space Ship",
-                            "Entity Spawn Name": "Enemy Space Ship A",
-                            "Asset Data": [
-                                {"Position": [64, 16]}
-                            ]
-                        },
-                        {
-                            "Prefab Name": "Enemy Space Ship",
-                            "Entity Spawn Name": "Enemy Space Ship B",
-                            "Asset Data": [
-                                {"Position": [128, 16]}
-                            ]
-                        },
-                        {
-                            "Prefab Name": "Enemy Space Ship",
-                            "Entity Spawn Name": "Enemy Space Ship C",
-                            "Asset Data": [
-                                {"Position": [192, 16]}
-                            ]
-                        },
-                        {
-                            "Prefab Name": "Enemy Space Ship",
-                            "Entity Spawn Name": "Enemy Space Ship D",
-                            "Asset Data": [
-                                {"Position": [256, 16]}
-                            ]
-                        },
-                        {
-                            "Prefab Name": "Space Invaders Bullet",
-                            "Entity Spawn Name": "Space Invaders Bullet",
-                            "Asset Data": [
-                                {"Position": [152, 64]}
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },{
-            "Scene Name": "Match Three Game",
-            "Player Entity": {
-                "Prefab Name": "Player Match Three",
-                "Entity Spawn Name": "Player",
-                "Asset Data": [
-                    {"Position": [0, 0]}
-                ]
+            {
+              "Collision Shape Data": {
+                "CollisionShapeType": "Box",
+                "Size": [16, 16],
+                "ColliderOriginOffset": [0, 0]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Player Sokoban",
+          "Asset Type": "Player",
+          "Asset Data": [
+            { "Position": [0, 0] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/Man.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
             },
-            "Rooms Data": [
-                {
-                    "Room Index" : [0, 0],
-                    "Room Entities": [
-                        {
-                            "Prefab Name": "Space Invaders Tilemap",
-                            "Entity Spawn Name": "Space Invaders Tilemap"
-                        },
-                        {
-                            "Prefab Name": "Match Three Red Tile",
-                            "Entity Spawn Name": "Match Three Red Tile"
-                        },
-                        {
-                            "Prefab Name": "Match Three Blue Tile",
-                            "Entity Spawn Name": "Match Three Blue Tile"
-                        },
-                        {
-                            "Prefab Name": "Match Three Green Tile",
-                            "Entity Spawn Name": "Match Three Green Tile"
-                        },
-                        {
-                            "Prefab Name": "Match Three Yellow Tile",
-                            "Entity Spawn Name": "Match Three Yellow Tile"
-                        },
-                        {
-                            "Prefab Name": "Selected Tile",
-                            "Entity Spawn Name": "Match Three Selected Tile"
-                        }
-                    ]
-                }
-            ]
-        },{
-            "Scene Name": "Sokoban Game",
-            "Player Entity": {
-                "Prefab Name": "Player Sokoban",
-                "Entity Spawn Name": "Player",
-                "Asset Data": [
-                    {"Position": [160, 120]}
-                ]
+            {
+              "Collision Shape Data": {
+                "CollisionShapeType": "Box",
+                "Size": [5, 11],
+                "ColliderOriginOffset": [6, 4]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Player Snek",
+          "Asset Type": "Player",
+          "Asset Data": [
+            { "Position": [100, 100] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/Snek.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
             },
-            "Rooms Data": [
-                {
-                    "Room Index" : [0, 0],
-                    "Room Entities": [
-                        {
-                            "Prefab Name": "Space Invaders Tilemap",
-                            "Entity Spawn Name": "Sokoban Tilemap"
-                        },
-                        {
-                            "Prefab Name": "Sokoban Box",
-                            "Entity Spawn Name": "Sokoban Box 1",
-                            "Asset Data": [
-                                {"Position": [64, 16]}
-                            ]
-                        },
-                        {
-                            "Prefab Name": "Sokoban Box",
-                            "Entity Spawn Name": "Sokoban Box 2",
-                            "Asset Data": [
-                                {"Position": [128, 16]}
-                            ]
-                        },
-                        {
-                            "Prefab Name": "Sokoban Box",
-                            "Entity Spawn Name": "Sokoban Box 3",
-                            "Asset Data": [
-                                {"Position": [192, 16]}
-                            ]
-                        },
-                        {
-                            "Prefab Name": "Sokoban Box",
-                            "Entity Spawn Name": "Sokoban Box 4",
-                            "Asset Data": [
-                                {"Position": [256, 16]}
-                            ]
-                        },
-                        {
-                            "Prefab Name": "Sokoban Box",
-                            "Entity Spawn Name": "Sokoban Box 5",
-                            "Asset Data": [
-                                {"Position": [160, 80]}
-                            ]
-                        },
-                        {
-                            "Prefab Name": "Tile Grid Size Trigger",
-                            "Entity Spawn Name": "Sokoban Box Collection Trigger",
-                            "Asset Data": [
-                                {"Position": [192, 48]}
-                            ]
-                        }
-                    ]
-                }
-            ]
-        },{
-            "Scene Name": "Snek Game",
-            "Player Entity": {
-                "Prefab Name": "Player Snek",
-                "Entity Spawn Name": "Player",
-                "Asset Data": [
-                    {"Position": [100, 100]}
-                ]
+            {
+              "Collision Shape Data": {
+                "CollisionShapeType": "Box",
+                "Size": [16, 16],
+                "ColliderOriginOffset": [0, 0]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Player TicTacToe",
+          "Asset Type": "Player",
+          "Asset Data": [
+            { "Position": [0, 0] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/PlayerShip.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
             },
-            "Rooms Data": [
-                {
-                    "Room Index" : [0, 0],
-                    "Room Entities": [
-                        {
-                            "Prefab Name": "Ground Tilemap",
-                            "Entity Spawn Name": "Ground Tilemap"
-                        },
-                        {
-                            "Prefab Name": "Red Grid Tile",
-                            "Entity Spawn Name": "Snek Red Grid Tile"
-                        },
-                        {
-                            "Prefab Name": "Blue Grid Tile",
-                            "Entity Spawn Name": "Snek Blue Grid Tile"
-                        },
-                        {
-                            "Prefab Name": "Green Grid Tile",
-                            "Entity Spawn Name": "Snek Green Grid Tile"
-                        },
-                        {
-                            "Prefab Name": "Yellow Grid Tile",
-                            "Entity Spawn Name": "Snek Yellow Grid Tile"
-                        },
-                        {
-                            "Prefab Name": "Snek Head Tile",
-                            "Entity Spawn Name": "Snek Head Tile"
-                        },
-                        {
-                            "Prefab Name": "Snek Tail Tile",
-                            "Entity Spawn Name": "Snek Tail Tile"
-                        }
-                    ]
-                }
-            ]
-        },{
-            "Scene Name": "Tower Defence Game",
-            "Player Entity": {
-                "Prefab Name": "Player Basic Circle",
-                "Entity Spawn Name": "Player",
-                "Asset Data": [
-                    {"Position": [0, 0]}
-                ]
-            },
-            "Rooms Data": [
-                {
-                    "Room Index" : [0, 0],
-                    "Room Entities": [
-                        {
-                            "Prefab Name": "Space Invaders Tilemap",
-                            "Entity Spawn Name": "Space Invaders Tilemap"
-                        },
-                        {
-                            "Prefab Name": "Red Grid Tile",
-                            "Entity Spawn Name": "Tower Defence Red Grid Tile"
-                        },
-                        {
-                            "Prefab Name": "Blue Grid Tile",
-                            "Entity Spawn Name": "Tower Defence Blue Grid Tile"
-                        },
-                        {
-                            "Prefab Name": "Green Grid Tile",
-                            "Entity Spawn Name": "Tower Defence Green Grid Tile"
-                        },
-                        {
-                            "Prefab Name": "Yellow Grid Tile",
-                            "Entity Spawn Name": "Tower Defence Yellow Grid Tile"
-                        },
-                        {
-                            "Prefab Name": "Selected Tile",
-                            "Entity Spawn Name": "Tower Defence Selected Tile"
-                        },
-                        {
-                            "Prefab Name": "Fire Ball",
-                            "Entity Spawn Name": "Tower Defence Fire Ball"
-                        },
-                        {
-                            "Prefab Name": "Tower Defence Enemy",
-                            "Entity Spawn Name": "Tower Defence Enemy"
-                        }
-                    ]
-                }
-            ]
-        },{
-            "Scene Name": "Crossy Road Game",
-            "Player Entity": {
-                "Prefab Name": "Player Basic Circle",
-                "Entity Spawn Name": "Player",
-                "Asset Data": [
-                    {"Position": [0, 0]}
-                ]
-            },
-            "Rooms Data": [
-                {
-                    "Room Index" : [0, 0],
-                    "Room Entities": [
-                        {
-                            "Prefab Name": "Red Grid Tile 16X16",
-                            "Entity Spawn Name": "Crossy Road Red Grid Tile"
-                        },
-                        {
-                            "Prefab Name": "Blue Grid Tile 16X16",
-                            "Entity Spawn Name": "Crossy Road Blue Grid Tile"
-                        },
-                        {
-                            "Prefab Name": "Green Grid Tile 16X16",
-                            "Entity Spawn Name": "Crossy Road Green Grid Tile"
-                        },
-                        {
-                            "Prefab Name": "Yellow Grid Tile 16X16",
-                            "Entity Spawn Name": "Crossy Road Yellow Grid Tile"
-                        },
-                        {
-                            "Prefab Name": "Person",
-                            "Entity Spawn Name": "Crossy Road Player"
-                        },
-                        {
-                            "Prefab Name": "Test Block",
-                            "Entity Spawn Name": "Crossy Road Test Block"
-                        }
-                    ]
-                }
-            ]
-        },{
-            "Scene Name": "Tic Tac Toe Game",
-            "Player Entity": {
-                "Prefab Name": "Player TicTacToe",
-                "Entity Spawn Name": "Player",
-                "Asset Data": [
-                    {"Position": [0, 0]}
-                ]
-            },
-            "Rooms Data": [
-                {
-                    "Room Index" : [0, 0],
-                    "Room Entities": [
-                        {
-                            "Prefab Name": "Space Invaders Tilemap",
-                            "Entity Spawn Name": "Space Invaders Tilemap"
-                        },
-                        {
-                            "Prefab Name": "X Grid Tile 16X16",
-                            "Entity Spawn Name": "Tic Tac Toe X Tile"
-                        },
-                        {
-                            "Prefab Name": "O Grid Tile 16X16",
-                            "Entity Spawn Name": "Tic Tac Toe O Tile"
-                        },
-                        {
-                            "Prefab Name": "Selected Tile",
-                            "Entity Spawn Name": "Tic Tac Toe Selected Tile"
-                        }
-                    ]
-                }
-            ]
+            {
+              "Collision Shape Data": {
+                "CollisionShapeType": "Box",
+                "Size": [16, 16],
+                "ColliderOriginOffset": [0, 0]
+              }
+            }
+          ]
         }
-    ]
+      ]
+    },
+    {
+      "Enemies": [
+        {
+          "Name": "Skeleton",
+          "Asset Type": "Enemy",
+          "Asset Data": [
+            { "Position": [25, 25] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/SkeletonSpriteSheet.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16],
+                "AnimationsData": [
+                  {
+                    "PerFrameTime": 0.25,
+                    "AnimationFramesData":[
+                      {
+                        "StartFramePos": [0, 0],
+                        "EndFramePos": [16, 16]
+                      },{
+                        "StartFramePos": [0, 16],
+                        "EndFramePos": [16, 32]
+                      },{
+                        "StartFramePos": [0, 32],
+                        "EndFramePos": [16, 48]
+                      },{
+                        "StartFramePos": [0, 48],
+                        "EndFramePos": [16, 64]
+                      }
+                    ]
+                  },
+                  {
+                    "PerFrameTime": 0.25,
+                    "AnimationFramesData":[
+                      {
+                        "StartFramePos": [16, 0],
+                        "EndFramePos": [32, 16]
+                      },{
+                        "StartFramePos": [16, 16],
+                        "EndFramePos": [32, 32]
+                      },{
+                        "StartFramePos": [16, 32],
+                        "EndFramePos": [32, 48]
+                      },{
+                        "StartFramePos": [16, 48],
+                        "EndFramePos": [32, 64]
+                      }
+                    ]
+                  },
+                  {
+                    "PerFrameTime": 0.25,
+                    "AnimationFramesData":[
+                      {
+                        "StartFramePos": [32, 0],
+                        "EndFramePos": [48, 16]
+                      },{
+                        "StartFramePos": [32, 16],
+                        "EndFramePos": [48, 32]
+                      },{
+                        "StartFramePos": [32, 32],
+                        "EndFramePos": [48, 48]
+                      },{
+                        "StartFramePos": [32, 48],
+                        "EndFramePos": [48, 64]
+                      }
+                    ]
+                  },
+                  {
+                    "PerFrameTime": 0.25,
+                    "AnimationFramesData":[
+                      {
+                        "StartFramePos": [48, 0],
+                        "EndFramePos": [64, 16]
+                      },{
+                        "StartFramePos": [48, 16],
+                        "EndFramePos": [64, 32]
+                      },{
+                        "StartFramePos": [48, 32],
+                        "EndFramePos": [64, 48]
+                      },{
+                        "StartFramePos": [48, 48],
+                        "EndFramePos": [64, 64]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "Collision Shape Data": {
+                "CollisionShapeType": "Box",
+                "Size": [16, 16],
+                "ColliderOriginOffset": [0, 0]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Skeleton Circle",
+          "Asset Type": "Enemy",
+          "Asset Data": [
+            { "Position": [25, 25] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/SkeletonSpriteSheet.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16],
+                "AnimationsData": [
+                  {
+                    "PerFrameTime": 0.25,
+                    "AnimationFramesData":[
+                      {
+                        "StartFramePos": [0, 0],
+                        "EndFramePos": [16, 16]
+                      },{
+                        "StartFramePos": [0, 16],
+                        "EndFramePos": [16, 32]
+                      },{
+                        "StartFramePos": [0, 32],
+                        "EndFramePos": [16, 48]
+                      },{
+                        "StartFramePos": [0, 48],
+                        "EndFramePos": [16, 64]
+                      }
+                    ]
+                  },
+                  {
+                    "PerFrameTime": 0.25,
+                    "AnimationFramesData":[
+                      {
+                        "StartFramePos": [16, 0],
+                        "EndFramePos": [32, 16]
+                      },{
+                        "StartFramePos": [16, 16],
+                        "EndFramePos": [32, 32]
+                      },{
+                        "StartFramePos": [16, 32],
+                        "EndFramePos": [32, 48]
+                      },{
+                        "StartFramePos": [16, 48],
+                        "EndFramePos": [32, 64]
+                      }
+                    ]
+                  },
+                  {
+                    "PerFrameTime": 0.25,
+                    "AnimationFramesData":[
+                      {
+                        "StartFramePos": [32, 0],
+                        "EndFramePos": [48, 16]
+                      },{
+                        "StartFramePos": [32, 16],
+                        "EndFramePos": [48, 32]
+                      },{
+                        "StartFramePos": [32, 32],
+                        "EndFramePos": [48, 48]
+                      },{
+                        "StartFramePos": [32, 48],
+                        "EndFramePos": [48, 64]
+                      }
+                    ]
+                  },
+                  {
+                    "PerFrameTime": 0.25,
+                    "AnimationFramesData":[
+                      {
+                        "StartFramePos": [48, 0],
+                        "EndFramePos": [64, 16]
+                      },{
+                        "StartFramePos": [48, 16],
+                        "EndFramePos": [64, 32]
+                      },{
+                        "StartFramePos": [48, 32],
+                        "EndFramePos": [64, 48]
+                      },{
+                        "StartFramePos": [48, 48],
+                        "EndFramePos": [64, 64]
+                      }
+                    ]
+                  }
+                ]
+              }
+            },
+            {
+              "Collision Shape Data": {
+                "CollisionShapeType": "Circle",
+                "Radius": 8,
+                "ColliderOriginOffset": [8, 8]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Eyeball",
+          "Asset Type": "Enemy",
+          "Asset Data": [
+            { "Position": [25, 25] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/Eyeball.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
+            },
+            {
+              "Collision Shape Data": {
+                "CollisionShapeType": "Circle",
+                "Radius": 8,
+                "ColliderOriginOffset": [8, 8]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Invisible Triggers": [
+        {
+          "Name": "Breakout Ball Failure Trigger",
+          "Asset Type": "Invisible Trigger",
+          "Asset Data": [
+            { "Position": [-64, 304] },
+            {
+              "Collision Shape Data": {
+                "CollisionShapeType": "Box",
+                "Size": [400, 200],
+                "ColliderOriginOffset": [0, 0]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Visible Triggers": [
+        {
+          "Name": "Tile Grid Size Trigger",
+          "Asset Type": "Visible Trigger",
+          "Asset Data": [
+            { "Position": [64, 48] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/TilesetDungeon.png",
+                "RenderRectStart": [32, 16],
+                "RenderRectEnd": [48, 32]
+              }
+            },
+            {
+              "Collision Shape Data": {
+                "CollisionShapeType": "Box",
+                "Size": [16, 16],
+                "ColliderOriginOffset": [0, 0]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Red Grid Tile",
+          "Asset Type": "Visible Trigger",
+          "Asset Data": [
+            { "Position": [0, 0] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/RedTile.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Blue Grid Tile",
+          "Asset Type": "Visible Trigger",
+          "Asset Data": [
+            { "Position": [0, 0] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/BlueTile.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Green Grid Tile",
+          "Asset Type": "Visible Trigger",
+          "Asset Data": [
+            { "Position": [0, 0] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/GreenTile.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Yellow Grid Tile",
+          "Asset Type": "Visible Trigger",
+          "Asset Data": [
+            { "Position": [0, 0] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/YellowTile.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Snek Head Tile",
+          "Asset Type": "Visible Trigger",
+          "Asset Data": [
+            { "Position": [0, 0] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/SnekHead.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Snek Tail Tile",
+          "Asset Type": "Visible Trigger",
+          "Asset Data": [
+            { "Position": [0, 0] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/SnekTail.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Fire Ball",
+          "Asset Type": "Visible Trigger",
+          "Asset Data": [
+            { "Position": [0, 0] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/FireBall.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Tower Defence Enemy",
+          "Asset Type": "Visible Trigger",
+          "Asset Data": [
+            { "Position": [0, 0] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/TowerDefenceEnemy.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Person",
+          "Asset Type": "Visible Trigger",
+          "Asset Data": [
+            { "Position": [0, 0] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/Person.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Test Block",
+          "Asset Type": "Visible Trigger",
+          "Asset Data": [
+            { "Position": [0, 0] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/TestBlock.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Red Grid Tile 16X16",
+          "Asset Type": "Visible Trigger",
+          "Asset Data": [
+            { "Position": [0, 0] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/RedTile16X16.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Blue Grid Tile 16X16",
+          "Asset Type": "Visible Trigger",
+          "Asset Data": [
+            { "Position": [0, 0] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/BlueTile16X16.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Green Grid Tile 16X16",
+          "Asset Type": "Visible Trigger",
+          "Asset Data": [
+            { "Position": [0, 0] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/GreenTile16X16.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Yellow Grid Tile 16X16",
+          "Asset Type": "Visible Trigger",
+          "Asset Data": [
+            { "Position": [0, 0] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/YellowTile16X16.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "X Grid Tile 16X16",
+          "Asset Type": "Visible Trigger",
+          "Asset Data": [
+            { "Position": [0, 0] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/XTile16X16.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "O Grid Tile 16X16",
+          "Asset Type": "Visible Trigger",
+          "Asset Data": [
+            { "Position": [0, 0] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/OTile16X16.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Obstacles": [
+        {
+          "Name": "Stone Block",
+          "Asset Type": "Obstacle",
+          "Asset Data": [
+            { "Position": [150, 150] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/TilesetDungeon.png",
+                "RenderRectStart": [128, 48],
+                "RenderRectEnd": [144, 64]
+              }
+            },
+            {
+              "Collision Shape Data": {
+                "CollisionShapeType": "Box",
+                "Size": [16, 16],
+                "ColliderOriginOffset": [0, 0]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Stone Pyramid",
+          "Asset Type": "Obstacle",
+          "Asset Data": [
+            { "Position": [200, 150] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/TilesetDungeon.png",
+                "RenderRectStart": [112, 48],
+                "RenderRectEnd": [128, 64]
+              }
+            },
+            {
+              "Collision Shape Data": {
+                "CollisionShapeType": "Circle",
+                "Radius": 8,
+                "ColliderOriginOffset": [8, 8]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Breakout Ball",
+          "Asset Type": "Obstacle",
+          "Asset Data": [
+            { "Position": [200, 150] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/Ball.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
+            },
+            {
+              "Collision Shape Data": {
+                "CollisionShapeType": "Circle",
+                "Radius": 4,
+                "ColliderOriginOffset": [4, 4]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Breakout Brick",
+          "Asset Type": "Obstacle",
+          "Asset Data": [
+            { "Position": [200, 150] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/Brick.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [32, 14]
+              }
+            },
+            {
+              "Collision Shape Data": {
+                "CollisionShapeType": "Box",
+                "Size": [32, 14],
+                "ColliderOriginOffset": [0, 0]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Space Invaders Bullet",
+          "Asset Type": "Obstacle",
+          "Asset Data": [
+            { "Position": [0, 0] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/Bullet.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
+            },
+            {
+              "Collision Shape Data": {
+                "CollisionShapeType": "Box",
+                "Size": [2, 11],
+                "ColliderOriginOffset": [8, 3]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Enemy Space Ship",
+          "Asset Type": "Obstacle",
+          "Asset Data": [
+            { "Position": [25, 25] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/EnemyShip.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
+            },
+            {
+              "Collision Shape Data": {
+                "CollisionShapeType": "Box",
+                "Size": [16, 16],
+                "ColliderOriginOffset": [0, 0]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Match Three Red Tile",
+          "Asset Type": "Obstacle",
+          "Asset Data": [
+            { "Position": [0, 0] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/RedTile.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
+            },
+            {
+              "Collision Shape Data": {
+                "CollisionShapeType": "Box",
+                "Size": [16, 16],
+                "ColliderOriginOffset": [0, 0]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Match Three Blue Tile",
+          "Asset Type": "Obstacle",
+          "Asset Data": [
+            { "Position": [0, 0] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/BlueTile.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
+            },
+            {
+              "Collision Shape Data": {
+                "CollisionShapeType": "Box",
+                "Size": [16, 16],
+                "ColliderOriginOffset": [0, 0]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Match Three Green Tile",
+          "Asset Type": "Obstacle",
+          "Asset Data": [
+            { "Position": [0, 0] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/GreenTile.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
+            },
+            {
+              "Collision Shape Data": {
+                "CollisionShapeType": "Box",
+                "Size": [16, 16],
+                "ColliderOriginOffset": [0, 0]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Match Three Yellow Tile",
+          "Asset Type": "Obstacle",
+          "Asset Data": [
+            { "Position": [0, 0] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/YellowTile.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
+            },
+            {
+              "Collision Shape Data": {
+                "CollisionShapeType": "Box",
+                "Size": [16, 16],
+                "ColliderOriginOffset": [0, 0]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Selected Tile",
+          "Asset Type": "Obstacle",
+          "Asset Data": [
+            { "Position": [0, 0] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/SelectedTile.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
+            },
+            {
+              "Collision Shape Data": {
+                "CollisionShapeType": "Box",
+                "Size": [16, 16],
+                "ColliderOriginOffset": [0, 0]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Sokoban Box",
+          "Asset Type": "Obstacle",
+          "Asset Data": [
+            { "Position": [0, 0] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/Box.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
+            },
+            {
+              "Collision Shape Data": {
+                "CollisionShapeType": "Box",
+                "Size": [16, 16],
+                "ColliderOriginOffset": [0, 0]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Items": [
+        {
+          "Name": "Life Pot",
+          "Asset Type": "Item",
+          "Asset Data": [
+            { "Position": [160, 120] },
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/LifePot.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [16, 16]
+              }
+            },
+            {
+              "Collision Shape Data": {
+                "CollisionShapeType": "Circle",
+                "Radius": 4,
+                "ColliderOriginOffset": [5, 5]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Fonts": [
+        {
+          "Name": "FONT - Courier Bold",
+          "Asset Type": "Font",
+          "Asset Data": [
+            {
+              "Font": {
+                "Font Name": "FONT - Courier Bold",
+                "Font Location": "Assets/Fonts/Courier/courbd.ttf"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Text Data": [
+        {
+          "Name": "Breakout You Win Text",
+          "Asset Type": "Text",
+          "Asset Data": [
+            {
+              "Text": {
+                "Text Name": "You Win Text",
+                "Font Name": "FONT - Courier Bold",
+                "Text String": "You Win!"
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Breakout You Lose Text",
+          "Asset Type": "Text",
+          "Asset Data": [
+            {
+              "Text": {
+                "Text Name": "You Lose Text",
+                "Font Name": "FONT - Courier Bold",
+                "Text String": "You Lose, rather excitedly."
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "UI Data": [
+        {
+          "Name": "UI Test Rect Sprite",
+          "Asset Type": "UI Sprite Data",
+          "Asset Data": [
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/RandomUI.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [64, 16]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "Yes Button Sprite",
+          "Asset Type": "UI Sprite Data",
+          "Asset Data": [
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/YesButton.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [32, 16]
+              }
+            }
+          ]
+        },
+        {
+          "Name": "No Button Sprite",
+          "Asset Type": "UI Sprite Data",
+          "Asset Data": [
+            {
+              "Sprite Data": {
+                "SpriteTextureLocation": "Assets/Images/NoButton.png",
+                "RenderRectStart": [0, 0],
+                "RenderRectEnd": [32, 16]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "UI Sprite Data": [
+    {
+      "Prefab Name": "UI Test Rect Sprite",
+      "Entity Spawn Name": "UI Test Rect Sprite"
+    },
+    {
+      "Prefab Name": "Yes Button Sprite",
+      "Entity Spawn Name": "Yes Button Sprite"
+    },
+    {
+      "Prefab Name": "No Button Sprite",
+      "Entity Spawn Name": "No Button Sprite"
+    }
+  ],
+  "Scenes Data": [
+    {
+      "Scene Name": "Main Game",
+      "Player Entity": {
+        "Prefab Name": "Player Basic Circle",
+        "Entity Spawn Name": "Player",
+        "Asset Data": [{ "Position": [100, 100] }]
+      },
+      "Rooms Data": [
+        {
+          "Room Index": [0, 0],
+          "Room Entities": [
+            {
+              "Prefab Name": "Ground Tilemap",
+              "Entity Spawn Name": "Ground Tilemap"
+            },
+            {
+              "Prefab Name": "Skeleton",
+              "Entity Spawn Name": "Skeleton Box A",
+              "Asset Data": [{ "Position": [130, 150] }]
+            },
+            {
+              "Prefab Name": "Tile Grid Size Trigger",
+              "Entity Spawn Name": "Main Game Breakout Ball Trigger",
+              "Asset Data": [{ "Position": [64, 48] }]
+            },
+            {
+              "Prefab Name": "Tile Grid Size Trigger",
+              "Entity Spawn Name": "Main Game Magical Ride Trigger",
+              "Asset Data": [{ "Position": [128, 48] }]
+            },
+            {
+              "Prefab Name": "Tile Grid Size Trigger",
+              "Entity Spawn Name": "Main Game Space Invaders Trigger",
+              "Asset Data": [{ "Position": [192, 48] }]
+            },
+            {
+              "Prefab Name": "Tile Grid Size Trigger",
+              "Entity Spawn Name": "Main Game Match Three Trigger",
+              "Asset Data": [{ "Position": [258, 48] }]
+            },
+            {
+              "Prefab Name": "Tile Grid Size Trigger",
+              "Entity Spawn Name": "Main Game Sokoban Trigger",
+              "Asset Data": [{ "Position": [258, 80] }]
+            },
+            {
+              "Prefab Name": "Tile Grid Size Trigger",
+              "Entity Spawn Name": "Main Game Snek Game Trigger",
+              "Asset Data": [{ "Position": [192, 80] }]
+            },
+            {
+              "Prefab Name": "Tile Grid Size Trigger",
+              "Entity Spawn Name": "Main Game Tower Defence Game Trigger",
+              "Asset Data": [{ "Position": [128, 80] }]
+            },
+            {
+              "Prefab Name": "Tile Grid Size Trigger",
+              "Entity Spawn Name": "Main Game Crossy Road Game Trigger",
+              "Asset Data": [{ "Position": [64, 80] }]
+            },
+            {
+              "Prefab Name": "Tile Grid Size Trigger",
+              "Entity Spawn Name": "Main Game Tic Tac Toe Game Trigger",
+              "Asset Data": [{ "Position": [64, 122] }]
+            },
+            {
+              "Prefab Name": "Stone Pyramid",
+              "Entity Spawn Name": "Random Circle Obstacle"
+            },
+            {
+              "Prefab Name": "Skeleton Circle",
+              "Entity Spawn Name": "Skeleton Circle A",
+              "Asset Data": [{ "Position": [30, 30] }]
+            },
+            { "Prefab Name": "Stone Block" },
+            {
+              "Prefab Name": "Skeleton Circle",
+              "Entity Spawn Name": "Skeleton Circle B",
+              "Asset Data": [{ "Position": [250, 130] }]
+            },
+            {
+              "Prefab Name": "Life Pot",
+              "Entity Spawn Name": "Life Pot"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Scene Name": "Breakout Game",
+      "Player Entity": {
+        "Prefab Name": "Player Breakout",
+        "Entity Spawn Name": "Player",
+        "Asset Data": [{ "Position": [128, 224] }]
+      },
+      "Rooms Data": [
+        {
+          "Room Index": [0, 0],
+          "Room Entities": [
+            {
+              "Prefab Name": "Breakout Tilemap",
+              "Entity Spawn Name": "Breakout Tilemap"
+            },
+            {
+              "Prefab Name": "Breakout Ball Failure Trigger",
+              "Entity Spawn Name": "Breakout Ball Failure Trigger"
+            },
+            {
+              "Prefab Name": "Breakout Ball",
+              "Entity Spawn Name": "Breakout Ball",
+              "Asset Data": [{ "Position": [200, 150] }]
+            },
+            {
+              "Prefab Name": "Breakout Brick",
+              "Entity Spawn Name": "Breakout Brick 1",
+              "Asset Data": [{ "Position": [48, 16] }]
+            },
+            {
+              "Prefab Name": "Breakout Brick",
+              "Entity Spawn Name": "Breakout Brick 2",
+              "Asset Data": [{ "Position": [96, 16] }]
+            },
+            {
+              "Prefab Name": "Breakout Brick",
+              "Entity Spawn Name": "Breakout Brick 3",
+              "Asset Data": [{ "Position": [144, 16] }]
+            },
+            {
+              "Prefab Name": "Breakout Brick",
+              "Entity Spawn Name": "Breakout Brick 4",
+              "Asset Data": [{ "Position": [192, 16] }]
+            },
+            {
+              "Prefab Name": "Breakout Brick",
+              "Entity Spawn Name": "Breakout Brick 5",
+              "Asset Data": [{ "Position": [240, 16] }]
+            },
+            {
+              "Prefab Name": "Breakout You Win Text",
+              "Entity Spawn Name": "Breakout You Win Text"
+            },
+            {
+              "Prefab Name": "Breakout You Lose Text",
+              "Entity Spawn Name": "Breakout You Lose Text"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Scene Name": "Magical Ride Game",
+      "Player Entity": {
+        "Prefab Name": "Player Magical Ride",
+        "Entity Spawn Name": "Player",
+        "Asset Data": [{ "Position": [64, 120] }]
+      },
+      "Rooms Data": [
+        {
+          "Room Index": [0, 0],
+          "Room Entities": [
+            {
+              "Prefab Name": "Magical Ride Tilemap",
+              "Entity Spawn Name": "Magical Ride Tilemap"
+            },
+            {
+              "Prefab Name": "Eyeball",
+              "Entity Spawn Name": "Magical Ride Eyeball A",
+              "Asset Data": [{ "Position": [240, 64] }]
+            },
+            {
+              "Prefab Name": "Eyeball",
+              "Entity Spawn Name": "Magical Ride Eyeball B",
+              "Asset Data": [{ "Position": [150, 120] }]
+            },
+            {
+              "Prefab Name": "Eyeball",
+              "Entity Spawn Name": "Magical Ride Eyeball C",
+              "Asset Data": [{ "Position": [360, 64] }]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Scene Name": "Space Invaders Game",
+      "Player Entity": {
+        "Prefab Name": "Player Space Invader",
+        "Entity Spawn Name": "Player",
+        "Asset Data": [{ "Position": [152, 208] }]
+      },
+      "Rooms Data": [
+        {
+          "Room Index": [0, 0],
+          "Room Entities": [
+            {
+              "Prefab Name": "Space Invaders Tilemap",
+              "Entity Spawn Name": "Space Invaders Tilemap"
+            },
+            {
+              "Prefab Name": "Enemy Space Ship",
+              "Entity Spawn Name": "Enemy Space Ship A",
+              "Asset Data": [{ "Position": [64, 16] }]
+            },
+            {
+              "Prefab Name": "Enemy Space Ship",
+              "Entity Spawn Name": "Enemy Space Ship B",
+              "Asset Data": [{ "Position": [128, 16] }]
+            },
+            {
+              "Prefab Name": "Enemy Space Ship",
+              "Entity Spawn Name": "Enemy Space Ship C",
+              "Asset Data": [{ "Position": [192, 16] }]
+            },
+            {
+              "Prefab Name": "Enemy Space Ship",
+              "Entity Spawn Name": "Enemy Space Ship D",
+              "Asset Data": [{ "Position": [256, 16] }]
+            },
+            {
+              "Prefab Name": "Space Invaders Bullet",
+              "Entity Spawn Name": "Space Invaders Bullet",
+              "Asset Data": [{ "Position": [152, 64] }]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Scene Name": "Match Three Game",
+      "Player Entity": {
+        "Prefab Name": "Player Match Three",
+        "Entity Spawn Name": "Player",
+        "Asset Data": [{ "Position": [0, 0] }]
+      },
+      "Rooms Data": [
+        {
+          "Room Index": [0, 0],
+          "Room Entities": [
+            {
+              "Prefab Name": "Space Invaders Tilemap",
+              "Entity Spawn Name": "Space Invaders Tilemap"
+            },
+            {
+              "Prefab Name": "Match Three Red Tile",
+              "Entity Spawn Name": "Match Three Red Tile"
+            },
+            {
+              "Prefab Name": "Match Three Blue Tile",
+              "Entity Spawn Name": "Match Three Blue Tile"
+            },
+            {
+              "Prefab Name": "Match Three Green Tile",
+              "Entity Spawn Name": "Match Three Green Tile"
+            },
+            {
+              "Prefab Name": "Match Three Yellow Tile",
+              "Entity Spawn Name": "Match Three Yellow Tile"
+            },
+            {
+              "Prefab Name": "Selected Tile",
+              "Entity Spawn Name": "Match Three Selected Tile"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Scene Name": "Sokoban Game",
+      "Player Entity": {
+        "Prefab Name": "Player Sokoban",
+        "Entity Spawn Name": "Player",
+        "Asset Data": [{ "Position": [160, 120] }]
+      },
+      "Rooms Data": [
+        {
+          "Room Index": [0, 0],
+          "Room Entities": [
+            {
+              "Prefab Name": "Space Invaders Tilemap",
+              "Entity Spawn Name": "Sokoban Tilemap"
+            },
+            {
+              "Prefab Name": "Sokoban Box",
+              "Entity Spawn Name": "Sokoban Box 1",
+              "Asset Data": [{ "Position": [64, 16] }]
+            },
+            {
+              "Prefab Name": "Sokoban Box",
+              "Entity Spawn Name": "Sokoban Box 2",
+              "Asset Data": [{ "Position": [128, 16] }]
+            },
+            {
+              "Prefab Name": "Sokoban Box",
+              "Entity Spawn Name": "Sokoban Box 3",
+              "Asset Data": [{ "Position": [192, 16] }]
+            },
+            {
+              "Prefab Name": "Sokoban Box",
+              "Entity Spawn Name": "Sokoban Box 4",
+              "Asset Data": [{ "Position": [256, 16] }]
+            },
+            {
+              "Prefab Name": "Sokoban Box",
+              "Entity Spawn Name": "Sokoban Box 5",
+              "Asset Data": [{ "Position": [160, 80] }]
+            },
+            {
+              "Prefab Name": "Tile Grid Size Trigger",
+              "Entity Spawn Name": "Sokoban Box Collection Trigger",
+              "Asset Data": [{ "Position": [192, 48] }]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Scene Name": "Snek Game",
+      "Player Entity": {
+        "Prefab Name": "Player Snek",
+        "Entity Spawn Name": "Player",
+        "Asset Data": [{ "Position": [100, 100] }]
+      },
+      "Rooms Data": [
+        {
+          "Room Index": [0, 0],
+          "Room Entities": [
+            {
+              "Prefab Name": "Ground Tilemap",
+              "Entity Spawn Name": "Ground Tilemap"
+            },
+            {
+              "Prefab Name": "Red Grid Tile",
+              "Entity Spawn Name": "Snek Red Grid Tile"
+            },
+            {
+              "Prefab Name": "Blue Grid Tile",
+              "Entity Spawn Name": "Snek Blue Grid Tile"
+            },
+            {
+              "Prefab Name": "Green Grid Tile",
+              "Entity Spawn Name": "Snek Green Grid Tile"
+            },
+            {
+              "Prefab Name": "Yellow Grid Tile",
+              "Entity Spawn Name": "Snek Yellow Grid Tile"
+            },
+            {
+              "Prefab Name": "Snek Head Tile",
+              "Entity Spawn Name": "Snek Head Tile"
+            },
+            {
+              "Prefab Name": "Snek Tail Tile",
+              "Entity Spawn Name": "Snek Tail Tile"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Scene Name": "Tower Defence Game",
+      "Player Entity": {
+        "Prefab Name": "Player Basic Circle",
+        "Entity Spawn Name": "Player",
+        "Asset Data": [{ "Position": [0, 0] }]
+      },
+      "Rooms Data": [
+        {
+          "Room Index": [0, 0],
+          "Room Entities": [
+            {
+              "Prefab Name": "Space Invaders Tilemap",
+              "Entity Spawn Name": "Space Invaders Tilemap"
+            },
+            {
+              "Prefab Name": "Red Grid Tile",
+              "Entity Spawn Name": "Tower Defence Red Grid Tile"
+            },
+            {
+              "Prefab Name": "Blue Grid Tile",
+              "Entity Spawn Name": "Tower Defence Blue Grid Tile"
+            },
+            {
+              "Prefab Name": "Green Grid Tile",
+              "Entity Spawn Name": "Tower Defence Green Grid Tile"
+            },
+            {
+              "Prefab Name": "Yellow Grid Tile",
+              "Entity Spawn Name": "Tower Defence Yellow Grid Tile"
+            },
+            {
+              "Prefab Name": "Selected Tile",
+              "Entity Spawn Name": "Tower Defence Selected Tile"
+            },
+            {
+              "Prefab Name": "Fire Ball",
+              "Entity Spawn Name": "Tower Defence Fire Ball"
+            },
+            {
+              "Prefab Name": "Tower Defence Enemy",
+              "Entity Spawn Name": "Tower Defence Enemy"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Scene Name": "Crossy Road Game",
+      "Player Entity": {
+        "Prefab Name": "Player Basic Circle",
+        "Entity Spawn Name": "Player",
+        "Asset Data": [{ "Position": [0, 0] }]
+      },
+      "Rooms Data": [
+        {
+          "Room Index": [0, 0],
+          "Room Entities": [
+            {
+              "Prefab Name": "Red Grid Tile 16X16",
+              "Entity Spawn Name": "Crossy Road Red Grid Tile"
+            },
+            {
+              "Prefab Name": "Blue Grid Tile 16X16",
+              "Entity Spawn Name": "Crossy Road Blue Grid Tile"
+            },
+            {
+              "Prefab Name": "Green Grid Tile 16X16",
+              "Entity Spawn Name": "Crossy Road Green Grid Tile"
+            },
+            {
+              "Prefab Name": "Yellow Grid Tile 16X16",
+              "Entity Spawn Name": "Crossy Road Yellow Grid Tile"
+            },
+            {
+              "Prefab Name": "Person",
+              "Entity Spawn Name": "Crossy Road Player"
+            },
+            {
+              "Prefab Name": "Test Block",
+              "Entity Spawn Name": "Crossy Road Test Block"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "Scene Name": "Tic Tac Toe Game",
+      "Player Entity": {
+        "Prefab Name": "Player TicTacToe",
+        "Entity Spawn Name": "Player",
+        "Asset Data": [{ "Position": [0, 0] }]
+      },
+      "Rooms Data": [
+        {
+          "Room Index": [0, 0],
+          "Room Entities": [
+            {
+              "Prefab Name": "Space Invaders Tilemap",
+              "Entity Spawn Name": "Space Invaders Tilemap"
+            },
+            {
+              "Prefab Name": "X Grid Tile 16X16",
+              "Entity Spawn Name": "Tic Tac Toe X Tile"
+            },
+            {
+              "Prefab Name": "O Grid Tile 16X16",
+              "Entity Spawn Name": "Tic Tac Toe O Tile"
+            },
+            {
+              "Prefab Name": "Selected Tile",
+              "Entity Spawn Name": "Tic Tac Toe Selected Tile"
+            }
+          ]
+        }
+      ]
+    }
+  ]
 }

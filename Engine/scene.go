@@ -23,6 +23,8 @@ type Scene struct {
 	Texts                    map[string]string
 	EntityIDsByName          map[string]int
 
+	AnimationsTimerSystem TimerSystem
+
 	lastUpdatedTime time.Time
 	elapsed         time.Duration
 }

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/hajimehoshi/ebiten/v2/text/v2"
 	"golang.org/x/text/language"
@@ -57,9 +58,30 @@ func PopulateEntityDataFromPrefab(PrefabMap map[string]Prefab, curSceneRef *Scen
 			entityComponentsRef.Positions[entityID] = *assetData.Position
 		case "Sprite Data":
 			entityComponentsRef.Sprites[entityID] = Sprite{
-				Image:           LoadImageFromFileSystem(assetData.SpriteAssetData.SpriteTextureLocation),
-				RenderRectStart: assetData.SpriteAssetData.RenderRectStart,
-				RenderRectEnd:   assetData.SpriteAssetData.RenderRectEnd,
+				Image:                 LoadImageFromFileSystem(assetData.SpriteAssetData.SpriteTextureLocation),
+				RenderRectStart:       assetData.SpriteAssetData.RenderRectStart,
+				RenderRectEnd:         assetData.SpriteAssetData.RenderRectEnd,
+				CurrentAnimationIndex: 0,
+			}
+			for i := 0; i < len(assetData.SpriteAssetData.AnimationsData); i++ {
+				curAnimation := Animation{
+					currentFrameCounter: 0,
+					animationFramesData: assetData.SpriteAssetData.AnimationsData[i].AnimationFramesData,
+					AnimationTimer: curSceneRef.AnimationsTimerSystem.SetTimerFromPoolWithDurationLoopAndFunc(time.Duration(float64(assetData.SpriteAssetData.AnimationsData[i].PerFrameTime)*float64(time.Second)), true, func() {
+
+						curSpriteRef := &entityComponentsRef.Sprites[entityID]
+
+						curAnimationFrameIndex := int(curSpriteRef.Animations[curSpriteRef.CurrentAnimationIndex].currentFrameCounter) % len(curSpriteRef.Animations[curSpriteRef.CurrentAnimationIndex].animationFramesData)
+						curAnimationFrameData := curSpriteRef.Animations[curSpriteRef.CurrentAnimationIndex].animationFramesData[curAnimationFrameIndex]
+
+						curSpriteRef.RenderRectStart = curAnimationFrameData.StartFramePos
+						curSpriteRef.RenderRectEnd = curAnimationFrameData.EndFramePos
+
+						curSpriteRef.Animations[curSpriteRef.CurrentAnimationIndex].currentFrameCounter++
+					}),
+				}
+				entityComponentsRef.Sprites[entityID].Animations = append(entityComponentsRef.Sprites[entityID].Animations, curAnimation)
+				entityComponentsRef.Sprites[entityID].Animations[i].AnimationTimer.Item.PauseTimer()
 			}
 		case "Collision Shape Data":
 			switch assetData.CollisionShapeData.CollisionShapeType {
@@ -285,6 +307,7 @@ func CreateAndPopulateEntitiesAndComponents() *World {
 		world.Scenes[index].SceneName = sceneData.SceneName
 
 		curScene := world.Scenes[index]
+		curScene.AnimationsTimerSystem.InitWithTimers("Scene Animation Timer System", 24)
 		FillSceneWithSceneDataFirstTime(curScene, &sceneData)
 	}
 

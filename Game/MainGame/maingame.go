@@ -8,6 +8,11 @@ import (
 	"github.com/hajimehoshi/ebiten/v2"
 )
 
+type AnimationFrameData struct {
+	startFramePos Engine.Vector2Int
+	endFramePos   Engine.Vector2Int
+}
+
 type MainGameMode struct {
 	World    *Engine.World
 	SceneRef *Engine.Scene
@@ -37,6 +42,7 @@ func (mainGameMode *MainGameMode) Update() {
 
 	// collideAndSlide := true
 
+	playerSpriteRef := &entityComponentsRef.Sprites[entityComponentsRef.PlayerEntityID]
 	playerPosRef := &entityComponentsRef.Positions[entityComponentsRef.PlayerEntityID]
 	curRoomIndex := entityComponentsRef.Tilemap.GetRoomIndexOfPosition(playerPosRef)
 	curRoom, curRoomHasSomeData := curSceneRef.RoomsData[curRoomIndex]
@@ -63,6 +69,8 @@ func (mainGameMode *MainGameMode) Update() {
 
 	if inputDirection.X != 0 || inputDirection.Y != 0 {
 
+		// playerSpriteRef.Animations[playerSpriteRef.CurrentAnimationIndex].AnimationTimer.Item.UnPauseTimer()
+
 		normalisedInputDir := Engine.Normalise_Vector2(&inputDirection)
 		totalMoveAmount := Engine.Multiply_Float_Vector2(playerMoveAmountPerFrame, &normalisedInputDir)
 
@@ -75,6 +83,22 @@ func (mainGameMode *MainGameMode) Update() {
 		}
 
 		curSceneRef.CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex, curSceneRef.EntityComponentsForScene.PlayerEntityID, inputDirection, totalMoveAmount, playerMoveAmountPerFrame, playerCollideAndMoveParameters)
+
+		if inputDirection.X < 0 {
+			playerSpriteRef.ChangeSpriteAnimationIndexTo(2)
+		} else if inputDirection.X > 0 {
+			playerSpriteRef.ChangeSpriteAnimationIndexTo(3)
+		} else if inputDirection.Y < 0 {
+			playerSpriteRef.ChangeSpriteAnimationIndexTo(1)
+		} else if inputDirection.Y > 0 {
+			playerSpriteRef.ChangeSpriteAnimationIndexTo(0)
+		}
+
+	} else {
+		for i := 0; i < 4; i++ {
+			// playerSpriteRef.Animations[i].AnimationTimer.Item.PauseTimer()
+		}
+		playerSpriteRef.Animations[playerSpriteRef.CurrentAnimationIndex].AnimationTimer.Item.PauseTimer()
 	}
 
 	if curRoomHasSomeData {
@@ -82,9 +106,13 @@ func (mainGameMode *MainGameMode) Update() {
 		stoppageDistanceFromPlayer := 32.0
 		skeleMoveAmountPerFrame := 1.0
 		for _, enemyEntityID := range curRoom.EnemyEntityIDs {
+			skeletonSpriteRef := &entityComponentsRef.Sprites[enemyEntityID]
 			skelePosRef := &entityComponentsRef.Positions[enemyEntityID]
 
 			if Engine.DistanceSquare_Vector2(skelePosRef, playerPosRef) > math.Pow(stoppageDistanceFromPlayer, 2) {
+
+				// skeletonSpriteRef.Animations[skeletonSpriteRef.CurrentAnimationIndex].AnimationTimer.Item.UnPauseTimer()
+
 				directionToPlayer := Engine.Subtract_Vector2(playerPosRef, skelePosRef)
 				directionToPlayerNormalised := Engine.Normalise_Vector2(&directionToPlayer)
 
@@ -99,6 +127,18 @@ func (mainGameMode *MainGameMode) Update() {
 				}
 
 				curSceneRef.CollideAndMoveEntityWithTilemapAndObstacles(curRoomIndex, enemyEntityID, directionToPlayerNormalised, totalDisplacement, skeleMoveAmountPerFrame, skeletonCollideAndMoveParameters)
+
+				if directionToPlayerNormalised.X < 0 {
+					skeletonSpriteRef.ChangeSpriteAnimationIndexTo(2)
+				} else if directionToPlayerNormalised.X > 0 {
+					skeletonSpriteRef.ChangeSpriteAnimationIndexTo(3)
+				} else if directionToPlayerNormalised.Y < 0 {
+					skeletonSpriteRef.ChangeSpriteAnimationIndexTo(1)
+				} else if directionToPlayerNormalised.Y > 0 {
+					skeletonSpriteRef.ChangeSpriteAnimationIndexTo(0)
+				}
+			} else {
+				// skeletonSpriteRef.Animations[skeletonSpriteRef.CurrentAnimationIndex].AnimationTimer.Item.PauseTimer()
 			}
 
 			skeletonCollisionShapeRef := entityComponentsRef.CollisionShapes[enemyEntityID]
@@ -131,12 +171,14 @@ func (mainGameMode *MainGameMode) Update() {
 	currentLevelCentre := Engine.Add_Vector2(&currentLevelPos, &levelHalfSize)
 
 	Engine.CameraFollowTarget(currentLevelCentre, entityComponentsRef)
+
+	// mainGameMode.currentPlayerSpriteAnimUpdateFrame++
 }
 
 func (mainGameMode *MainGameMode) Draw(screenRef *ebiten.Image) {
 
 	Engine.DrawActiveRoomInScene(mainGameMode.SceneRef, screenRef)
-	Engine.DrawActiveRoomInSceneColliders(mainGameMode.SceneRef, screenRef)
+	// Engine.DrawActiveRoomInSceneColliders(mainGameMode.SceneRef, screenRef)
 
 	drawOptions := ebiten.DrawImageOptions{}
 	if mainGameMode.showCurrentUITree {
