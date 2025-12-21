@@ -5,10 +5,12 @@ import (
 	"WorldAtPause/Game/MainGame"
 	"WorldAtPause/Game/Minigames"
 	"embed"
+	"errors"
 	"image/color"
 	"log"
 
 	"github.com/hajimehoshi/ebiten/v2"
+	"github.com/hajimehoshi/ebiten/v2/inpututil"
 )
 
 //go:embed Assets/*
@@ -18,7 +20,16 @@ type Game struct {
 	world *Engine.World
 }
 
+var errGameQuit = errors.New("quit game")
+
 func (g *Game) Update() error {
+	if ebiten.IsKeyPressed(ebiten.KeyEscape) {
+		return errGameQuit
+	}
+
+	if inpututil.IsKeyJustPressed(ebiten.KeyF1) {
+		ebiten.SetFullscreen(!ebiten.IsFullscreen())
+	}
 
 	g.world.UpdateCurrentSceneGameMode()
 	return nil
@@ -104,9 +115,10 @@ func SetScenesGameModes(g *Game) {
 
 func main() {
 
-	ebiten.SetWindowSize(640, 480)
-	// ebiten.SetWindowSize(320, 240)
+	// ebiten.SetWindowSize(640, 480)
+	ebiten.SetWindowSize(320, 240)
 	ebiten.SetWindowTitle("Ninja!")
+	ebiten.SetFullscreen(true)
 	ebiten.SetWindowResizingMode(ebiten.WindowResizingModeEnabled)
 
 	Engine.EmbeddedAssetsFS = EmbeddedAssetsFS
