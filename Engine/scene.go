@@ -11,6 +11,8 @@ type Room struct {
 	VisibleTriggerEntityIDs   []int
 	ObstacleEntityIDs         []int
 	ItemEntityIDs             []int
+
+	Factories []*Factory
 }
 
 type Scene struct {

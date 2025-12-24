@@ -69,6 +69,12 @@ func (assetData *AssetData) UnmarshalJSON(data []byte) error {
 				return err
 			}
 			assetData.tilemapAssetData = &tilemapAssetData
+		case "Factory":
+			var factoryAssetData FactoryAssetData
+			if err := json.Unmarshal(val, &factoryAssetData); err != nil {
+				return err
+			}
+			assetData.factoryAssetData = &factoryAssetData
 		}
 	}
 	return nil

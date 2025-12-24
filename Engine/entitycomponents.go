@@ -48,7 +48,7 @@ func (entityComponents *EntityComponents) IsEntityDead(entityID int) bool {
 	return entityComponents.EntityDead[entityID]
 }
 
-func PopulateEntityDataFromPrefab(PrefabMap map[string]Prefab, curSceneRef *Scene, prefabName string, entityID int) {
+func PopulateEntityDataFromPrefab(PrefabMap map[string]Prefab, curSceneRef *Scene, curRoom *Room, prefabName string, entityID int) {
 
 	entityComponentsRef := curSceneRef.EntityComponentsForScene
 
@@ -135,6 +135,12 @@ func PopulateEntityDataFromPrefab(PrefabMap map[string]Prefab, curSceneRef *Scen
 				log.Fatal(err, "\nFailed to create tilemap.")
 			}
 
+		case "Factory":
+			var factory Factory
+			factoryEntityToCopy := curSceneRef.EntityIDsByName[assetData.factoryAssetData.FactoryTemplateEntityPrefabName]
+			factory.InitFactory(entityComponentsRef, curSceneRef, curRoom, assetData.factoryAssetData.FactoryName, assetData.factoryAssetData.FactoryNumEntities, factoryEntityToCopy, FactoryStateFromString[assetData.factoryAssetData.FactoryType])
+
+			curRoom.Factories = append(curRoom.Factories, &factory)
 		}
 	}
 
@@ -215,6 +221,7 @@ func ReloadSceneWithSceneData(curScene *Scene, sceneData *SceneData) {
 	runningEntityID := 0
 	curSceneEntityComponents := curScene.EntityComponentsForScene
 
+	// FILL PLAYER ENTITY DATA
 	ReloadEntityDataFromPrefab(PrefabMap, curScene, sceneData.PlayerEntityDataForScene.PrefabName, runningEntityID)
 	OverridePrefabDataForEntityWithEntityData(runningEntityID, curSceneEntityComponents, &sceneData.PlayerEntityDataForScene)
 
@@ -240,7 +247,8 @@ func FillSceneWithSceneDataFirstTime(curScene *Scene, sceneData *SceneData) {
 	runningEntityID := 0
 	curSceneEntityComponents := curScene.EntityComponentsForScene
 
-	PopulateEntityDataFromPrefab(PrefabMap, curScene, sceneData.PlayerEntityDataForScene.PrefabName, runningEntityID)
+	// FILL PLAYER ENTITY DATA
+	PopulateEntityDataFromPrefab(PrefabMap, curScene, nil, sceneData.PlayerEntityDataForScene.PrefabName, runningEntityID)
 	OverridePrefabDataForEntityWithEntityData(runningEntityID, curSceneEntityComponents, &sceneData.PlayerEntityDataForScene)
 	curSceneEntityComponents.PlayerEntityID = runningEntityID
 	curScene.EntityIDsByName[sceneData.PlayerEntityDataForScene.EntityName] = runningEntityID
@@ -254,25 +262,42 @@ func FillSceneWithSceneDataFirstTime(curScene *Scene, sceneData *SceneData) {
 
 		for _, curEntityData := range curRoomParsedData.RoomEntities {
 
-			PopulateEntityDataFromPrefab(PrefabMap, curScene, curEntityData.PrefabName, runningEntityID)
-			OverridePrefabDataForEntityWithEntityData(runningEntityID, curSceneEntityComponents, &curEntityData)
+			if PrefabMap[curEntityData.PrefabName].AssetType != "Factory" {
+				PopulateEntityDataFromPrefab(PrefabMap, curScene, curRoom, curEntityData.PrefabName, runningEntityID)
+				OverridePrefabDataForEntityWithEntityData(runningEntityID, curSceneEntityComponents, &curEntityData)
 
-			switch PrefabMap[curEntityData.PrefabName].AssetType {
-			case "Enemy":
-				curRoom.EnemyEntityIDs = append(curRoom.EnemyEntityIDs, runningEntityID)
-			case "Obstacle":
-				curRoom.ObstacleEntityIDs = append(curRoom.ObstacleEntityIDs, runningEntityID)
-			case "Invisible Trigger":
-				curRoom.InvisibleTriggerEntityIDs = append(curRoom.InvisibleTriggerEntityIDs, runningEntityID)
-			case "Visible Trigger":
-				curRoom.VisibleTriggerEntityIDs = append(curRoom.VisibleTriggerEntityIDs, runningEntityID)
-			case "Item":
-				curRoom.ItemEntityIDs = append(curRoom.ItemEntityIDs, runningEntityID)
+				switch PrefabMap[curEntityData.PrefabName].AssetType {
+				case "Enemy":
+					curRoom.EnemyEntityIDs = append(curRoom.EnemyEntityIDs, runningEntityID)
+				case "Obstacle":
+					curRoom.ObstacleEntityIDs = append(curRoom.ObstacleEntityIDs, runningEntityID)
+				case "Invisible Trigger":
+					curRoom.InvisibleTriggerEntityIDs = append(curRoom.InvisibleTriggerEntityIDs, runningEntityID)
+				case "Visible Trigger":
+					curRoom.VisibleTriggerEntityIDs = append(curRoom.VisibleTriggerEntityIDs, runningEntityID)
+				case "Item":
+					curRoom.ItemEntityIDs = append(curRoom.ItemEntityIDs, runningEntityID)
+				}
+
+				curRoom.EntitiesInThisRoom = append(curRoom.EntitiesInThisRoom, runningEntityID)
+				curScene.EntityIDsByName[curEntityData.EntityName] = runningEntityID
+				runningEntityID += 1
 			}
+		}
 
-			curRoom.EntitiesInThisRoom = append(curRoom.EntitiesInThisRoom, runningEntityID)
-			curScene.EntityIDsByName[curEntityData.EntityName] = runningEntityID
-			runningEntityID += 1
+		for _, curEntityData := range curRoomParsedData.RoomEntities {
+
+			if PrefabMap[curEntityData.PrefabName].AssetType == "Factory" {
+
+				PopulateEntityDataFromPrefab(PrefabMap, curScene, curRoom, curEntityData.PrefabName, runningEntityID)
+				OverridePrefabDataForEntityWithEntityData(runningEntityID, curSceneEntityComponents, &curEntityData)
+
+				curRoom.EntitiesInThisRoom = append(curRoom.EntitiesInThisRoom, runningEntityID)
+				curScene.EntityIDsByName[curEntityData.EntityName] = runningEntityID
+
+				runningEntityID += 1
+
+			}
 		}
 	}
 }
@@ -307,7 +332,7 @@ func CreateAndPopulateEntitiesAndComponents() *World {
 		world.Scenes[index].SceneName = sceneData.SceneName
 
 		curScene := world.Scenes[index]
-		curScene.AnimationsTimerSystem.InitWithTimers("Scene Animation Timer System", 24)
+		curScene.AnimationsTimerSystem.InitWithTimers("Scene Animation Timer System", 128)
 		FillSceneWithSceneDataFirstTime(curScene, &sceneData)
 	}
 

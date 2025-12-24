@@ -8,6 +8,7 @@ type AssetData struct {
 	tilemapAssetData   *TilemapAssetData
 	fontAssetData      *FontAssetData
 	textAssetData      *TextAssetData
+	factoryAssetData   *FactoryAssetData
 }
 
 type Prefab struct {

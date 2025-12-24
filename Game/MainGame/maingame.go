@@ -31,6 +31,28 @@ func (mainGameMode *MainGameMode) Init() {
 	mainGameMode.playerSpeed = 2.0
 
 	mainGameMode.showCurrentUITree = false
+
+	curSceneRef := mainGameMode.SceneRef
+	entityComponentsRef := curSceneRef.EntityComponentsForScene
+
+	playerPosRef := &entityComponentsRef.Positions[entityComponentsRef.PlayerEntityID]
+	curRoomIndex := entityComponentsRef.Tilemap.GetRoomIndexOfPosition(playerPosRef)
+	curRoom, _ := curSceneRef.RoomsData[curRoomIndex]
+
+	index := 0
+	for i := curRoom.Factories[0].EntityBegin; i <= curRoom.Factories[0].EntityEnd; i++ {
+		entityComponentsRef.EntityDead[i] = false
+		entityComponentsRef.Positions[i] = Engine.Vector2{X: float64(30.0 + index*40.0), Y: float64(80.0 + index*40.0)}
+		index++
+	}
+
+	index = 0
+	for i := curRoom.Factories[1].EntityBegin; i <= curRoom.Factories[1].EntityEnd; i++ {
+		entityComponentsRef.EntityDead[i] = false
+		entityComponentsRef.Positions[i] = Engine.Vector2{X: float64(120.0 + index*20.0), Y: float64(60.0 + index*20.0)}
+		index++
+	}
+
 }
 
 func (mainGameMode *MainGameMode) Update() {
@@ -95,9 +117,6 @@ func (mainGameMode *MainGameMode) Update() {
 		}
 
 	} else {
-		for i := 0; i < 4; i++ {
-			// playerSpriteRef.Animations[i].AnimationTimer.Item.PauseTimer()
-		}
 		playerSpriteRef.Animations[playerSpriteRef.CurrentAnimationIndex].AnimationTimer.Item.PauseTimer()
 	}
 
@@ -105,7 +124,11 @@ func (mainGameMode *MainGameMode) Update() {
 		playerCollisionShapeRef := entityComponentsRef.CollisionShapes[entityComponentsRef.PlayerEntityID]
 		stoppageDistanceFromPlayer := 32.0
 		skeleMoveAmountPerFrame := 1.0
+		// fmt.Println("=============")
 		for _, enemyEntityID := range curRoom.EnemyEntityIDs {
+
+			// fmt.Println(enemyEntityID)
+
 			skeletonSpriteRef := &entityComponentsRef.Sprites[enemyEntityID]
 			skelePosRef := &entityComponentsRef.Positions[enemyEntityID]
 
@@ -137,8 +160,8 @@ func (mainGameMode *MainGameMode) Update() {
 				} else if directionToPlayerNormalised.Y > 0 {
 					skeletonSpriteRef.ChangeSpriteAnimationIndexTo(0)
 				}
-			} else {
-				// skeletonSpriteRef.Animations[skeletonSpriteRef.CurrentAnimationIndex].AnimationTimer.Item.PauseTimer()
+
+				// fmt.Println(skelePosRef)
 			}
 
 			skeletonCollisionShapeRef := entityComponentsRef.CollisionShapes[enemyEntityID]
@@ -146,6 +169,7 @@ func (mainGameMode *MainGameMode) Update() {
 				// fmt.Println("Skeleton is colliding with player!")
 			}
 		}
+		// fmt.Println("=============")
 
 		for _, itemEntityID := range curRoom.ItemEntityIDs {
 
@@ -178,7 +202,7 @@ func (mainGameMode *MainGameMode) Update() {
 func (mainGameMode *MainGameMode) Draw(screenRef *ebiten.Image) {
 
 	Engine.DrawActiveRoomInScene(mainGameMode.SceneRef, screenRef)
-	// Engine.DrawActiveRoomInSceneColliders(mainGameMode.SceneRef, screenRef)
+	Engine.DrawActiveRoomInSceneColliders(mainGameMode.SceneRef, screenRef)
 
 	drawOptions := ebiten.DrawImageOptions{}
 	if mainGameMode.showCurrentUITree {

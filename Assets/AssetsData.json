@@ -1195,6 +1195,38 @@
           ]
         }
       ]
+    },
+    {
+      "Factories":[
+        {
+          "Name" : "Skeleton Circle Factory",
+          "Asset Type": "Factory",
+          "Asset Data": [
+            {
+              "Factory":{
+                "FactoryName": "Skeleton Circle Factory",
+                "FactoryType": "FactoryType_EnemyEntities",
+                "FactoryTemplateEntityPrefabName": "Skeleton Circle A",
+                "FactoryNumEntities": 4
+              }
+            }
+          ]
+        },
+        {
+          "Name" : "Skeleton Box Factory",
+          "Asset Type": "Factory",
+          "Asset Data": [
+            {
+              "Factory":{
+                "FactoryName": "Skeleton Box Factory",
+                "FactoryType": "FactoryType_EnemyEntities",
+                "FactoryTemplateEntityPrefabName": "Skeleton Box A",
+                "FactoryNumEntities": 4
+              }
+            }
+          ]
+        }
+      ]
     }
   ],
   "UI Sprite Data": [
@@ -1295,6 +1327,12 @@
             {
               "Prefab Name": "Life Pot",
               "Entity Spawn Name": "Life Pot"
+            },
+            {
+              "Prefab Name": "Skeleton Circle Factory"
+            },
+            {
+              "Prefab Name": "Skeleton Box Factory"
             }
           ]
         }
