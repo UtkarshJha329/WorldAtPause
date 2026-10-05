@@ -1225,6 +1225,20 @@
               }
             }
           ]
+        },
+        {
+          "Name" : "Breakout Brick Factory",
+          "Asset Type": "Factory",
+          "Asset Data": [
+            {
+              "Factory":{
+                "FactoryName": "Breakout Brick Factory",
+                "FactoryType": "FactoryType_ObstacleEntities",
+                "FactoryTemplateEntityPrefabName": "Breakout Brick 1",
+                "FactoryNumEntities": 5
+              }
+            }
+          ]
         }
       ]
     }
@@ -1368,32 +1382,15 @@
               "Asset Data": [{ "Position": [48, 16] }]
             },
             {
-              "Prefab Name": "Breakout Brick",
-              "Entity Spawn Name": "Breakout Brick 2",
-              "Asset Data": [{ "Position": [96, 16] }]
-            },
-            {
-              "Prefab Name": "Breakout Brick",
-              "Entity Spawn Name": "Breakout Brick 3",
-              "Asset Data": [{ "Position": [144, 16] }]
-            },
-            {
-              "Prefab Name": "Breakout Brick",
-              "Entity Spawn Name": "Breakout Brick 4",
-              "Asset Data": [{ "Position": [192, 16] }]
-            },
-            {
-              "Prefab Name": "Breakout Brick",
-              "Entity Spawn Name": "Breakout Brick 5",
-              "Asset Data": [{ "Position": [240, 16] }]
-            },
-            {
               "Prefab Name": "Breakout You Win Text",
               "Entity Spawn Name": "Breakout You Win Text"
             },
             {
               "Prefab Name": "Breakout You Lose Text",
               "Entity Spawn Name": "Breakout You Lose Text"
+            },
+            {
+              "Prefab Name": "Breakout Brick Factory"
             }
           ]
         }

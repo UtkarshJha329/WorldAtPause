@@ -27,6 +27,23 @@ func (breakoutGameMode *BreakoutGameMode) Init() {
 	breakoutGameMode.numBricks = 5.0
 	breakoutGameMode.failureTriggerTriggered = false
 
+	curSceneRef := breakoutGameMode.SceneRef
+	entityComponentsRef := curSceneRef.EntityComponentsForScene
+
+	playerPosRef := &entityComponentsRef.Positions[entityComponentsRef.PlayerEntityID]
+	curRoomIndex := entityComponentsRef.Tilemap.GetRoomIndexOfPosition(playerPosRef)
+	curRoom, _ := curSceneRef.RoomsData[curRoomIndex]
+
+	breakoutTemplateBrick := curSceneRef.EntityIDsByName["Breakout Brick 1"]
+	entityComponentsRef.EntityDead[breakoutTemplateBrick] = true
+
+	index := 0
+	for i := curRoom.Factories[0].EntityBegin; i <= curRoom.Factories[0].EntityEnd; i++ {
+		entityComponentsRef.EntityDead[i] = false
+		entityComponentsRef.Positions[i] = Engine.Vector2{X: float64(48.0 + index*(48.0)), Y: float64(16.0)}
+		index++
+	}
+
 }
 
 func (breakoutGameMode *BreakoutGameMode) Update() {

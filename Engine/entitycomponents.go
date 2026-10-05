@@ -138,6 +138,7 @@ func PopulateEntityDataFromPrefab(PrefabMap map[string]Prefab, curSceneRef *Scen
 		case "Factory":
 			var factory Factory
 			factoryEntityToCopy := curSceneRef.EntityIDsByName[assetData.factoryAssetData.FactoryTemplateEntityPrefabName]
+			entityComponentsRef.EntityDead[factoryEntityToCopy] = true
 			factory.InitFactory(entityComponentsRef, curSceneRef, curRoom, assetData.factoryAssetData.FactoryName, assetData.factoryAssetData.FactoryNumEntities, factoryEntityToCopy, FactoryStateFromString[assetData.factoryAssetData.FactoryType])
 
 			curRoom.Factories = append(curRoom.Factories, &factory)
